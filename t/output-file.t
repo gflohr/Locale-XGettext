@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 26;
 
-use Locale::XGettext::TT2;
+use Locale::XGettext;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -49,51 +49,51 @@ die "could not rmdir output/" if -e 'output';
 
 ok mkdir 'output';
 
-ok(Locale::XGettext::TT2->new({}, 'templates/template.tt')->run->output);
+ok(Locale::XGettext->new({}, 'templates/template.tt')->run->output);
 ok -e 'messages.po';
 ok unlink 'messages.po';
 
-ok(Locale::XGettext::TT2->new({output => 'domain.po'}, 'templates/template.tt')
-                        ->run->output);
+ok(Locale::XGettext->new({output => 'domain.po'}, 'templates/template.tt')
+                   ->run->output);
 ok -e 'domain.po';
 ok unlink 'domain.po';
 
-ok(Locale::XGettext::TT2->new({default_domain => 'domain'}, 
-                              'templates/template.tt')
-                        ->run->output);
+ok(Locale::XGettext->new({default_domain => 'domain'}, 
+                        'templates/template.tt')
+                   ->run->output);
 ok -e 'domain.po';
 ok unlink 'domain.po';
 
-ok(Locale::XGettext::TT2->new({output_dir => 'output'}, 
-                              'templates/template.tt')
-                        ->run->output);
+ok(Locale::XGettext->new({output_dir => 'output'}, 
+                        'templates/template.tt')
+                   ->run->output);
 ok -e 'output/messages.po';
 ok unlink 'output/messages.po';
 
-ok(Locale::XGettext::TT2->new({output_dir => 'output', output => 'domain.po'}, 
-                              'templates/template.tt')
-                        ->run->output);
+ok(Locale::XGettext->new({output_dir => 'output', output => 'domain.po'}, 
+                         'templates/template.tt')
+                   ->run->output);
 ok -e 'output/domain.po';
 ok unlink 'output/domain.po';
 
-ok(Locale::XGettext::TT2->new({output_dir => 'output', 
-                               default_domain => 'domain'}, 
-                               'templates/template.tt')
-                        ->run->output);
+ok(Locale::XGettext->new({output_dir => 'output', 
+                          default_domain => 'domain'}, 
+                         'templates/template.tt')
+                   ->run->output);
 ok -e 'output/domain.po';
 ok unlink 'output/domain.po';
 
 open STDOUT, '>', 'domain.po';
-ok(Locale::XGettext::TT2->new({default_domain => '-'}, 
+ok(Locale::XGettext->new({default_domain => '-'}, 
                                'templates/template.tt')
-                        ->run->output);
+                   ->run->output);
 ok -e 'domain.po';
 ok !-e '-.po';
 unlink '-.po';
 
-ok(Locale::XGettext::TT2->new({output => '-'}, 
-                               'templates/template.tt')
-                        ->run->output);
+ok(Locale::XGettext->new({output => '-'}, 
+                        'templates/template.tt')
+                   ->run->output);
 ok -e 'domain.po';
 ok !-e '-.po';
 unlink '-.po';

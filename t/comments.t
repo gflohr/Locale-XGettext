@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 1;
 
-use Locale::XGettext::TT2;
+use Locale::XGettext;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -33,9 +33,9 @@ BEGIN {
 
 use TestLib qw(find_entries);
 
-my $po = Locale::XGettext::TT2->new({add_comments => ['TRANSLATORS:']}, 
-                                    'templates/template.tt')
-                              ->run->po;
+my $po = Locale::XGettext->new({add_comments => ['TRANSLATORS:']}, 
+                               'templates/template.tt')
+                         ->run->po;
 is((scalar find_entries $po, 
                msgid => qq{"Translator comment above.\\n"},
                comment => "TRANSLATORS: A translator comment."), 1);

@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 3;
 
-use Locale::XGettext::TT2;
+use Locale::XGettext;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -33,9 +33,9 @@ BEGIN {
 
 use TestLib qw(find_entries);
 
-my $po = Locale::XGettext::TT2->new({directory => ['templates', 'templates2']},
-                                    'template.tt',
-                                    'two.tt')->run->po;
+my $po = Locale::XGettext->new({directory => ['templates', 'templates2']},
+                               'template.tt',
+                               'two.tt')->run->po;
 is((scalar find_entries $po, msgid => qq{"Hello, world!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Do not extract!\\n"}), 0);
 is((scalar find_entries $po, msgid => qq{"Two, too!\\n"}), 1);

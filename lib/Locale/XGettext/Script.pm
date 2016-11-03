@@ -161,8 +161,10 @@ sub __displayUsage {
     print __(<<EOF);
 Extract translatable strings from given input files.  
 EOF
+
     print __(<<EOF);
-Input files are interpreted as Template Toolkit version 2 templates.  
+Input files are interpreted as plain text files with each paragraph being
+a separately translatable unit.  
 EOF
 
     print "\n";

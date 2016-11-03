@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 2;
 
-use Locale::XGettext::TT2;
+use Locale::XGettext;
 
 my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
@@ -30,9 +30,9 @@ chdir $test_dir or die "cannot chdir to $test_dir: $!";
 
 my $sep = '(?:"|\\\\n)';
 
-my $po = Locale::XGettext::TT2->new({}, 'templates/template.tt')->run->po;
+my $po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: PACKAGE VERSION${sep}/m;
 
-my $po = Locale::XGettext::TT2->new({package_name => 'qgoda'}, 
+my $po = Locale::XGettext->new({package_name => 'qgoda'}, 
                                     'templates/template.tt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: qgoda${sep}/m;

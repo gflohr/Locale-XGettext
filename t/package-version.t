@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 3;
 
-use Locale::XGettext::TT2;
+use Locale::XGettext;
 
 my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
@@ -31,17 +31,17 @@ chdir $test_dir or die "cannot chdir to $test_dir: $!";
 my $sep = '(?:"|\\\\n)';
 my $po;
 
-$po = Locale::XGettext::TT2->new({}, 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: PACKAGE VERSION${sep}/m;
 
 # --package-version is ignored if --package-name is not set.
-$po = Locale::XGettext::TT2->new({package_version => '1.2.3'}, 
-                                 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({package_version => '1.2.3'}, 
+                            'templates/template.tt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: PACKAGE VERSION${sep}/m;
 
-$po = Locale::XGettext::TT2->new({
-                                     package_name => 'qgoda',
-                                     package_version => '1.2.3',
-                                 }, 
-                                'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({
+                                package_name => 'qgoda',
+                                package_version => '1.2.3',
+                            }, 
+                           'templates/template.tt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: qgoda 1.2.3${sep}/m;

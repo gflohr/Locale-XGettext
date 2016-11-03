@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 9;
 
-use Locale::XGettext::TT2;
+use Locale::XGettext;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -33,7 +33,7 @@ BEGIN {
 
 use TestLib qw(find_entries);
 
-my $po = Locale::XGettext::TT2->new({}, 
+my $po = Locale::XGettext->new({}, 
                                     'templates/template.tt', 
                                     'templates/additional.tt')
                               ->run->po;
@@ -41,16 +41,16 @@ is((scalar find_entries $po, msgid => qq{"Hello, world!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, Mars!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, extraterrestrials!\\n"}), 0);
 
-$po = Locale::XGettext::TT2->new({files_from => ['POTFILES1']}, 
+$po = Locale::XGettext->new({files_from => ['POTFILES1']}, 
                                   'templates/extra.tt')
-                            ->run->po;
+                      ->run->po;
 is((scalar find_entries $po, msgid => qq{"Hello, world!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, Mars!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, extraterrestrials!\\n"}), 1);
 
 # Test that we can read from multiple files and that the entries are merged.
-$po = Locale::XGettext::TT2->new({files_from => ['POTFILES1', 'POTFILES2']})
-                            ->run->po;
+$po = Locale::XGettext->new({files_from => ['POTFILES1', 'POTFILES2']})
+                      ->run->po;
 is((scalar find_entries $po, msgid => qq{"Hello, world!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, Mars!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, extraterrestrials!\\n"}), 1);
