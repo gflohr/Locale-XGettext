@@ -1,0 +1,2 @@
+[% USE gtx = Gettext %]
+[% gtx.gettext("Hello, Mars!\n") %]
