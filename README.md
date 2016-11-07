@@ -47,7 +47,7 @@ templates and plain text files that have to be translated.
    created pot files `text.pot` and `templates.pot`.  This works
    because `xgettext` natively understands `.po` resp. `.pot` files.
  
-By the way, all xgettext flavors based on this library `Locale::XGetext`
+By the way, all xgettext flavors based on this library `Locale::XGettext`
 are also able to extract strings from `.po` or `.pot` files.  So you
 can also make do completely without GNU gettext as far as string
 extraction is concerned.
