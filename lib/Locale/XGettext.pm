@@ -1,4 +1,5 @@
 #! /bin/false
+# vim: ts=4:et
 
 # Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
 # all rights reserved.
@@ -27,12 +28,13 @@ use vars qw(@EXPORT $VERSION);
 @EXPORT = qw($VERSION);
 $VERSION = '0.1.1';
 
-use Locale::TextDomain qw(Template-Plugin-Gettext);
+use Locale::TextDomain qw(Locale-XGettext);
 use File::Spec;
-use Template;
 use Locale::PO 0.27;
 use Scalar::Util qw(reftype);
 use Locale::Recode;
+
+use Locale::XGettext::POEntries;
 
 sub empty {
     my ($what) = @_;
@@ -85,15 +87,15 @@ sub new {
     }
     
     if (exists $options->{add_comments}) {
-    	if (!ref $options->{add_comments} 
-    	    && 'ARRAY' ne $options->{add_comments}) {
-    		die __"Option 'add_comments' must be an array reference.\n";
-    	}
-    	
-    	foreach my $comment (@{$options->{add_comments}}) {
-    		$comment =~ s/^[ \t\n\f\r\013]+//;
-    		$comment = quotemeta $comment;
-    	}
+        if (!ref $options->{add_comments} 
+            && 'ARRAY' ne $options->{add_comments}) {
+        	die __"Option 'add_comments' must be an array reference.\n";
+        }
+        
+        foreach my $comment (@{$options->{add_comments}}) {
+        	$comment =~ s/^[ \t\n\f\r\013]+//;
+        	$comment = quotemeta $comment;
+        }
     }
     
     $options->{from_code} = 'ASCII' if empty $options->{from_code};
@@ -101,14 +103,14 @@ sub new {
     my $from_code = $options->{from_code};
     my $cd = Locale::Recode->new(from => $from_code,
                                  to => 'utf-8');
-    if ($cd->getError) {    	
+    if ($cd->getError) {        
         warn __x("warning: '{from_code}' is not a valid encoding name.  "
                  . "Using ASCII as fallback.",
                  from_code => $from_code);
         $options->{from_code} = 'ASCII';
     } else {
-    	$options->{from_code} = 
-    	    Locale::Recode->resolveAlias($options->{from_code});
+        $options->{from_code} = 
+            Locale::Recode->resolveAlias($options->{from_code});
     }
     
     $self->__readFilesFrom($options->{files_from});
@@ -119,7 +121,7 @@ sub new {
 }
 
 sub defaultKeywords {
-	return (
+    return (
         gettext => [1],
         ngettext => [1, 2],
         pgettext => ['1c', 2],
@@ -128,11 +130,11 @@ sub defaultKeywords {
         nxgettext => [1, 2],
         pxgettext => ['1c', 2],
         npxgettext => ['1c', 2, 3],
-	);
+    );
 }
 
 sub run {
-	my ($self) = @_;
+    my ($self) = @_;
 
     if ($self->{__run}++) {
         require Carp;
@@ -144,32 +146,27 @@ sub run {
     
     my $cd;
     if ($from_code ne 'US-ASCII' && $from_code ne 'UTF-8') {
-    	$cd = Locale::Recode->new(from => $from_code, to => 'utf-8')
-    	   or die $cd->getError;
+        $cd = Locale::Recode->new(from => $from_code, to => 'utf-8')
+           or die $cd->getError;
     }
-    
-    my $po = Locale::XGettext::TT2::POEntries->new;
+  
+    my $po = Locale::XGettext::POEntries->new; 
     foreach my $filename (@{$self->{__files}}) {
-    	my $path = $self->__resolveFilename($filename)
-    	    or die __x("Error opening '{filename}': {error}!\n",
-    	               filename => $filename, error => $!);
-    	my $entries = $self->__getEntriesFromFile($path);
-        unless ($self->{__options}->{no_location}) {
-            foreach my $entry (@$entries) {
-            	$self->__addLocation($entry, $filename);
-            }
+        my $path = $self->__resolveFilename($filename)
+            or die __x("Error opening '{filename}': {error}!\n",
+                       filename => $filename, error => $!);
+        my @entries = $self->__getEntriesFromFile($path);
+        foreach my $entry (@entries) {
+            $self->__recodeEntry($entry, $from_code, $cd, $path);
         }
-        foreach my $entry (@$entries) {
-        	$self->__recodeEntry($entry, $from_code, $cd, $path);
-        }
-        $po->addEntries($entries);
+        $po->addEntries(@entries);
     }
 
     # FIXME! Sort po!
     
     if ((@$po || $self->{__options}->{force_po})
         && !$self->{__options}->{omit_header}) {
-        unshift @$po, $self->__poHeader;
+        $po->prepend($self->__poHeader);
     }
 
     $self->{__po} = $po;
@@ -178,65 +175,62 @@ sub run {
 }
 
 sub __conversionError {
-    my ($self, $filename, $lineno, $cd) = @_;
+    my ($self, $reference, $cd) = @_;
     
-    die __x("{filename}:{lineno}: {conversion_error}\n",
-            filename => $filename, lineno => $lineno,
+    die __x("{reference}: {conversion_error}\n",
+            reference => $reference,
             conversion_error => $cd->getError);
 }
 
 sub __recodeEntry {
-	my ($self, $entry, $from_code, $cd, $filename) = @_;
-	
+    my ($self, $entry, $from_code, $cd) = @_;
+    
     my $toString = sub {
-    	my ($entry) = @_;
+        my ($entry) = @_;
 
         return join '', map { defined $_ ? $_ : '' }
             $entry->msgid, $entry->msgid_plural, 
             $entry->msgctxt, $entry->comment;
     };
     
-    my $lineno = $entry->{__xgettext_tt_lineno};
-    if ($from_code eq 'US-ASCII') {    	
-    	# Check that everything is 7 bit.
-    	my $flesh = $toString->($entry);
+    if ($from_code eq 'US-ASCII') {        
+        # Check that everything is 7 bit.
+        my $flesh = $toString->($entry);
         if ($flesh !~ /^[\000-\177]*$/) {
-        	die __x("Non-ASCII string at {filename}:{lineno}.\n"
-        	        . "    Please specify the source encoding through "
-        	        . "--from-code.\n",
-        	        filename => $filename,
-        	        lineno => $lineno);
+            die __x("Non-ASCII string at {reference}.\n"
+                    . "    Please specify the source encoding through "
+                    . "--from-code.\n",
+                    reference => $entry->reference);
         }
     } elsif ($from_code eq 'UTF-8') {
-    	# Check that utf-8 is valid.
-    	require utf8; # [SIC!]
-    	
+        # Check that utf-8 is valid.
+        require utf8; # [SIC!]
+        
         my $flesh = $toString->($entry);
         if (!utf8::valid($flesh)) {
-        	die __x("{filename}:{lineno}: invalid multibyte sequence\n",
-        	        filename => $filename,
-        	        lineno => $lineno);
+            die __x("{reference}: invalid multibyte sequence\n",
+                    reference => $entry->reference);
         }
     } else {
-    	# Convert.
+        # Convert.
         my $msgid = Locale::PO->dequote($entry->msgid);
         if (!empty $msgid) {
             $cd->recode($msgid) 
-                or $self->__conversionError($filename, $lineno, $cd);
+                or $self->__conversionError($entry->reference, $cd);
             $entry->msgid($msgid);
         }
         
         my $msgid_plural = Locale::PO->dequote($entry->msgid_plural);
         if (!empty $msgid_plural) {
             $cd->recode($msgid_plural) 
-                or $self->__conversionError($filename, $lineno, $cd);
+                or $self->__conversionError($entry->reference, $cd);
             $entry->msgid($msgid_plural);
         }
-    	
-    	my $msgstr = Locale::PO->dequote($entry->msgstr);
+        
+        my $msgstr = Locale::PO->dequote($entry->msgstr);
         if (!empty $msgstr) {
             $cd->recode($msgstr) 
-                or $self->__conversionError($filename, $lineno, $cd);
+                or $self->__conversionError($entry->reference, $cd);
             $entry->msgid($msgstr);
         }
         
@@ -244,57 +238,57 @@ sub __recodeEntry {
         if ($msgstr_n) {
             my $msgstr_0 = Locale::PO->dequote($msgstr_n->{0});
             $cd->recode($msgstr_0) 
-                or $self->__conversionError($filename, $lineno, $cd);
+                or $self->__conversionError($entry->reference, $cd);
             my $msgstr_1 = Locale::PO->dequote($msgstr_n->{1});
             $cd->recode($msgstr_1) 
-                or $self->__conversionError($filename, $lineno, $cd);
+                or $self->__conversionError($entry->reference, $cd);
             $entry->msgstr_n({
-            	0 => $msgstr_0,
-            	1 => $msgstr_1,
+                0 => $msgstr_0,
+                1 => $msgstr_1,
             })
         }
         
-    	my $comment = $entry->comment;
-    	$cd->recode($comment) 
-    	    or $self->__conversionError($filename, $lineno, $cd);
-    	$entry->comment($comment);
+        my $comment = $entry->comment;
+        $cd->recode($comment) 
+            or $self->__conversionError($entry->reference, $cd);
+        $entry->comment($comment);
     }
 
-	
-	return $self;
+    
+    return $self;
 }
 
 sub __resolveFilename {
-	my ($self, $filename) = @_;
-	
-	my $directories = $self->{__options}->{directory} || ['.'];
-	foreach my $directory (@$directories) {
-		my $path = File::Spec->catfile($directory, $filename);
-		stat $path && return $path;
-	}
-	
-	return;
+    my ($self, $filename) = @_;
+    
+    my $directories = $self->{__options}->{directory} || ['.'];
+    foreach my $directory (@$directories) {
+    	my $path = File::Spec->catfile($directory, $filename);
+    	stat $path && return $path;
+    }
+    
+    return;
 }
 
 sub __addLocation {
-	my ($self, $entry, $filename) = @_;
+    my ($self, $entry, $filename) = @_;
 
     my $new_ref = "$filename:$entry->{__xgettext_tt_lineno}";
     
     my $reference = $entry->reference;
     my @lines = split "\n", $reference;
     if (!@lines) {
-    	push @lines, $new_ref;
+        push @lines, $new_ref;
     } else {
-    	my $last_line = $lines[-1];
-    	my $ref_length = 1 + length $new_ref;
-    	if ($ref_length > 76) {
-    		push @lines, $new_ref;
-    	} elsif ($ref_length + length $last_line > 76) {
-    		push @lines, $new_ref;
-    	} else {
-    		$lines[-1] .= ' ' . $new_ref;
-    	}
+        my $last_line = $lines[-1];
+        my $ref_length = 1 + length $new_ref;
+        if ($ref_length > 76) {
+        	push @lines, $new_ref;
+        } elsif ($ref_length + length $last_line > 76) {
+        	push @lines, $new_ref;
+        } else {
+        	$lines[-1] .= ' ' . $new_ref;
+        }
     }
     
     $entry->reference(join "\n", @lines);
@@ -303,12 +297,12 @@ sub __addLocation {
 }
 
 sub po {
-	shift->{__po};
+    shift->{__po};
 }
 
 sub output {
-	my ($self) = @_;
-	
+    my ($self) = @_;
+    
     if (!$self->{__run}) {
         require Carp;
         Carp::croak(__"Attempt to output from extractor before run");
@@ -324,18 +318,18 @@ sub output {
     my $options = $self->{__options};
     my $filename;
     if (exists $options->{output}) {
-    	if (File::Spec->file_name_is_absolute($options->{output})
-    	    || '-' eq $options->{output}) {
-    	    $filename = $options->{output};	
-    	} else {
-    		$filename = File::Spec->catfile($options->{output_dir},
-    		                                $options->{output})
-    	}
+        if (File::Spec->file_name_is_absolute($options->{output})
+            || '-' eq $options->{output}) {
+            $filename = $options->{output};	
+        } else {
+        	$filename = File::Spec->catfile($options->{output_dir},
+        	                                $options->{output})
+        }
     } elsif ('-' eq $options->{default_domain}) {
-    	$filename = '-';
+        $filename = '-';
     } else {
-    	$filename = File::Spec->catfile($options->{output_dir}, 
-    	                                $options->{default_domain} . '.po');
+        $filename = File::Spec->catfile($options->{output_dir}, 
+                                        $options->{default_domain} . '.po');
     }
     
     open my $fh, ">$filename"
@@ -343,7 +337,7 @@ sub output {
                    file => $filename, error => $!);
     
     foreach my $entry (@{$self->{__po}}) {
-    	print $fh $entry->dump
+        print $fh $entry->dump
             or die __x("Error writing '{file}': {error}.\n",
                        file => $filename, error => $!);
     }
@@ -355,47 +349,47 @@ sub output {
 }
 
 sub __poHeader {
-	my ($self) = @_;
+    my ($self) = @_;
 
     my $options = $self->{__options};
     
     my $user_info;
     if ($options->{foreign_user}) {
-    	$user_info = <<EOF;
+        $user_info = <<EOF;
 This file is put in the public domain.
 EOF
     } else {
-    	my $copyright = $options->{copyright_holder};
-    	$copyright = "THE PACKAGE'S COPYRIGHT HOLDER" if !defined $copyright;
-    	
-    	$user_info = <<EOF;
+        my $copyright = $options->{copyright_holder};
+        $copyright = "THE PACKAGE'S COPYRIGHT HOLDER" if !defined $copyright;
+        
+        $user_info = <<EOF;
 Copyright (C) YEAR $copyright
 This file is distributed under the same license as the PACKAGE package.
 EOF
     }
     chomp $user_info;
-	
-	my $entry = Locale::PO->new;
-	$entry->fuzzy(1);
-	$entry->comment(<<EOF);
+    
+    my $entry = Locale::PO->new;
+    $entry->fuzzy(1);
+    $entry->comment(<<EOF);
 SOME DESCRIPTIVE TITLE.
 $user_info
 FIRST AUTHOR <EMAIL\@ADDRESS>, YEAR.
 EOF
     $entry->msgid('');
 
-	my @fields;
-	
+    my @fields;
+    
     my $package_name = $options->{package_name};
     if (defined $package_name) {
-    	my $package_version = $options->{package_version};
-    	$package_name .= ' ' . $package_version 
-    	    if defined $package_version && length $package_version; 
+        my $package_version = $options->{package_version};
+        $package_name .= ' ' . $package_version 
+            if defined $package_version && length $package_version; 
     } else {
-    	$package_name = 'PACKAGE VERSION'
+        $package_name = 'PACKAGE VERSION'
     }
     
-	push @fields, "Project-Id-Version: $package_name";
+    push @fields, "Project-Id-Version: $package_name";
 
     my $msgid_bugs_address = $options->{msgid_bugs_address};
     $msgid_bugs_address = '' if !defined $msgid_bugs_address;
@@ -409,33 +403,39 @@ EOF
     push @fields, 'Content-Type: text/plain; charset=UTF-8';
     push @fields, 'Content-Transfer-Encoding: 8bit';
     
-    $entry->msgstr(join "\n", @fields);	
-	return $entry;
+    $entry->msgstr(join "\n", @fields);    
+    return $entry;
 }
 
 sub __getEntriesFromFile {
-	my ($self, $filename) = @_;
+    my ($self, $filename) = @_;
 
-    my %options = (
-        INTERPOLATE => 1,
-        RELATIVE => 1
-    );
+    open my $fh, "<$filename" 
+        or die __x("Error reading '{filename}': {error}!\n",
+                   filename => $filename, error => $!);
     
-    my $parser = Locale::XGettext::TT2::Parser->new(\%options);
+    my @entries;
+    my $chunk = '';
+    my $last_lineno = 1;
+    while (my $line = <$fh>) {
+        if ($line =~ /^[\x09-\x0d ]*$/) {
+            if (length $chunk) {
+                my $entry = Locale::PO::Entry->new;
+                $entry->msgid($chunk);
+                $entry->reference("$filename:$last_lineno");
+            }
+            $last_lineno = $. + 1;
+            $chunk = '';
+        }
+    }
     
-    my $tt = Template->new({
-        %options,
-        PARSER => $parser,
-    });
- 
-    my $sink;
-    $parser->{__xgettext}->{options} = $self->{__options};
-    
-    $tt->process($filename, {}, \$sink) or die $tt->error;
+    if (length $chunk) {
+        my $entry = Locale::PO::Entry->new;
+        $entry->msgid($chunk);
+        $entry->reference("$filename:$last_lineno");
+    }
 
-    my $entries = $parser->__xgettextEntries;
-    
-    return $entries;
+    return \@entries;
 }
 
 sub __readFilesFrom {
@@ -473,177 +473,6 @@ sub __readFilesFrom {
     $self->{__files} = \@files;
     
     return $self;
-}
-
-package Locale::XGettext::TT2::POEntries;
-
-use strict;
-
-sub new {
-	bless [], shift;
-}
-
-sub add {
-	my ($self, $entry) = @_;
-	
-	push @$self, $entry;
-	
-	return $self;
-}
-
-sub addEntries {
-	my ($self, $entries) = @_;
-	
-	push @$self, @$entries;
-	
-	return $self;
-}
-
-sub entries {
-	my ($self) = @_;
-	
-	return @$self;
-}
-
-package Locale::XGettext::TT2::Parser;
-
-use base qw(Template::Parser);
-
-use strict;
-
-sub split_text {
-    my ($self, $text) = @_;
-
-    my %functions = (
-        gettext => [qw(s)],
-        ngettext => [qw(s p)],
-        pgettext => [qw(c s)],
-        npgettext => [qw(c s p)],
-        xgettext => [qw(s)],
-        nxgettext => [qw(s p)],
-        pxgettext => [qw(c s)],
-        npxgettext => [qw(c s p)],
-    );
-    my %properties = (
-        s => 'msgid',
-        p => 'msgid_plural',
-        c => 'msgctxt',
-    );
-
-    sub extract_args {
-        my ($tokens, $offset, $function) = @_;
-
-        return if $offset >= @$tokens;
-        my $schema = $functions{$function};
-
-        return if '(' ne $tokens->[$offset];
-        $offset += 2;
-
-        my $entry = Locale::PO->new;
-        foreach my $type (@$schema) {
-            return if $offset >= @$tokens;
-
-            if ('LITERAL' eq $tokens->[$offset]) {
-                my $string = substr $tokens->[$offset + 1], 1, -1;
-                $string =~ s/\\([\\'])/$1/gs;
-                my $method = $properties{$type};
-                $entry->$method($string);
-                
-                $offset += 2;
-
-                if ($type ne $schema->[-1]) {
-                    return if $offset >= @$tokens;
-                    return if 'COMMA' ne $tokens->[$offset];
-                    $offset += 2;
-                }
-            } elsif ('"' eq $tokens->[$offset]) {
-                $offset += 2;
-                return if $offset >= @$tokens;
-                return if 'TEXT' ne $tokens->[$offset];
-                my $method = $properties{$type};
-                $entry->$method($tokens->[$offset + 1]);
-                
-                $offset += 4;
-            } else {
-                return;
-            }
-        }
-
-        if (defined $entry->msgid_plural && length $entry->msgid_plural) {
-            $entry->msgstr_n({0 => '', 1 => ''});
-        } else {
-            $entry->msgstr('');       	
-        }
-
-        # We ignore excess elements.
-
-        return $entry;
-    }
-
-    my $chunks = $self->SUPER::split_text($text) or return;
-
-    my $entries = Locale::XGettext::TT2::POEntries->new;
-    
-    my $options = $self->{__xgettext}->{options};
-    
-    my $ident;
-    foreach my $chunk (@$chunks) {
-         my ($text, $lineno, $tokens) = @$chunk;
-
-         next if !ref $tokens;
-
-         if ('USE' eq $tokens->[0] && 'IDENT' eq $tokens->[2]) {
-             if ('Gettext' eq $tokens->[3]
-                 && (4 == @$tokens
-                     || '(' eq $tokens->[4])) {
-                 $ident = 'Gettext';
-             } elsif ('ASSIGN' eq $tokens->[4] && 'IDENT' eq $tokens->[6]
-                      && 'Gettext' eq $tokens->[7]) {
-                 $ident = $tokens->[3];
-             }
-             next;
-         }
-
-         next if !defined $ident;
-    
-         if ('IDENT' eq $tokens->[0] && $ident eq $tokens->[1]
-             && 'DOT' eq $tokens->[2] && 'IDENT' eq $tokens->[4]
-             && exists $functions{$tokens->[5]}) {
-             my $entry = extract_args $tokens, 6, $tokens->[5];
-             next if !$entry;
-
-             $entry->{__xgettext_tt_lineno} = $lineno;
-             
-             if ($options->{add_comments} && $text =~ /^#/) {
-             	my @triggers = @{$options->{add_comments}};
-             	foreach my $trigger (@triggers) {
-             		if ($text =~ /^#[ \t\r\f\013]*$trigger/) {
-             			my $comment = '';
-             			my @lines = split /\n/, $text;
-             			foreach my $line (@lines) {
-             				last if $line !~ s/^[ \t\r\f\013]*#[ \t\r\f\013]?//;
-             				
-             			    $comment .= $line . "\n";
-             			}
-             			chomp $comment;
-             			$entry->comment($comment);
-             			last;
-             		}
-             	}
-             }
-             
-             $entries->add($entry);
-         }
-    }
-
-    $self->{__xgettext_entries} = $entries;
-
-    # Stop processing here, so that for example includes are ignored.    
-    return [];
-}
-
-sub __xgettextEntries {
-	shift->{__xgettext_entries};
 }
 
 1;
