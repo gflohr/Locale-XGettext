@@ -39,17 +39,17 @@ sub __add {
     my $msgctxt = $entry->msgctxt || defined $entry->msgctxt ? $entry->msgctxt : '""';
     my $msgid_plural = $entry->msgid_plural 
         || defined $entry->msgid_plural ? $entry->msgid_plural : '""';
-    my $entry = $self->{__lookup}->{$msgid}->{$msgctxt};
-    if ($entry) {
-        $self->__mergeEntries($entry, $entry);
+    my $existing = $self->{__lookup}->{$msgid}->{$msgctxt};
+    if ($existing) {
+        $self->__mergeEntries($existing, $entry);
+        $entry = $existing;
     } else {
-        push @{$self->{__entries}}, $entry;
+        if ($prepend) {
+            unshift @{$self->{__entries}}, $entry;
+        } else {
+            push @{$self->{__entries}}, $entry;
+        }
         $self->{__lookup}->{$msgid}->{$msgctxt} = $entry;
-    }
-    if ($prepend) {
-        unshift @{$self->{__entries}}, $entry;
-    } else {
-        push @{$self->{__entries}}, $entry;
     }
 
     return $self;
@@ -68,9 +68,9 @@ sub prepend {
 }
 
 sub addEntries {
-    my ($self, $entries) = @_;
+    my ($self, @entries) = @_;
 
-    foreach my $entry (@$entries) {
+    foreach my $entry (@entries) {
         $self->add($entry);
     }
 

@@ -149,7 +149,7 @@ sub run {
         $cd = Locale::Recode->new(from => $from_code, to => 'utf-8')
            or die $cd->getError;
     }
-  
+
     my $po = Locale::XGettext::POEntries->new; 
     foreach my $filename (@{$self->{__files}}) {
         my $path = $self->__resolveFilename($filename)
@@ -164,7 +164,7 @@ sub run {
 
     # FIXME! Sort po!
     
-    if ((@$po || $self->{__options}->{force_po})
+    if (($po->entries || $self->{__options}->{force_po})
         && !$self->{__options}->{omit_header}) {
         $po->prepend($self->__poHeader);
     }
@@ -184,7 +184,7 @@ sub __conversionError {
 
 sub __recodeEntry {
     my ($self, $entry, $from_code, $cd) = @_;
-    
+   
     my $toString = sub {
         my ($entry) = @_;
 
@@ -270,34 +270,8 @@ sub __resolveFilename {
     return;
 }
 
-sub __addLocation {
-    my ($self, $entry, $filename) = @_;
-
-    my $new_ref = "$filename:$entry->{__xgettext_tt_lineno}";
-    
-    my $reference = $entry->reference;
-    my @lines = split "\n", $reference;
-    if (!@lines) {
-        push @lines, $new_ref;
-    } else {
-        my $last_line = $lines[-1];
-        my $ref_length = 1 + length $new_ref;
-        if ($ref_length > 76) {
-        	push @lines, $new_ref;
-        } elsif ($ref_length + length $last_line > 76) {
-        	push @lines, $new_ref;
-        } else {
-        	$lines[-1] .= ' ' . $new_ref;
-        }
-    }
-    
-    $entry->reference(join "\n", @lines);
-    
-    return $self;
-}
-
 sub po {
-    shift->{__po};
+    shift->{__po}->entries;
 }
 
 sub output {
@@ -313,7 +287,7 @@ sub output {
         Carp::croak(__"No PO data");
     }
     
-    return if !@{$self->{__po}} && !$self->{__options}->{force_po};
+    return if !$self->{__po}->entries && !$self->{__options}->{force_po};
 
     my $options = $self->{__options};
     my $filename;
@@ -336,7 +310,7 @@ sub output {
         or die __x("Error writing '{file}': {error}.\n",
                    file => $filename, error => $!);
     
-    foreach my $entry (@{$self->{__po}}) {
+    foreach my $entry ($self->{__po}->entries) {
         print $fh $entry->dump
             or die __x("Error writing '{file}': {error}.\n",
                        file => $filename, error => $!);
@@ -420,22 +394,26 @@ sub __getEntriesFromFile {
     while (my $line = <$fh>) {
         if ($line =~ /^[\x09-\x0d ]*$/) {
             if (length $chunk) {
-                my $entry = Locale::PO::Entry->new;
+                my $entry = Locale::PO->new;
                 $entry->msgid($chunk);
                 $entry->reference("$filename:$last_lineno");
+                push @entries, $entry;
             }
             $last_lineno = $. + 1;
             $chunk = '';
+        } else {
+            $chunk .= $line;
         }
     }
     
     if (length $chunk) {
-        my $entry = Locale::PO::Entry->new;
+        my $entry = Locale::PO->new;
         $entry->msgid($chunk);
         $entry->reference("$filename:$last_lineno");
+        push @entries, $entry;
     }
 
-    return \@entries;
+    return @entries;
 }
 
 sub __readFilesFrom {
