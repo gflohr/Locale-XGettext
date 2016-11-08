@@ -23,7 +23,11 @@ package Locale::XGettext::Language::Text;
 
 use strict;
 
+use Locale::TextDomain qw(Locale-XGettext);
+
 use base qw(Locale::XGettext);
+
+our $VERSION = '0.1.0';
 
 sub readFile {
     my ($self, $filename) = @_;
@@ -55,6 +59,16 @@ sub readFile {
     }
 
     return $self;
+}
+
+sub versionInformation {
+    return __x('{program} (Locale-XGettext) {version}
+Copyright (C) {years} Cantanea EOOD (http://www.cantanea.com/).
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Written by Guido Flohr (http://www.guido-flohr.net/).
+', program => $0, years => 2016, version => $VERSION);
 }
 
 1;

@@ -133,7 +133,11 @@ sub newFromArgv {
     my %options = $self->__getOptions($argv);
     
     $self->__displayUsage if $options{help};
-    $self->__displayVersion if $options{version};
+    
+    if ($options{version}) {
+        print $self->versionInformation;
+        exit 0;
+    }
     
     $options{keyword} = $self->__setKeywords($options{keyword});
 
@@ -833,18 +837,19 @@ Try '$0 --help' for more information!
 EOF
 }
 
-sub __displayVersion {
-    my $msg = __x('{program} (Template-Plugin-Gettext) {version}
-Copyright (C) {years} Cantanea EOOD (http://www.cantanea.com/).
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-Written by Guido Flohr (http://www.guido-flohr.net/).
-', program => $0, years => 2016, version => $Locale::XGettext::TT2::VERSION);
-
-    print $msg;
-
-    exit 0;
+sub versionInformation {
+	my ($self) = @_;
+	
+	my $package = ref $self;
+	
+	my $version = eval { eval "$package::VERSION" };
+	$version = '' if !defined $version;
+	
+    $package =~ s/::/-/g;
+	
+	return __x('{program} ({package}) {version}
+Please see the source for copyright information!
+', program => $0, package => $package, version => $version);
 }
 
 1;
