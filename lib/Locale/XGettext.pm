@@ -161,23 +161,14 @@ sub __run {
         Carp::croak(__"Attempt to re-run extractor");
     }
 
-    my $from_code = $self->{__options}->{from_code};
-    $from_code = Locale::Recode->resolveAlias($from_code);
-    
-    my $cd;
-    if ($from_code ne 'US-ASCII' && $from_code ne 'UTF-8') {
-        $cd = Locale::Recode->new(from => $from_code, to => 'utf-8')
-           or die $cd->getError;
-    }
-
-    my $po = Locale::XGettext::Util::POEntries->new; 
+    my $po = $self->{__po} = Locale::XGettext::Util::POEntries->new;
     foreach my $filename (@{$self->{__files}}) {
         my $path = $self->__resolveFilename($filename)
             or die __x("Error opening '{filename}': {error}!\n",
                        filename => $filename, error => $!);
         my @entries = $self->__getEntriesFromFile($path);
         foreach my $entry (@entries) {
-            $self->__recodeEntry($entry, $from_code, $cd, $path);
+            $self->recodeEntry($entry);
         }
         $po->addEntries(@entries);
     }
@@ -189,37 +180,32 @@ sub __run {
         $po->prepend($self->__poHeader);
     }
 
-    $self->{__po} = $po;
-    
     return $self;
 }
 
-sub run {
-	my ($self) = @_;
+sub addEntry {
+	my ($self, $entry) = @_;
 	
-	if ($self->{__script_mode}) {
-		eval { $self->run };
-		if ($@) {
-			chomp $@;
-			die "$0: $@\n";
-		}
-		return $self;
-	}
-
-    return $self->__run;
+	if (!$self->{__run}) {
+        require Carp;
+        Carp::croak(__"Attempt to add entries before run");
+    }
+	
+	$self->{__po}->add($entry);
 }
 
-sub __conversionError {
-    my ($self, $reference, $cd) = @_;
+sub recodeEntry {
+	my ($self, $entry) = @_;
+	
+	my $from_code = $self->{__options}->{from_code};
+    $from_code = Locale::Recode->resolveAlias($from_code);
     
-    die __x("{reference}: {conversion_error}\n",
-            reference => $reference,
-            conversion_error => $cd->getError);
-}
+    my $cd;
+    if ($from_code ne 'US-ASCII' && $from_code ne 'UTF-8') {
+        $cd = Locale::Recode->new(from => $from_code, to => 'utf-8');
+        die $cd->getError if defined $cd->getError;
+    }
 
-sub __recodeEntry {
-    my ($self, $entry, $from_code, $cd) = @_;
-   
     my $toString = sub {
         my ($entry) = @_;
 
@@ -289,8 +275,30 @@ sub __recodeEntry {
         $entry->comment($comment);
     }
 
+    return $self;    	
+}
+
+sub run {
+	my ($self) = @_;
+	
+	if ($self->{__script_mode}) {
+		eval { $self->run };
+		if ($@) {
+			chomp $@;
+			die "$0: $@\n";
+		}
+		return $self;
+	}
+
+    return $self->__run;
+}
+
+sub __conversionError {
+    my ($self, $reference, $cd) = @_;
     
-    return $self;
+    die __x("{reference}: {conversion_error}\n",
+            reference => $reference,
+            conversion_error => $cd->getError);
 }
 
 sub __resolveFilename {
