@@ -166,11 +166,7 @@ sub __run {
         my $path = $self->__resolveFilename($filename)
             or die __x("Error opening '{filename}': {error}!\n",
                        filename => $filename, error => $!);
-        my @entries = $self->__getEntriesFromFile($path);
-        foreach my $entry (@entries) {
-            $self->recodeEntry($entry);
-        }
-        $po->addEntries(@entries);
+        $self->readFile($path);
     }
 
     # FIXME! Sort po!

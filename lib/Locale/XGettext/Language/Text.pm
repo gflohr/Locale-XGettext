@@ -25,7 +25,7 @@ use strict;
 
 use base qw(Locale::XGettext);
 
-sub _readFile {
+sub readFile {
     my ($self, $filename) = @_;
 
     open my $fh, "<$filename" 
@@ -38,8 +38,8 @@ sub _readFile {
         if ($line =~ /^[\x09-\x0d ]*$/) {
             if (length $chunk) {
                 chomp $chunk;
-                $self->_addEntry({msgid => $chunk,
-                                  reference => "$filename:$last_lineno"});
+                $self->addEntry({msgid => $chunk,
+                                 reference => "$filename:$last_lineno"});
             }
             $last_lineno = $. + 1;
             $chunk = '';
@@ -50,8 +50,8 @@ sub _readFile {
     
     if (length $chunk) {
         chomp $chunk;
-        $self->_addEntry({msgid => $chunk,
-                          reference => "$filename:$last_lineno"});
+        $self->addEntry({msgid => $chunk,
+                         reference => "$filename:$last_lineno"});
     }
 
     return $self;
