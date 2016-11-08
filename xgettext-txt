@@ -28,5 +28,5 @@ Locale::Messages::setlocale(LC_MESSAGES, "");
 
 my %options;
 
-Locale::XGettext::Script->new(\@ARGV)->run->output;
+Locale::XGettext::Script->newFromArgv(\@ARGV)->run->output;
 
