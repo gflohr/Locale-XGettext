@@ -36,6 +36,7 @@ use Locale::Recode;
 use Getopt::Long qw(GetOptionsFromArray);
 
 use Locale::XGettext::POEntries;
+use Locale::XGettext::Util::Keyword;
 
 sub empty {
     my ($what) = @_;
@@ -583,9 +584,9 @@ sub __setKeywords {
     
     my %keywords = Locale::XGettext->defaultKeywords;
     while (my ($method, $argspec) = each %keywords) {
-        $keywords{$method} = Locale::XGettext::Keyword->new($method, @$argspec);
+        $keywords{$method} = Locale::XGettext::Util::Keyword->new($method, 
+                                                                  @$argspec);
     }
-    my %keywords;
     
     foreach my $option (@$options) {
         if ('' eq $option) {
@@ -593,7 +594,7 @@ sub __setKeywords {
             next;
         }
 
-        my $keyword = Locale::XGettext::Keyword->newFromString($option);
+        my $keyword = Locale::XGettext::Util::Keyword->newFromString($option);
         $keywords{$keyword->method} = $keyword;
     }
 

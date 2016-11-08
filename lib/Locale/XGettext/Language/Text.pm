@@ -23,7 +23,7 @@ package Locale::XGettext::Language::Text;
 
 use strict;
 
-use base qw(Locale::XGettext::Language);
+use base qw(Locale::XGettext);
 
 sub _readFile {
     my ($self, $filename) = @_;
