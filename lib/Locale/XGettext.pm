@@ -35,7 +35,7 @@ use Scalar::Util qw(reftype);
 use Locale::Recode;
 use Getopt::Long qw(GetOptionsFromArray);
 
-use Locale::XGettext::POEntries;
+use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
 
 sub empty {
@@ -170,7 +170,7 @@ sub __run {
            or die $cd->getError;
     }
 
-    my $po = Locale::XGettext::POEntries->new; 
+    my $po = Locale::XGettext::Util::POEntries->new; 
     foreach my $filename (@{$self->{__files}}) {
         my $path = $self->__resolveFilename($filename)
             or die __x("Error opening '{filename}': {error}!\n",
