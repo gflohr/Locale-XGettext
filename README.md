@@ -17,7 +17,7 @@ base needed for such scripts.
 ## Usage
 
 Included is a sample string extractor for plain text files.  It simply
-splits the input into paragraphs, and turns each paragraph into an en
+splits the input into paragraphs, and turns each paragraph into an
 entry of a PO file.
 
 ## Common Workflow
@@ -51,4 +51,4 @@ By the way, all xgettext flavors based on this library `Locale::XGettext`
 are also able to extract strings from `.po` or `.pot` files.  So you
 can also make do completely without GNU gettext as far as string
 extraction is concerned.
-   
+
