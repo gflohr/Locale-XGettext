@@ -28,9 +28,9 @@ my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
 chdir $test_dir or die "cannot chdir to $test_dir: $!";
 
-my $po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
+my $po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
 is $po->[0]->msgid, '""';
 
 $po = Locale::XGettext->new({omit_header => 1}, 
-                            'templates/template.tt')->run->po;
+                            'files/hello.txt')->run->po;
 isnt $po->[0]->msgid, '""';

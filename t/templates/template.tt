@@ -1,5 +1,0 @@
-[% USE gtx = Gettext %]
-[% gtx.gettext("Hello, world!\n") %]
-
-[% # TRANSLATORS: A translator comment.
-   gtx.gettext("Translator comment above.\n") %]

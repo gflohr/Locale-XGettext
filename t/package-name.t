@@ -30,9 +30,9 @@ chdir $test_dir or die "cannot chdir to $test_dir: $!";
 
 my $sep = '(?:"|\\\\n)';
 
-my $po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
+my $po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: PACKAGE VERSION${sep}/m;
 
 my $po = Locale::XGettext->new({package_name => 'qgoda'}, 
-                                    'templates/template.tt')->run->po;
+                                    'files/hello.txt')->run->po;
 like $po->[0]->msgstr, qr/${sep}Project-Id-Version: qgoda${sep}/m;

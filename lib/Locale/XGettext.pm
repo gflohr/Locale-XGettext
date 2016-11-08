@@ -395,6 +395,7 @@ sub __getEntriesFromFile {
         if ($line =~ /^[\x09-\x0d ]*$/) {
             if (length $chunk) {
                 my $entry = Locale::PO->new;
+                chompd $chunk;
                 $entry->msgid($chunk);
                 $entry->reference("$filename:$last_lineno");
                 push @entries, $entry;
@@ -409,6 +410,7 @@ sub __getEntriesFromFile {
     if (length $chunk) {
         my $entry = Locale::PO->new;
         $entry->msgid($chunk);
+        chomp $chunk;
         $entry->reference("$filename:$last_lineno");
         push @entries, $entry;
     }

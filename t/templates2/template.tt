@@ -1,2 +1,0 @@
-[% USE gtx = Gettext %]
-[% gtx.gettext("Do not extract!\n") %]

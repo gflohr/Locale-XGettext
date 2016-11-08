@@ -34,15 +34,15 @@ BEGIN {
 use TestLib qw(find_entries);
 
 my $po = Locale::XGettext->new({}, 
-                                    'templates/template.tt', 
-                                    'templates/additional.tt')
+                                    'files/hello.txt', 
+                                    'files/additional.txt')
                               ->run->po;
 is((scalar find_entries $po, msgid => qq{"Hello, world!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, Mars!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, extraterrestrials!\\n"}), 0);
 
 $po = Locale::XGettext->new({files_from => ['POTFILES1']}, 
-                                  'templates/extra.tt')
+                                  'files/extra.txt')
                       ->run->po;
 is((scalar find_entries $po, msgid => qq{"Hello, world!\\n"}), 1);
 is((scalar find_entries $po, msgid => qq{"Hello, Mars!\\n"}), 1);

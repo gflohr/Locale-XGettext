@@ -28,21 +28,21 @@ my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
 chdir $test_dir or die "cannot chdir to $test_dir: $!";
 
-my $po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
+my $po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
 like $po->[0]->comment, qr/\nCopyright \(C\) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n/;
 
-$po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
 like $po->[0]->comment, qr/\nThis file is distributed under the same license as the PACKAGE package.\n/;
 
-$po = Locale::XGettext->new({}, 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
 unlike $po->[0]->comment, qr/\nThis file is put in the public domain\.\n/;
 
-$po = Locale::XGettext->new({foreign_user => 1}, 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({foreign_user => 1}, 'files/hello.txt')->run->po;
 unlike $po->[0]->comment, qr/\nCopyright \(C\) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n/;
 
-$po = Locale::XGettext->new({foreign_user => 1}, 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({foreign_user => 1}, 'files/hello.txt')->run->po;
 unlike $po->[0]->comment, qr/\nThis file is distributed under the same license as the PACKAGE package.\n/;
 
-$po = Locale::XGettext->new({foreign_user => 1}, 'templates/template.tt')->run->po;
+$po = Locale::XGettext->new({foreign_user => 1}, 'files/hello.txt')->run->po;
 like $po->[0]->comment, qr/\nThis file is put in the public domain\.\n/;
 
