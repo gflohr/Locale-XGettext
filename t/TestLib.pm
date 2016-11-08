@@ -47,8 +47,8 @@ sub use_keywords($) {
 
     foreach my $method (keys %$keywords) {
         $keywords->{$method} =
-            Locale::XGettext:::Keyword->new($method,
-                                                @{$keywords->{$method}});
+            Locale::XGettext::Keyword->new($method,
+                                           @{$keywords->{$method}});
     }
 
     Locale::XGettext->new({keywords => $keywords}, 'dummy');
