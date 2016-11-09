@@ -117,4 +117,12 @@ sub method {
     shift->{__method};
 }
 
+sub forms {
+	shift->{__forms};
+}
+
+sub context {
+	shift->{__context};
+}
+
 1;
