@@ -610,6 +610,8 @@ sub __setKeywords {
 }
 
 sub __displayUsage {
+	my ($self) = @_;
+	
     print __x("Usage: {program} [OPTION] [INPUTFILE]...\n", program => $0);
     
     print "\n";
@@ -618,10 +620,10 @@ sub __displayUsage {
 Extract translatable strings from given input files.  
 EOF
 
-    print __(<<EOF);
-Input files are interpreted as plain text files with each paragraph being
-a separately translatable unit.  
-EOF
+    if ($self->can('fileInformation')) {
+    	print "\n";
+    	print $self->fileInformation;
+    }
 
     print "\n";
     
@@ -725,14 +727,18 @@ EOF
 Language specific options:
 EOF
 
-    print __(<<EOF);
+    if ($self->canExtractAll) {
+        print __(<<EOF);
   -a, --extract-all           extract all strings
 EOF
+    }
 
-    print __(<<EOF);
+    if ($self->canKeywords) {
+        print __(<<EOF);
   -kWORD, --keyword=WORD      look for WORD as an additional keyword
   -k, --keyword               do not to use default keywords"));
 EOF
+    }
 
     # FIXME! Other plug-in name? Or combine it with the keywords, like
     # --keyword=Maketext.blabla?
@@ -850,6 +856,14 @@ sub versionInformation {
 	return __x('{program} ({package}) {version}
 Please see the source for copyright information!
 ', program => $0, package => $package, version => $version);
+}
+
+sub canExtractAll {
+	return;
+}
+
+sub canKeywords {
+	shift;
 }
 
 1;

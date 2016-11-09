@@ -71,4 +71,19 @@ Written by Guido Flohr (http://www.guido-flohr.net/).
 ', program => $0, years => 2016, version => $VERSION);
 }
 
+sub fileInformation {
+	return __(<<EOF);
+Input files are interpreted as plain text files with each paragraph being
+a separately translatable unit.  
+EOF
+}
+
+sub canExtractAll {
+	shift;
+}
+
+sub canKeywords {
+	return;
+}
+
 1;
