@@ -23,10 +23,7 @@ package Locale::XGettext;
 
 use strict;
 
-use base 'Exporter';
-use vars qw(@EXPORT $VERSION);
-@EXPORT = qw($VERSION);
-$VERSION = '0.1.1';
+our $VERSION = '0.1';
 
 use Locale::TextDomain qw(Locale-XGettext);
 use File::Spec;
@@ -385,6 +382,10 @@ sub output {
     }
 
     return $self->__output;
+}
+
+sub options {
+	shift->{__options};
 }
 
 sub __poHeader {
