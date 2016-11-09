@@ -99,3 +99,5 @@ ok !-e '-.po';
 unlink '-.po';
 
 ok rmdir 'output';
+
+$SIG{DIE}->();
