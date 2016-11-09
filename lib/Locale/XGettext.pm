@@ -56,6 +56,13 @@ sub new {
     $self->{__files} = [@files];
     
     bless $self, $class;
+
+    if (__PACKAGE__ eq ref $self) {
+    	require Carp;
+    	Carp::croak(__x("{package} is an abstract base class and must not"
+    	                . " be instantiated directly",
+    	                package => __PACKAGE__));
+    }
     
     $options->{default_domain} = 'messages' if empty $options->{default_domain};
     $options->{from_code} = 'ASCII' if empty $options->{default_domain};
