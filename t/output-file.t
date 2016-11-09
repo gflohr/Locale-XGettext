@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 26;
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -49,54 +49,53 @@ die "could not rmdir output/" if -e 'output';
 
 ok mkdir 'output';
 
-ok(Locale::XGettext->new({}, 'files/hello.txt')->run->output);
+ok(Locale::XGettext::Text->new({}, 'files/hello.txt')->run->output);
 ok -e 'messages.po';
 ok unlink 'messages.po';
 
-ok(Locale::XGettext->new({output => 'domain.po'}, 'files/hello.txt')
-                   ->run->output);
+ok(Locale::XGettext::Text->new({output => 'domain.po'}, 'files/hello.txt')
+                         ->run->output);
 ok -e 'domain.po';
 ok unlink 'domain.po';
 
-ok(Locale::XGettext->new({default_domain => 'domain'}, 
-                        'files/hello.txt')
-                   ->run->output);
+ok(Locale::XGettext::Text->new({default_domain => 'domain'}, 
+                               'files/hello.txt')
+                         ->run->output);
 ok -e 'domain.po';
 ok unlink 'domain.po';
 
-ok(Locale::XGettext->new({output_dir => 'output'}, 
-                        'files/hello.txt')
-                   ->run->output);
+ok(Locale::XGettext::Text->new({output_dir => 'output'}, 
+                               'files/hello.txt')
+                         ->run->output);
 ok -e 'output/messages.po';
 ok unlink 'output/messages.po';
 
-ok(Locale::XGettext->new({output_dir => 'output', output => 'domain.po'}, 
-                         'files/hello.txt')
-                   ->run->output);
+ok(Locale::XGettext::Text->new({output_dir => 'output', output => 'domain.po'}, 
+                               'files/hello.txt')
+                         ->run->output);
 ok -e 'output/domain.po';
 ok unlink 'output/domain.po';
 
-ok(Locale::XGettext->new({output_dir => 'output', 
-                          default_domain => 'domain'}, 
-                         'files/hello.txt')
-                   ->run->output);
+ok(Locale::XGettext::Text->new({output_dir => 'output', 
+                                default_domain => 'domain'}, 
+                                'files/hello.txt')
+                         ->run->output);
 ok -e 'output/domain.po';
 ok unlink 'output/domain.po';
 
 open STDOUT, '>', 'domain.po';
-ok(Locale::XGettext->new({default_domain => '-'}, 
+ok(Locale::XGettext::Text->new({default_domain => '-'}, 
                                'files/hello.txt')
-                   ->run->output);
+                         ->run->output);
 ok -e 'domain.po';
 ok !-e '-.po';
 unlink '-.po';
 
-ok(Locale::XGettext->new({output => '-'}, 
-                        'files/hello.txt')
-                   ->run->output);
+ok(Locale::XGettext::Text->new({output => '-'}, 
+                              'files/hello.txt')
+                         ->run->output);
 ok -e 'domain.po';
 ok !-e '-.po';
 unlink '-.po';
 
 ok rmdir 'output';
-

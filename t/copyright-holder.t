@@ -22,15 +22,15 @@ use strict;
 
 use Test::More tests => 2;
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 
 my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
 chdir $test_dir or die "cannot chdir to $test_dir: $!";
 
-my @po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
+my @po = Locale::XGettext::Text->new({}, 'files/hello.txt')->run->po;
 like $po[0]->comment, qr/\nCopyright \(C\) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n/;
 
-@po = Locale::XGettext->new({copyright_holder => 'Copy Left'}, 
+@po = Locale::XGettext::Text->new({copyright_holder => 'Copy Left'}, 
                             'files/hello.txt')->run->po;
 like $po[0]->comment, qr/Copyright \(C\) YEAR Copy Left\n/m;

@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 3;
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 
 my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
@@ -31,17 +31,16 @@ chdir $test_dir or die "cannot chdir to $test_dir: $!";
 my $sep = '(?:"|\\\\n)';
 my @po;
 
-@po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
+@po = Locale::XGettext::Text->new({}, 'files/hello.txt')->run->po;
 like $po[0]->msgstr, qr/${sep}Project-Id-Version: PACKAGE VERSION${sep}/m;
 
 # --package-version is ignored if --package-name is not set.
-@po = Locale::XGettext->new({package_version => '1.2.3'}, 
-                            'files/hello.txt')->run->po;
+@po = Locale::XGettext::Text->new({package_version => '1.2.3'}, 
+                                  'files/hello.txt')->run->po;
 like $po[0]->msgstr, qr/${sep}Project-Id-Version: PACKAGE VERSION${sep}/m;
 
-@po = Locale::XGettext->new({
-                                package_name => 'qgoda',
-                                package_version => '1.2.3',
-                            }, 
-                           'files/hello.txt')->run->po;
+@po = Locale::XGettext::Text->new({package_name => 'qgoda',
+                                   package_version => '1.2.3'}, 
+                                  'files/hello.txt')
+                            ->run->po;
 like $po[0]->msgstr, qr/${sep}Project-Id-Version: qgoda 1.2.3${sep}/m;

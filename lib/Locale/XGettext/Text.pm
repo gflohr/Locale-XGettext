@@ -41,6 +41,7 @@ sub readFile {
     while (my $line = <$fh>) {
         if ($line =~ /^[\x09-\x0d ]*$/) {
             if (length $chunk) {
+                chomp $chunk;
                 $self->addEntry({msgid => $chunk,
                                  reference => "$filename:$last_lineno"});
             }
@@ -52,6 +53,7 @@ sub readFile {
     }
     
     if (length $chunk) {
+        chomp $chunk;
         $self->addEntry({msgid => $chunk,
                          reference => "$filename:$last_lineno"});
     }

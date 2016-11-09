@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 2;
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 
 my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
@@ -31,9 +31,9 @@ chdir $test_dir or die "cannot chdir to $test_dir: $!";
 my $sol = '(?:\\A|\\\\n)';
 my $eol = '(?:\\E|\\\\n)';
 
-my @po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
+my @po = Locale::XGettext::Text->new({}, 'files/hello.txt')->run->po;
 like $po[0]->msgstr, qr/${sol}Report-Msgid-Bugs-To: ${eol}/m;
 
-@po = Locale::XGettext->new({msgid_bugs_address => 'bugtracker'}, 
-                            'files/hello.txt')->run->po;
+@po = Locale::XGettext::Text->new({msgid_bugs_address => 'bugtracker'}, 
+                                  'files/hello.txt')->run->po;
 like $po[0]->msgstr, qr/${sol}Report-Msgid-Bugs-To: bugtracker${eol}/m;

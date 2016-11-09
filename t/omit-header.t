@@ -22,15 +22,15 @@ use strict;
 
 use Test::More tests => 2;
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 
 my $test_dir = __FILE__;
 $test_dir =~ s/[-a-z0-9]+\.t$//i;
 chdir $test_dir or die "cannot chdir to $test_dir: $!";
 
-my @po = Locale::XGettext->new({}, 'files/hello.txt')->run->po;
+my @po = Locale::XGettext::Text->new({}, 'files/hello.txt')->run->po;
 is $po[0]->msgid, '""';
 
-@po = Locale::XGettext->new({omit_header => 1}, 
-                            'files/hello.txt')->run->po;
+@po = Locale::XGettext::Text->new({omit_header => 1}, 
+                                  'files/hello.txt')->run->po;
 isnt $po[0]->msgid, '""';

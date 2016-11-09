@@ -22,7 +22,7 @@ use strict;
 
 use Test::More tests => 9;
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -33,24 +33,24 @@ BEGIN {
 
 use TestLib qw(find_entries);
 
-my @po = Locale::XGettext->new({}, 
-                               'files/hello.txt', 
-                               'files/additional.txt')
-                         ->run->po;
-is((scalar find_entries \@po, msgid => qq{"Hello, world!\\n"}), 1);
-is((scalar find_entries \@po, msgid => qq{"Hello, Mars!\\n"}), 1);
-is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!\\n"}), 0);
+my @po = Locale::XGettext::Text->new({}, 
+                                     'files/hello.txt', 
+                                     'files/additional.txt')
+                               ->run->po;
+is((scalar find_entries \@po, msgid => qq{"Hello, world!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, Mars!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!"}), 0);
 
-@po = Locale::XGettext->new({files_from => ['POTFILES1']}, 
-                            'files/extra.txt')
-                      ->run->po;
-is((scalar find_entries \@po, msgid => qq{"Hello, world!\\n"}), 1);
-is((scalar find_entries \@po, msgid => qq{"Hello, Mars!\\n"}), 1);
-is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!\\n"}), 1);
+@po = Locale::XGettext::Text->new({files_from => ['POTFILES1']}, 
+                                  'files/extra.txt')
+                            ->run->po;
+is((scalar find_entries \@po, msgid => qq{"Hello, world!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, Mars!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!"}), 1);
 
 # Test that we can read from multiple files and that the entries are merged.
-@po = Locale::XGettext->new({files_from => ['POTFILES1', 'POTFILES2']})
-                      ->run->po;
-is((scalar find_entries \@po, msgid => qq{"Hello, world!\\n"}), 1);
-is((scalar find_entries \@po, msgid => qq{"Hello, Mars!\\n"}), 1);
-is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!\\n"}), 1);
+@po = Locale::XGettext::Text->new({files_from => ['POTFILES1', 'POTFILES2']})
+                            ->run->po;
+is((scalar find_entries \@po, msgid => qq{"Hello, world!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, Mars!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!"}), 1);

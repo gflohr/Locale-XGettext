@@ -22,7 +22,7 @@ use strict;
 
 use vars qw(@ISA @EXPORT_OK);
 
-use Locale::XGettext;
+use Locale::XGettext::Text;
 use Locale::XGettext::Util::Keyword;
 
 @ISA = qw(Exporter);
@@ -51,6 +51,6 @@ sub use_keywords($) {
                                                  @{$keywords->{$method}});
     }
 
-    Locale::XGettext->new({keywords => $keywords}, 'dummy');
+    Locale::XGettext::Text->new({keywords => $keywords}, 'dummy');
 }
 
