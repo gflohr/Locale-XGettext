@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 # USA.
 
-package Locale::XGettext::Language::Text;
+package Locale::XGettext::Text;
 
 use strict;
 
@@ -41,7 +41,6 @@ sub readFile {
     while (my $line = <$fh>) {
         if ($line =~ /^[\x09-\x0d ]*$/) {
             if (length $chunk) {
-                chomp $chunk;
                 $self->addEntry({msgid => $chunk,
                                  reference => "$filename:$last_lineno"});
             }
@@ -53,7 +52,6 @@ sub readFile {
     }
     
     if (length $chunk) {
-        chomp $chunk;
         $self->addEntry({msgid => $chunk,
                          reference => "$filename:$last_lineno"});
     }
