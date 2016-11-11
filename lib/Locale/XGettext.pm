@@ -121,6 +121,8 @@ sub new {
     
     $self->__readFilesFrom($options->{files_from});
 
+    $options->{keyword} = $self->__setKeywords($options->{keyword});
+
     # TODO: Read exclusion file for --exclude-file.
 
     return $self;
@@ -143,8 +145,6 @@ sub newFromArgv {
         exit 0;
     }
     
-    $options{keyword} = $self->__setKeywords($options{keyword});
-
     return $class->new(\%options, @$argv);
 }
 
@@ -610,7 +610,12 @@ sub __setKeywords {
             next;
         }
 
-        my $keyword = Locale::XGettext::Util::Keyword->newFromString($option);
+        my $keyword;
+        if (ref $option) {
+        	$keyword = $option;
+        } else {
+        	$keyword = Locale::XGettext::Util::Keyword->newFromString($option);
+        }
         $keywords{$keyword->method} = $keyword;
     }
 
