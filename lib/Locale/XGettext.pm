@@ -871,3 +871,65 @@ sub canKeywords {
 }
 
 1;
+
+=head1 NAME
+
+Locale::XGettext - Extract Strings To PO Files
+
+=head1 SYNOPSIS
+
+    use base 'Locale::XGettext';
+    
+=head1 DESCRIPTION
+
+B<Locale::XGettext> is the base class for various string extractors.  These
+string extractors can be used as standalone programs on the commandline or
+as a module as a part of other software.
+
+See L<https://github.com/gflohr/Locale-XGettext> for an overall picture of
+the software.
+
+=head1 USAGE
+
+    xgettext-LANG [OPTIONS] [INPUTFILE]...
+
+B<LANG> will be replaced by an identifier for the language that a specific
+extractor was written for, for example "xgettext-txt" for plain text files
+or "xgettext-tt2" for templates for the Template Toolkit version 2 (see
+L<Template>).
+
+By default, string extractors based on this module extract strings from
+one or more B<INPUTFILES> and write the output to a file "messages.po" if
+any strings had been found.  
+
+=head1 OPTIONS
+
+The command line options are mostly compatible to
+F<xgettext> from L<GNU
+Gettext|https://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html>.
+
+=head2 INPUT FILE LOCATION
+
+=over 4
+
+=item B<INPUTFILE...>
+
+All non-option arguments are interpreted as input files containing strings to
+be extracted.  If the input file is "-", standard input is read.
+
+=item B<-f, --files-from=FILE>
+
+Read the names of the input files from B<FILE> instead of getting them from the
+command line.
+
+Unlike xgettext from GNU Gettext, extractors based on B<Locale::XGettext>
+accept this option multiple times, so that you can read the list of input
+files from multiple files.
+
+=item B<-D, --directory=DIRECTORY>
+
+Add B<DIRECTORY> to the list of directories. Source files are searched 
+relative to this list of directories. The resulting .po file will be written 
+relative to the current directory, though. 
+
+=back
