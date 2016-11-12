@@ -22,11 +22,11 @@ use Getopt::Long;
 use Locale::Messages qw(setlocale LC_MESSAGES);
 use Locale::TextDomain qw('Locale-XGettext');
 
-use Locale::XGettext::Language::Text;
+use Locale::XGettext::Text;
 
 Locale::Messages::setlocale(LC_MESSAGES, "");
 
 my %options;
 
-Locale::XGettext::Language::Text->newFromArgv(\@ARGV)->run->output;
+Locale::XGettext::Text->newFromArgv(\@ARGV)->run->output;
 
