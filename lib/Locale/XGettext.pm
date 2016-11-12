@@ -917,19 +917,50 @@ Gettext|https://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocatio
 All non-option arguments are interpreted as input files containing strings to
 be extracted.  If the input file is "-", standard input is read.
 
-=item B<-f, --files-from=FILE>
+=item B<-f FILE>
+
+=item B<--files-from=FILE>
 
 Read the names of the input files from B<FILE> instead of getting them from the
 command line.
 
-Unlike xgettext from GNU Gettext, extractors based on B<Locale::XGettext>
-accept this option multiple times, so that you can read the list of input
-files from multiple files.
+B<Note!> Unlike xgettext from GNU Gettext, extractors based on 
+B<Locale::XGettext> accept this option multiple times, so that you can read 
+the list of input files from multiple files.
 
-=item B<-D, --directory=DIRECTORY>
+=item B<-D DIRECTORY>
+
+=item B<--directory=DIRECTORY>
 
 Add B<DIRECTORY> to the list of directories. Source files are searched 
 relative to this list of directories. The resulting .po file will be written 
 relative to the current directory, though. 
+
+=back
+
+=head2 OUTPUT FILE LOCATION
+
+=over 4
+
+=item B<-d NAME>
+
+=item B<--default-domain=NAME>
+
+Use B<NAME>.po for output (instead of F<messages.po>).
+
+=item B<-o FILE>
+
+=item B<--output=FILE>
+
+Write output to specified B<FILE> (instead of B<NAME>.po or F<messages.po>).
+
+=item B<-p DIR>
+
+=item B<--output-dir=DIR>
+
+Output files will be placed in directory B<DIR>.
+
+If the output file is B<-> or F</dev/stdout>, the output is written to standard 
+output. 
 
 =back
