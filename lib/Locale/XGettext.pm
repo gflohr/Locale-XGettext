@@ -642,7 +642,7 @@ sub printLanguageSpecificUsage {
 sub __setKeywords {
     my ($self, $options) = @_;
     
-    my %keywords = Locale::XGettext->defaultKeywords;
+    my %keywords = $self->defaultKeywords;
     while (my ($method, $argspec) = each %keywords) {
         $keywords{$method} = Locale::XGettext::Util::Keyword->new($method, 
                                                                   @$argspec);
