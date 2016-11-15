@@ -613,7 +613,6 @@ sub printLanguageSpecificUsage {
         
         my @description = split /[ \x09-\x0d]+/, $description;
         my $lineno = 0;
-        $DB::single = 1;
         while (@description) {
             my $limit = $lineno ? 31 : 29;
             if ($pos < $limit) {
