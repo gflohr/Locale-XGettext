@@ -597,7 +597,46 @@ sub __getOptions {
     return %options;   
 }
 
-sub getLanguageSpecificOptions {
+sub getLanguageSpecificOptions {}
+
+sub printLanguageSpecificUsage {
+    my ($self) = @_;
+    
+    my @options = $self->getLanguageSpecificOptions;
+    
+    foreach my $optspec (@options) {
+        my ($optstring, $optvar,
+            $usage, $description) = @$optspec;
+        
+        print "  $usage ";
+        my $pos = 3 + length $usage;
+        
+        my @description = split /[ \x09-\x0d]+/, $description;
+        my $lineno = 0;
+        $DB::single = 1;
+        while (@description) {
+            my $limit = $lineno ? 31 : 29;
+            if ($pos < $limit) {
+                print ' ' x ($limit - $pos);
+                $pos = $limit;
+            }
+            
+            while (@description) {
+                my $word = shift @description;
+                print " $word";
+                $pos += 1 + length $word;
+                if (@description && $pos > 77 - length $word) {
+                	++$lineno;
+                	print "\n";
+                	$pos = 0;
+                	last;
+                }
+            }
+        }
+        print "\n";
+    }
+    
+    return $self;
 }
 
 sub __setKeywords {
@@ -758,8 +797,7 @@ EOF
 EOF
     }
 
-    # FIXME! Other plug-in name? Or combine it with the keywords, like
-    # --keyword=Maketext.blabla?
+    $self->printLanguageSpecificUsage;
 
     print "\n";
 
