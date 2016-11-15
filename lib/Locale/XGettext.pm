@@ -594,9 +594,6 @@ sub __getOptions {
         delete $options{$key} if !defined $options{$key};
     }
     
-    use Data::Dumper;
-    die Dumper \%options;
-    
     return %options;   
 }
 
