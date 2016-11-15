@@ -533,8 +533,19 @@ sub __getOptions {
     
     my %options;
     
+    my @lang_options = $self->getLanguageSpecificOptions(\%options);
+    my %lang_options;
+    foreach my $optspec (@lang_options) {
+    	my ($optstring, $optvar,
+    	    $usage, $description) = @$optspec;
+        $lang_options{$optstring} = \$options{$optvar};
+    }
+    
     Getopt::Long::Configure('bundling');
     GetOptionsFromArray($argv,
+        # Are always overridden by standard options.
+        %lang_options,
+        
         # Input file location:
         'f|files-from=s@' => \$options{files_from},
         'D|directory=s@' => \$options{directory},
@@ -583,7 +594,13 @@ sub __getOptions {
         delete $options{$key} if !defined $options{$key};
     }
     
+    use Data::Dumper;
+    die Dumper \%options;
+    
     return %options;   
+}
+
+sub getLanguageSpecificOptions {
 }
 
 sub __setKeywords {
@@ -952,7 +969,8 @@ Use B<NAME>.po for output (instead of F<messages.po>).
 
 =item B<--output=FILE>
 
-Write output to specified B<FILE> (instead of B<NAME>.po or F<messages.po>).
+Write output to specified F<B<FILE>> (instead of F<B<NAME>.po> or 
+F<messages.po>).
 
 =item B<-p DIR>
 
@@ -962,5 +980,21 @@ Output files will be placed in directory B<DIR>.
 
 If the output file is B<-> or F</dev/stdout>, the output is written to standard 
 output. 
+
+=back
+
+=head2 INPUT FILE INTERPRETATION
+
+=over 4
+
+=item B<--from-code=NAME>
+
+Specifies the encoding of the input files. This option is needed only if some 
+untranslated message strings or their corresponding comments contain non-ASCII 
+characters.
+
+By default the input files are assumed to be in ASCII.
+
+B<Note!> Some extractors have a fixed input set, UTF-8 most of the times.
 
 =back
