@@ -638,6 +638,10 @@ sub printLanguageSpecificUsage {
     return $self;
 }
 
+sub fileInformation {}
+
+sub getBugTrackingAddress {}
+
 sub __setKeywords {
     my ($self, $options) = @_;
     
@@ -676,7 +680,7 @@ sub __displayUsage {
 Extract translatable strings from given input files.  
 EOF
 
-    if ($self->can('fileInformation')) {
+    if (defined $self->fileInformation) {
     	print "\n";
     	print $self->fileInformation;
     }
@@ -872,13 +876,15 @@ EOF
   -V, --version               output version information and exit
 EOF
 
-    printf "\n";
-
-    # TRANSLATORS: The placeholder indicates the bug-reporting address
-    # for this package.  Please add _another line_ saying
-    # "Report translation bugs to <...>\n" with the address for translation
-    # bugs (typically your translation team's web or email address).
-    print __"Report bugs at <https://github.com/gflohr/template-plugin-gettext/issues>!\n";
+    my $url = $self->getBugTrackingAddress;
+    if (defined $url) {
+        printf "\n";
+        # TRANSLATORS: The placeholder indicates the bug-reporting address
+        # for this package.  Please add _another line_ saying
+        # "Report translation bugs to <...>\n" with the address for translation
+        # bugs (typically your translation team's web or email address).
+        print __x("Report bugs at <{URL}>!\n", URL => $url);
+    }
 
     exit 0;
 }
