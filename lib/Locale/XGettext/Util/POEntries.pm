@@ -153,7 +153,7 @@ sub __mergeEntries {
            $self->__conflict($entry, $overlay,
                              __x"conflicting flags");
         }
-        $entry->flag($flag);
+        $entry->add_flag($flag) if !$entry->has_flag($flag);
     }
 
     return $self;

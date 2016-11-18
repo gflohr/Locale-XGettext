@@ -1,6 +1,7 @@
 #! /bin/false
 # vim: ts=4:et
 
+
 # Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
 # all rights reserved.
 
@@ -35,7 +36,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
 
-sub empty {
+sub empty($) {
     my ($what) = @_;
 
     return if defined $what && length $what;
@@ -162,12 +163,18 @@ sub __run {
 
     my $po = $self->{__po} = Locale::XGettext::Util::POEntries->new;
     foreach my $filename (@{$self->{__files}}) {
-        my $path = $self->__resolveFilename($filename)
-            or die __x("Error opening '{filename}': {error}!\n",
+        my $path = $self->resolveFilename($filename)
+            or die __x("Error resolving '{filename}': {error}!\n",
                        filename => $filename, error => $!);
-        $self->readFile($path);
+        if ($path =~ /\.pot?$/i) {
+            $self->readPO($path);
+        } else {
+        	$self->readFile($path);
+        }
     }
 
+    $self->extractFromNonFiles;
+    
     # FIXME! Sort po!
     
     if (($po->entries || $self->{__options}->{force_po})
@@ -176,6 +183,26 @@ sub __run {
     }
 
     return $self;
+}
+
+sub extractFromNonFiles { shift }
+
+sub readPO {
+	my ($self, $path) = @_;
+	
+	my $entries = Locale::PO->load_file_asarray($path)
+	    or die __x("error reading '{filename}': {error}!\n",
+	               filename => $path, error => $!);
+	
+	foreach my $entry (@$entries) {
+		if ('""' eq $entry->msgid
+		    && empty $entry->dequote($entry->msgctxt)) {
+			next;
+		}
+		$self->addEntry($entry);
+	}
+	
+	return $self;
 }
 
 sub addEntry {
@@ -296,7 +323,7 @@ sub __conversionError {
             conversion_error => $cd->getError);
 }
 
-sub __resolveFilename {
+sub resolveFilename {
     my ($self, $filename) = @_;
     
     my $directories = $self->{__options}->{directory} || ['.'];
@@ -877,8 +904,10 @@ EOF
 EOF
 
     my $url = $self->getBugTrackingAddress;
+
+    printf "\n";
+
     if (defined $url) {
-        printf "\n";
         # TRANSLATORS: The placeholder indicates the bug-reporting address
         # for this package.  Please add _another line_ saying
         # "Report translation bugs to <...>\n" with the address for translation
