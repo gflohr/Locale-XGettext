@@ -134,10 +134,15 @@ sub newFromArgv {
 
     my $self = {};
     bless $self, $class;
-    
-    $self->scriptMode(1);
-    
-    my %options = $self->__getOptions($argv);
+
+    my %options = eval { $self->__getOptions($argv) };
+    if ($@) {
+    	chomp $@;
+    	die __x(<<EOF, program_name => $0, error => $@);
+{program_name}: {error}!
+Try '{program_name} --help' for more information.
+EOF
+    }
     
     $self->__displayUsage if $options{help};
     
@@ -153,7 +158,7 @@ sub defaultKeywords {
     return;
 }
 
-sub __run {
+sub run {
     my ($self) = @_;
 
     if ($self->{__run}++) {
@@ -300,21 +305,6 @@ sub recodeEntry {
     return $self;    	
 }
 
-sub run {
-	my ($self) = @_;
-	
-	if ($self->{__script_mode}) {
-		eval { $self->run };
-		if ($@) {
-			chomp $@;
-			die "$0: $@\n";
-		}
-		return $self;
-	}
-
-    return $self->__run;
-}
-
 sub __conversionError {
     my ($self, $reference, $cd) = @_;
     
@@ -326,9 +316,10 @@ sub __conversionError {
 sub resolveFilename {
     my ($self, $filename) = @_;
     
-    my $directories = $self->{__options}->{directory} || ['.'];
+    my $directories = $self->{__options}->{directory} || [''];
     foreach my $directory (@$directories) {
-    	my $path = File::Spec->catfile($directory, $filename);
+    	my $path = length $directory 
+    	    ? File::Spec->catfile($directory, $filename) : $filename;
     	stat $path && return $path;
     }
     
@@ -339,7 +330,7 @@ sub po {
     shift->{__po}->entries;
 }
 
-sub __output {
+sub output {
     my ($self) = @_;
     
     if (!$self->{__run}) {
@@ -385,21 +376,6 @@ sub __output {
                    file => $filename, error => $!);
     
     return $self;
-}
-
-sub output {
-    my ($self) = @_;
-    
-    if ($self->{__script_mode}) {
-        eval { $self->output };
-        if ($@) {
-            chomp $@;
-            die "$0: $@\n";
-        }
-        return $self;
-    }
-
-    return $self->__output;
 }
 
 sub options {
@@ -569,6 +545,10 @@ sub __getOptions {
     }
     
     Getopt::Long::Configure('bundling');
+    $SIG{__WARN__} = sub {
+    	$SIG{__WARN__} = 'DEFAULT';
+    	die shift;
+    };
     GetOptionsFromArray($argv,
         # Are always overridden by standard options.
         %lang_options,
@@ -615,7 +595,8 @@ sub __getOptions {
         # Informative output.
         'h|help' => \$options{help},
         'V|version' => \$options{version},
-    ) or exit 1;
+    );
+    $SIG{__WARN__} = 'DEFAULT';
     
     foreach my $key (keys %options) {
         delete $options{$key} if !defined $options{$key};
