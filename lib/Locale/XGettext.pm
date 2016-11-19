@@ -904,10 +904,10 @@ sub __usageError {
     if ($message) {
         $message =~ s/\s+$//;
         $message = "$0: $message\n";
-    }
-    else {
+    } else {
         $message = '';
     }
+    
     die <<EOF;
 ${message}Usage: $0 [OPTIONS]
 Try '$0 --help' for more information!
