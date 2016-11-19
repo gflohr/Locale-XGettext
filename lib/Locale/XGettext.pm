@@ -121,7 +121,8 @@ sub new {
     }
     
     $self->__readFilesFrom($options->{files_from});
-
+    $self->__usageError(__"no input file given") if !@{$self->{__files}};
+    
     $options->{keyword} = $self->__setKeywords($options->{keyword});
 
     # TODO: Read exclusion file for --exclude-file.
@@ -137,11 +138,7 @@ sub newFromArgv {
 
     my %options = eval { $self->__getOptions($argv) };
     if ($@) {
-    	chomp $@;
-    	die __x(<<EOF, program_name => $0, error => $@);
-{program_name}: {error}!
-Try '{program_name} --help' for more information.
-EOF
+    	$self->__usageError($@);
     }
     
     $self->__displayUsage if $options{help};
@@ -507,8 +504,6 @@ sub __readFilesFrom {
             push @files, $file;
         }
     }
-
-    die __"No input file given.\n" if !@files;
     
     $self->{__files} = \@files;
     
@@ -900,18 +895,18 @@ EOF
 }
 
 sub __usageError {
-    my $message = shift;
+	my ($self, $message) = @_;
+
     if ($message) {
         $message =~ s/\s+$//;
-        $message = "$0: $message\n";
+        $message = __x("{program_name}: {error}\n",
+                       program_name => $0, error => $message);
     } else {
         $message = '';
     }
     
-    die <<EOF;
-${message}Usage: $0 [OPTIONS]
-Try '$0 --help' for more information!
-EOF
+    die $message . __x("Try '{program_name} --help' for more information!\n",
+                       program_name => $0);
 }
 
 sub versionInformation {
