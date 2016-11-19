@@ -121,7 +121,9 @@ sub new {
     }
     
     $self->__readFilesFrom($options->{files_from});
-    $self->__usageError(__"no input file given") if !@{$self->{__files}};
+    if ($self->needInputFiles) {
+        $self->__usageError(__"no input file given") if !@{$self->{__files}};
+    }
     
     $options->{keyword} = $self->__setKeywords($options->{keyword});
 
@@ -676,7 +678,6 @@ sub __displayUsage {
 	my ($self) = @_;
 	
     print __x("Usage: {program} [OPTION] [INPUTFILE]...\n", program => $0);
-    
     print "\n";
     
     print __(<<EOF);
@@ -697,7 +698,7 @@ EOF
 
     print "\n";
 
-    print __(<<EOF);
+        print __(<<EOF);
 Input file location:
 EOF
 
@@ -718,7 +719,7 @@ If input file is -, standard input is read.
 EOF
 
     print "\n";
-
+    
     printf __(<<EOF);
 Output file location:
 EOF
@@ -929,6 +930,10 @@ sub canExtractAll {
 }
 
 sub canKeywords {
+	shift;
+}
+
+sub needInputFiles {
 	shift;
 }
 
