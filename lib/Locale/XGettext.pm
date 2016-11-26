@@ -1,7 +1,6 @@
 #! /bin/false
 # vim: ts=4:et
 
-
 # Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
 # all rights reserved.
 
@@ -126,6 +125,7 @@ sub new {
     }
     
     $options->{keyword} = $self->__setKeywords($options->{keyword});
+    $options->{flag} = $self->__setFlags($options->{flags});
 
     # TODO: Read exclusion file for --exclude-file.
 
@@ -155,6 +155,10 @@ sub newFromArgv {
 
 sub defaultKeywords {
     return;
+}
+
+sub defaultFlags {
+	return;
 }
 
 sub run {
@@ -573,6 +577,7 @@ sub __getOptions {
         # Language specific options:
         'a|extract-all' => \$options{extract_all},
         'k|keyword:s@' => \$options{keyword},
+        'flag:s@' => \$options{flag},
          
         # Output details:
         'force-po' => \$options{force_po},
@@ -672,6 +677,10 @@ sub __setKeywords {
     }
 
     return \%keywords;
+}
+
+sub __setFlags {
+	
 }
 
 sub __displayUsage {
@@ -801,6 +810,8 @@ EOF
         print __(<<EOF);
   -kWORD, --keyword=WORD      look for WORD as an additional keyword
   -k, --keyword               do not to use default keywords"));
+      --flag=WORD:ARG:FLAG    additional flag for strings inside the argument
+                              number ARG of keyword WORD
 EOF
     }
 

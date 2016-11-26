@@ -66,7 +66,17 @@ sub add {
     	}
     	$entry = $po_entry;
     }
-    
+
+    $entry->msgid('') if !defined $entry->msgid;
+    if (defined $entry->msgid_plural) {
+    	if (!defined $entry->msgstr_n) {
+    	    $entry->msgstr_n({0 => '', 1 => ''});
+    	}
+    	$entry->msgstr(undef);
+    } elsif (!defined $entry->msgstr) {
+        $entry->msgstr('') if !defined $entry->msgstr;    	
+    }
+     
     return $self->__add($entry);
 }
 
