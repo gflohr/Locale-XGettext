@@ -537,9 +537,9 @@ sub __getOptions {
     
     my %options;
     
-    my @lang_options = $self->getLanguageSpecificOptions(\%options);
+    my $lang_options = $self->getLanguageSpecificOptions(\%options);
     my %lang_options;
-    foreach my $optspec (@lang_options) {
+    foreach my $optspec (@{$lang_options || []}) {
     	my ($optstring, $optvar,
     	    $usage, $description) = @$optspec;
         $lang_options{$optstring} = \$options{$optvar};
@@ -612,9 +612,9 @@ sub getLanguageSpecificOptions {}
 sub printLanguageSpecificUsage {
     my ($self) = @_;
     
-    my @options = $self->getLanguageSpecificOptions;
+    my $options = $self->getLanguageSpecificOptions;
     
-    foreach my $optspec (@options) {
+    foreach my $optspec (@{$options || []}) {
         my ($optstring, $optvar,
             $usage, $description) = @$optspec;
         
