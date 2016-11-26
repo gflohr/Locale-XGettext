@@ -42,6 +42,14 @@ sub readFile {
     $self->{__java_extractor}->readFile($filename);
 }
 
+sub getLanguageSpecificOptions {
+	my ($self) = @_;
+	
+    return [] if !JavaXGettext->can('getLanguageSpecificOptions');
+
+    return JavaXGettext->getLanguageSpecificOptions;
+}
+
 package Locale::XGettext::Callbacks;
 
 use strict;

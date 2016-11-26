@@ -26,4 +26,13 @@ class JavaXGettext extends InlineJavaPerlCaller {
                                  Integer.class);
         }
     }
+    
+    public static String[][] getLanguageSpecificOptions() {
+    	String test_options[] = {
+    		 "test-binding", "test_binding", "    --test-binding",
+             "print additional information for testing the language binding"
+    	};
+    	
+    	return new String[][] { test_options };
+    }
 }
