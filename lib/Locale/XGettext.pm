@@ -385,6 +385,14 @@ sub options {
 	shift->{__options};
 }
 
+sub getOption {
+	my ($self, $key) = @_;
+	
+	return if !exists $self->{$key};
+	
+	return $self->{$key};
+}
+
 sub __poHeader {
     my ($self) = @_;
 
@@ -670,13 +678,22 @@ sub __setFlags {
 sub __displayUsage {
 	my ($self) = @_;
 	
-    print __x("Usage: {program} [OPTION] [INPUTFILE]...\n", program => $0);
-    print "\n";
+	if ($self->needInputFiles) {
+        print __x("Usage: {program} [OPTION] [INPUTFILE]...\n", program => $0);
+        print "\n";
     
-    print __(<<EOF);
+        print __(<<EOF);
 Extract translatable strings from given input files.  
 EOF
-
+	} else {
+        print __x("Usage: {program} [OPTION]\n", program => $0);
+        print "\n";
+    
+        print __(<<EOF);
+Extract translatable strings.  
+EOF
+	}
+	
     if (defined $self->fileInformation) {
     	print "\n";
     	my $description = $self->fileInformation;
@@ -927,7 +944,11 @@ sub canExtractAll {
 }
 
 sub canKeywords {
-	shift;
+    shift;
+}
+
+sub canFlags {
+    shift;
 }
 
 sub needInputFiles {
