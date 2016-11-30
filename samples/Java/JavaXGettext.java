@@ -41,9 +41,11 @@ class JavaXGettext extends InlineJavaPerlCaller {
     public void extractFromNonFiles() throws InlineJavaException {
     }
 
+    /* The following optional methods must be implemented as class methods
+     * because they are called from the Perl constructor.
+     */
+    
     /* Implement this method if you want to describe the type of input files.
-     * 
-     * Note that for internal reasons this must be a static method.
      */
     public static String fileInformation() {
     	return "Input files are plain text files and are converted into one"
@@ -53,8 +55,6 @@ class JavaXGettext extends InlineJavaPerlCaller {
     /* You can add more language specific options here.  It is your
      * responsibility that the option names do not conflict with those of the
      * wrapper.
-     * 
-     * Note that for internal reasons this must be a static method.
      */
     public static String[][] getLanguageSpecificOptions() {
     	return new String[][] {
