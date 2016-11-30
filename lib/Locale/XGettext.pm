@@ -516,22 +516,6 @@ sub __readFilesFrom {
     return $self;
 }
 
-sub scriptMode {
-	my ($self, $mode) = @_;
-	
-	if (@_ > 1) {
-		if ($mode) {
-			$self->{__script_mode} = 1;
-		} else {
-			delete $self->{__script_mode};
-		}
-	}
-	
-	return $self if $self->{__script_mode};
-	
-	return;
-}
-
 sub __getOptions {
     my ($self, $argv) = @_;
     
