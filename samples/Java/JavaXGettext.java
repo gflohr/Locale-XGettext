@@ -31,22 +31,33 @@ class JavaXGettext extends InlineJavaPerlCaller {
     }
     
     /* All of the following methods are optional.  You do not have to
-     * implement them.
-     */
+     * implement them.  */
     
     /* This method gets called right after all input files have been
      * processed and before the PO entries are sorted.  That means that you
-     * can add more entries here.
-     */
+     * can add more entries here.  */
     public void extractFromNonFiles() throws InlineJavaException {
     }
 
-    /* The following optional methods must be implemented as class methods
+    /*
+     * Return an array of arrays with the default keywords of this language.
+     */
+    public static String[][] defaultKeywords() {
+    	return new String[][] {
+    			{"gettext", "1"},
+    			{"ngettext", "1", "2"},
+    			{"pgettext", "1c", "2"},
+    			{"npgettext", "1c", "2", "3"}
+    	};
+    }
+    
+    /*
+     * The following optional methods must be implemented as class methods
      * because they are called from the Perl constructor.
      */
     
-    /* Implement this method if you want to describe the type of input files.
-     */
+    /* Implement this method if you want to describe the type of input
+     * files.  */
     public static String fileInformation() {
     	return "Input files are plain text files and are converted into one"
     			+ " PO entry\nfor every non-empty line.";
@@ -83,5 +94,27 @@ class JavaXGettext extends InlineJavaPerlCaller {
 	        }
             /* Add more option specifications here.  */
         };
-    }    
+    }
+    
+    /* Does the program honor the option -a, --extract-all?  The default
+     * implementation returns false.
+     */
+    public static boolean canExtractAll() {
+    	return false;
+    }
+    
+    /* Does the program honor the option -k, --keyword?  The default
+     * implementation returns true.
+     */
+    public static boolean canKeywords() {
+    	return false;
+    }
+    
+    /* Does the program honor the option --flag?  The default implementation 
+     * returns true.
+     */
+    public static boolean canFlags() {
+    	return false;
+    }
+       
 }
