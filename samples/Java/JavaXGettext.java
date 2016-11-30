@@ -34,9 +34,27 @@ class JavaXGettext extends InlineJavaPerlCaller {
      * implement them.
      */
     
+    /* This method gets called right after all input files have been
+     * processed and before the PO entries are sorted.  That means that you
+     * can add more entries here.
+     */
+    public void extractFromNonFiles() throws InlineJavaException {
+    }
+
+    /* Implement this method if you want to describe the type of input files.
+     * 
+     * Note that for internal reasons this must be a static method.
+     */
+    public static String fileInformation() {
+    	return "Input files are plain text files and are converted into one"
+    			+ " PO entry\nfor every non-empty line.";
+    }
+    
     /* You can add more language specific options here.  It is your
      * responsibility that the option names do not conflict with those of the
      * wrapper.
+     * 
+     * Note that for internal reasons this must be a static method.
      */
     public static String[][] getLanguageSpecificOptions() {
     	return new String[][] {
@@ -65,14 +83,5 @@ class JavaXGettext extends InlineJavaPerlCaller {
 	        }
             /* Add more option specifications here.  */
         };
-    }
-    
-    /* This method gets called right after all input files have been
-     * processed and before the PO entries are sorted.  That means that you
-     * can add more entries here.
-     */
-    public void extractFromNonFiles() throws InlineJavaException {
-    }
-
-    
+    }    
 }

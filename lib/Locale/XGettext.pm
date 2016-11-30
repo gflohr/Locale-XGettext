@@ -679,7 +679,9 @@ EOF
 
     if (defined $self->fileInformation) {
     	print "\n";
-    	print $self->fileInformation;
+    	my $description = $self->fileInformation;
+    	chomp $description;
+    	print "$description\n";
     }
 
     print "\n";

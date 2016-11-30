@@ -51,11 +51,19 @@ sub getLanguageSpecificOptions {
 }
 
 sub extractFromNonFiles {
-	my ($self) = @_;
-	
-	return $self if !JavaXGettext->can('extractFromNonFiles');
-	
-	return $self->{__java_extractor}->extractFromNonFiles;
+    my ($self) = @_;
+    
+    return $self if $self->can('extractFromNonFiles');
+    
+    return $self->{__java_extractor}->extractFromNonFiles;
+}
+
+sub fileInformation {
+    my ($self) = @_;
+    
+    return if !JavaXGettext->can('fileInformation');
+    
+    return JavaXGettext->fileInformation;
 }
 
 package Locale::XGettext::Callbacks;
