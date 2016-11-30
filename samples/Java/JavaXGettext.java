@@ -6,6 +6,9 @@ class JavaXGettext extends InlineJavaPerlCaller {
     public JavaXGettext() throws InlineJavaException {
     }
 
+    /* This method gets called for every input file found.  It is supposed
+     * to parse the file, extract the PO entries and add them.
+     */
     public void readFile(String filename) 
             throws InlineJavaException, InlineJavaPerlException,
                    FileNotFoundException, IOException {
@@ -27,12 +30,49 @@ class JavaXGettext extends InlineJavaPerlCaller {
         }
     }
     
+    /* All of the following methods are optional.  You do not have to
+     * implement them.
+     */
+    
+    /* You can add more language specific options here.  It is your
+     * responsibility that the option names do not conflict with those of the
+     * wrapper.
+     */
     public static String[][] getLanguageSpecificOptions() {
-    	String test_options[] = {
-    		 "test-binding", "test_binding", "    --test-binding",
-             "print additional information for testing the language binding"
-    	};
-    	
-    	return new String[][] { test_options };
+    	return new String[][] {
+            {
+            	/* The option specification for Getopt::Long.  If you would
+            	 * expect a string argument, you would have to specify
+            	 * "test-binding=s" here, see 
+            	 * http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm 
+            	 * for details!
+            	 */
+   		        "test-binding",
+   		        
+   		        /* The "name" of the option variable.  This is the argument
+   		         * to getOptionValue().
+   		         */
+   		        "test_binding", 
+   		        
+   		        /* The option as displayed in the usage description.  The
+   		         * leading four spaces compensate for the missing shor
+   		         * option.
+   		         */
+   		        "    --test-binding",
+   		        
+   		        /* The explanation of the option.  */
+                "print additional information for testing the language binding"
+	        }
+            /* Add more option specifications here.  */
+        };
     }
+    
+    /* This method gets called right after all input files have been
+     * processed and before the PO entries are sorted.  That means that you
+     * can add more entries here.
+     */
+    public void extractFromNonFiles() throws InlineJavaException {
+    }
+
+    
 }
