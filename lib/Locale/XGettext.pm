@@ -634,7 +634,7 @@ sub printLanguageSpecificUsage {
                 my $word = shift @description;
                 print " $word";
                 $pos += 1 + length $word;
-                if (@description && $pos > 77 - length $word) {
+                if (@description && $pos > 77 - length $description[-1]) {
                 	++$lineno;
                 	print "\n";
                 	$pos = 0;
