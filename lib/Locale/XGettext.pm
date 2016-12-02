@@ -388,9 +388,9 @@ sub options {
 sub getOption {
 	my ($self, $key) = @_;
 	
-	return if !exists $self->{$key};
+	return if !exists $self->{__options}->{$key};
 	
-	return $self->{$key};
+	return $self->{__options}->{$key};
 }
 
 sub __poHeader {
