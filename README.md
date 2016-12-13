@@ -1,4 +1,4 @@
-# Plugin-XGettext
+# Locale-XGettext
 
 Extract strings into PO files with Perl
 
