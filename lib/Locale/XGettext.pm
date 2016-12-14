@@ -28,7 +28,7 @@ our $VERSION = '0.1';
 use Locale::TextDomain qw(Locale-XGettext);
 use File::Spec;
 use Locale::PO 0.27;
-use Scalar::Util qw(reftype);
+use Scalar::Util qw(reftype blessed);
 use Locale::Recode;
 use Getopt::Long qw(GetOptionsFromArray);
 
@@ -213,15 +213,46 @@ sub readPO {
 	return $self;
 }
 
-sub addEntry {
+sub __promoteEntry {
 	my ($self, $entry) = @_;
 	
-	if (!$self->{__run}) {
+	if (!blessed $entry) {
+        my $po_entry = Locale::PO->new;
+        foreach my $method (keys %$entry) {
+            $po_entry->$method($entry->{$method});
+        }
+        $entry = $po_entry;
+    }
+
+	return $entry;
+}
+
+sub addFlaggedEntry {
+	my ($self, $entry, $comment) = @_;
+    
+    if (!$self->{__run}) {
         require Carp;
         Carp::croak(__"Attempt to add entries before run");
     }
+    
+    $self->{__po}->add($self->__promoteEntry($entry));
+}
+
+sub addEntry {
+	my ($self, $entry, $comment) = @_;
 	
-	$self->{__po}->add($entry);
+	if (defined $comment) {
+		# Does it contain an "xgettext:" comment?  The original implementation
+		# is quite relaxed here, even recogizing comments like "exgettext:".
+		while ($comment =~ s/xgettext:(.*)//gm) {
+			# FIXME! Analyze the comment!
+			my $string = $1;
+		}
+
+        $entry = $self->__promoteEntry($entry);
+	}
+	
+	$self->addFlaggedEntry($entry, $comment);
 }
 
 sub recodeEntry {
@@ -671,8 +702,34 @@ sub __setKeywords {
     return \%keywords;
 }
 
-sub __setFlags {
+sub __parseFlag {
+	my ($self, $flag) = @_;
 	
+	return if $flag !~ s/:([^:]+)$//;
+	my $format = $1;
+	
+    return if $flag !~ s/:([^:]+)$//;
+	my $argnum = $1;
+	
+	my $function = $flag;
+	return if !length $function;
+	
+	return;
+}
+
+sub __setFlags {
+    my ($self, $options) = @_;
+    
+    my @defaults = $self->defaultFlags;
+    
+    foreach my $flag (@defaults, @$options) {
+    	my @spec = $self->__parseFlag($flag)
+    	    or die __x("A --flag argument doesn't have the"
+    	               . " <keyword>:<argnum>:[pass-]<flag> syntax: {flag}",
+    	               $flag);
+    }
+    
+    return $self;
 }
 
 sub __displayUsage {

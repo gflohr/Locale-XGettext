@@ -54,3 +54,34 @@ sub use_keywords($) {
     Locale::XGettext::Text->new({keywords => $keywords}, 'dummy');
 }
 
+package Locale::XGettext::Test;
+
+use strict;
+
+use base qw(Locale::XGettext);
+
+sub needInputFiles {
+    return;
+}
+
+sub extractFromNonFiles {
+    my ($self) = @_;
+
+    my @added = @{$self->{__fed_entries} || []};
+    foreach my $record (@added) {
+        $self->addEntry($record->[0], $record->[1]);
+    }
+
+    return $self;
+}
+
+sub _feedEntry {
+    my ($self, $entry, $comment) = @_;
+
+    $self->{__fed_entries} ||= [];
+    push @{$self->{__fed_entries}}, [$entry, $comment];
+
+    return $self;
+}
+
+1;

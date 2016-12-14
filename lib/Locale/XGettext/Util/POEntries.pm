@@ -24,7 +24,6 @@ package Locale::XGettext::Util::POEntries;
 use strict;
 
 use Locale::TextDomain qw(Locale-XGettext);
-use Scalar::Util qw(blessed);
 
 sub new {
     bless {
@@ -58,14 +57,6 @@ sub __add {
 
 sub add {
     my ($self, $entry) = @_;
-
-    if (!blessed $entry) {
-    	my $po_entry = Locale::PO->new;
-    	foreach my $method (keys %$entry) {
-    		$po_entry->$method($entry->{$method});
-    	}
-    	$entry = $po_entry;
-    }
 
     $entry->msgid('') if !defined $entry->msgid;
     if (defined $entry->msgid_plural) {
