@@ -234,8 +234,20 @@ sub addFlaggedEntry {
         require Carp;
         Carp::croak(__"Attempt to add entries before run");
     }
+
+    $entry = $self->__promoteEntry($entry);
     
-    $self->{__po}->add($self->__promoteEntry($entry));
+    my $comment_keywords = $self->getOption('add_comments');
+    if (defined $comment && $comment_keywords) {
+    	foreach my $keyword (@$comment_keywords) {
+    		if ($comment =~ /($keyword.*)/s) {
+    			$entry->automatic($1);
+    			last;
+    		}
+    	}
+    }
+    
+    $self->{__po}->add($entry);
 }
 
 sub addEntry {
@@ -244,12 +256,12 @@ sub addEntry {
 	if (defined $comment) {
 		# Does it contain an "xgettext:" comment?  The original implementation
 		# is quite relaxed here, even recogizing comments like "exgettext:".
-		while ($comment =~ s/xgettext:(.*)//gm) {
+		while ($comment =~ s/.*xgettext:(.*)\n?//gm) {
 			# FIXME! Analyze the comment!
 			my $string = $1;
+            $entry = $self->__promoteEntry($entry);
 		}
 
-        $entry = $self->__promoteEntry($entry);
 	}
 	
 	$self->addFlaggedEntry($entry, $comment);

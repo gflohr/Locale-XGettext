@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 2;
+use Test::More tests => 6;
 
 use Locale::XGettext::Text;
 
@@ -33,7 +33,7 @@ BEGIN {
 
 use TestLib qw(find_entries);
 
-my $xgettext;
+my ($xgettext, @po);
 
 my $entry = { msgid => 'Hello, world!'};
 
@@ -41,7 +41,33 @@ $xgettext = Locale::XGettext::Test->new;
 $xgettext->_feedEntry($entry, <<EOF);
 TRANSLATORS: There was no comment keyword specified!
 EOF
-my @po = $xgettext->run->po;
-
+@po = $xgettext->run->po;
 is scalar @po, 2;
-ok !defined $po[1]->automatic;
+ok !defined $po[1]->automatic, "no comment keyword specified";
+
+my $comment1 = "TRANSLATORS: This comment should go into the PO file!\n";
+$xgettext = Locale::XGettext::Test->new({add_comments => ['TRANSLATORS:']});
+$xgettext->_feedEntry($entry, $comment1);
+@po = $xgettext->run->po;
+is scalar @po, 2;
+is $po[1]->automatic, $comment1, "regular comment";
+
+$xgettext = Locale::XGettext::Test->new({add_comments => ['TRANSLATORS:',
+                                                          'CODERS:']});
+my $multi_comment = <<EOF;
+Leading garbage
+More leading garbage TRANSLATORS: Where should this go?
+garbage againxgettext: no-perl-brace-format c-format trailing garbage
+Into the PO file!
+EOF
+$xgettext->_feedEntry($entry, $multi_comment);
+my $comment2 = "CODERS: Think before you type!";
+my $entry2 = { msgid => "Hello, underworld!" };
+$xgettext->_feedEntry($entry2, $comment2);
+@po = $xgettext->run->po;
+is scalar @po, 3;
+is $po[1]->automatic, <<EOF, "interrupted comment";
+TRANSLATORS: Where should this go?
+Into the PO file!
+EOF
+
