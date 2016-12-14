@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use Locale::XGettext::Text;
 
@@ -61,7 +61,7 @@ garbage againxgettext: no-perl-brace-format c-format trailing garbage
 Into the PO file!
 EOF
 $xgettext->_feedEntry($entry, $multi_comment);
-my $comment2 = "CODERS: Think before you type!";
+my $comment2 = "CODERS: Think before you type!\n";
 my $entry2 = { msgid => "Hello, underworld!" };
 $xgettext->_feedEntry($entry2, $comment2);
 @po = $xgettext->run->po;
@@ -69,5 +69,8 @@ is scalar @po, 3;
 is $po[1]->automatic, <<EOF, "interrupted comment";
 TRANSLATORS: Where should this go?
 Into the PO file!
+EOF
+is $po[2]->automatic, <<EOF, "2nd comment keyword";
+CODERS: Think before you type!
 EOF
 
