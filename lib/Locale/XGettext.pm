@@ -254,14 +254,40 @@ sub addEntry {
 	my ($self, $entry, $comment) = @_;
 	
 	if (defined $comment) {
+        $entry = $self->__promoteEntry($entry);
+        
 		# Does it contain an "xgettext:" comment?  The original implementation
 		# is quite relaxed here, even recogizing comments like "exgettext:".
-		while ($comment =~ s/.*xgettext:(.*)\n?//gm) {
-			# FIXME! Analyze the comment!
-			my $string = $1;
-            $entry = $self->__promoteEntry($entry);
-		}
+		my $cleaned = '';
+		$comment =~ s{
+		          (.*?)xgettext:(.*?(?:\n|\Z))
+		      }{
+	              my ($lead, $string) = ($1, $2);
+		          my $valid;
+		                    
+		          my @tokens = split /[ \x09-\x0d]+/, $string;
+		                    
+		          foreach my $token (@tokens) {
+		              if ($token eq 'fuzzy') {
+		                  $entry->fuzzy(1);
+		                  $valid = 1;
+		              } elsif ($token eq 'no-wrap') {
+		              	  $entry->add_flag('no-wrap');
+		              	  $valid = 1;
+		              } elsif ($token eq 'wrap') {
+                          $entry->add_flag('wrap');
+                          $valid = 1;
+		              } elsif ($token =~ /^[a-z]+-(?:format|check)$/) {
+		              	  $entry->add_flag($token);
+		              	  $valid = 1;
+		              }
+		          }
+		                    
+		          $cleaned .= "${lead}xgettext:${string}" if !$valid;
+		      }exg;
 
+        $cleaned .= $comment;
+        $comment = $cleaned;
 	}
 	
 	$self->addFlaggedEntry($entry, $comment);

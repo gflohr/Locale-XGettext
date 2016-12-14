@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 use Locale::XGettext::Text;
 
@@ -74,3 +74,12 @@ is $po[2]->automatic, <<EOF, "2nd comment keyword";
 CODERS: Think before you type!
 EOF
 
+$xgettext = Locale::XGettext::Test->new({add_comments => ['TRANSLATORS:']});
+my $multi_comment2 = <<EOF;
+TRANSLATORS: You can use
+The string "xgettext:" in order to set flags in comments.
+EOF
+$xgettext->_feedEntry($entry, $multi_comment2);
+@po = $xgettext->run->po;
+is scalar @po, 2;
+is $po[1]->automatic, $multi_comment2, '"xgettext:" without valid flags';
