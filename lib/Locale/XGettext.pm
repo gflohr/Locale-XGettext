@@ -51,6 +51,7 @@ sub new {
     $self->{__options} = $options;
     $self->{__comment_tag} = undef;
     $self->{__files} = [@files];
+    $self->{__exclude} = {};
     
     bless $self, $class;
 
@@ -127,7 +128,11 @@ sub new {
     $options->{keyword} = $self->__setKeywords($options->{keyword});
     $options->{flag} = $self->__setFlags($options->{flags});
 
-    # TODO: Read exclusion file for --exclude-file.
+    if (exists $options->{exclude_file} && !ref $options->{exclude_file}) {
+    	$options->{exclude_file} = [$options->{exclude_file}];
+    }
+
+    $self->__readExcludeFiles($options->{exclude_file});
 
     return $self;
 }
@@ -223,6 +228,30 @@ sub readPO {
 	return $self;
 }
 
+sub __readExcludeFiles {
+	my ($self, $files) = @_;
+	
+	return $self if !$files;
+	
+	foreach my $file (@$files) {
+	   my $entries = Locale::PO->load_file_asarray($file)
+        or die __x("error reading '{filename}': {error}!\n",
+                   filename => $file, error => $!);
+    
+		foreach my $entry (@$entries) {
+			my $msgid = $entry->msgid;
+			next if empty $msgid;
+			
+			my $ctx = $entry->msgctxt;
+			$ctx = '' if empty $ctx;
+			
+			$self->{__exclude}->{$msgid}->{$ctx} = $entry;
+		}
+	}
+	
+	return $self;
+}
+
 sub __promoteEntry {
 	my ($self, $entry) = @_;
 	
@@ -246,6 +275,14 @@ sub addFlaggedEntry {
     }
 
     $entry = $self->__promoteEntry($entry);
+    
+    my ($msgid) = $entry->msgid;
+    if (!empty $msgid) {
+    	my $ctx = $entry->msgctxt;
+    	$ctx = '' if empty $ctx;
+    	
+    	return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
+    }
     
     my $comment_keywords = $self->getOption('add_comments');
     if (defined $comment && $comment_keywords) {
@@ -647,8 +684,9 @@ sub __getOptions {
        
         # Operation mode:
         'j|join-existing' => \$options{join_existing},
-        # FIXME! Is this allowed multiple times?
-        'x|exclude-file=s' => \$options{exclude_file},
+        
+        # We allow multiple files.
+        'x|exclude-file=s@' => \$options{exclude_file},
         'c|add-comments:s@' => \$options{add_comments},
         'check=s@' => \$options{check},
         'sentence_end=s' => \$options{sentence_end},

@@ -40,5 +40,5 @@ my @po = Locale::XGettext::Text->new({exclude_file => 'exclude-file.po'},
                                ->run->po;
 is((@po), 3);
 is((scalar find_entries \@po, msgid => qq{"Hello, world!"}), 0);
-is((scalar find_entries \@po, msgid => qq{"Hello, Marse!"}), 1);
+is((scalar find_entries \@po, msgid => qq{"Hello, Mars!"}), 1);
 is((scalar find_entries \@po, msgid => qq{"Hello, extraterrestrials!"}), 1);
