@@ -170,6 +170,15 @@ sub run {
     }
 
     my $po = $self->{__po} = Locale::XGettext::Util::POEntries->new;
+    
+    if ($self->getOption('join_existing')) {
+    	my $output_file = $self->getOption('output');
+    	if ('-' eq $output_file) {
+    		$self->__usageError(__"--join-existing cannot be used when output"
+    		                      . " is written to stdout");
+    	}
+    }
+    
     foreach my $filename (@{$self->{__files}}) {
         my $path = $self->resolveFilename($filename)
             or die __x("Error resolving '{filename}': {error}!\n",
