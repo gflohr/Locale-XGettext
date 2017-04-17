@@ -9,8 +9,5 @@ class PythonXGettext:
     # Optional methods.
     #def extractFromNonFiles(self, xgettext):
 
-    def xdefaultKeywords(self, xgettext):
-        return [
-                   ['gettext', '1'],
-                   ['ngettext', '1', '2']
-               ];
+    def defaultKeywords(self, xgettext):
+        return { 'gettext': ['1'], 'ngettext': ['1', '2'] }

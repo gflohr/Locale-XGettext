@@ -759,7 +759,7 @@ sub getBugTrackingAddress {}
 sub __setKeywords {
     my ($self, $options) = @_;
     
-    my %keywords = $self->defaultKeywords;
+    my %keywords = $self->__makeHash($self->defaultKeywords);
     while (my ($method, $argspec) = each %keywords) {
         $keywords{$method} = Locale::XGettext::Util::Keyword->new($method, 
                                                                   @$argspec);
@@ -781,6 +781,20 @@ sub __setKeywords {
     }
 
     return \%keywords;
+}
+
+sub __makeHash {
+    my ($self, @values) = @_;
+
+    if (1 == @values) {
+        if ('HASH' eq reftype $values[0]) {
+            return %{$values[0]};
+        } else {
+            return @{$values[0]};
+        }
+    }
+
+    return @values;
 }
 
 sub __parseFlag {
