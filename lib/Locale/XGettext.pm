@@ -75,24 +75,6 @@ sub new {
             if $option ne 'full' && $option ne 'file' && $option ne 'never';
     }
 
-    if (exists $options->{check}) {
-        my $option = $options->{check};
-
-        die __x("Syntax check '{type}' unknown.\n", type => $option)
-            if $option ne 'ellipsis-unicode'
-               && $option ne 'space-ellipsis'
-               && $option ne 'quote-unicode'
-               && $option ne 'bullet-unicode';
-    }
-
-    if (exists $options->{sentence_end}) {
-        my $option = $options->{sentence_end};
-
-        die __x("Sentence end type '{type}' unknown.\n", type => $option)
-            if $option ne 'single-space'
-               && $option ne 'double-space';
-    }
-    
     if (exists $options->{add_comments}) {
         if (!ref $options->{add_comments} 
             && 'ARRAY' ne $options->{add_comments}) {
@@ -134,14 +116,6 @@ sub new {
 
     $self->__readExcludeFiles($options->{exclude_file});
 
-    if ($options->{check}) {
-    	warn __x("warning: the option '--check' is not yet supported");
-    }
-    
-    if ($options->{sentence_end}) {
-        warn __x("warning: the option '--sentence-end' is not yet supported");
-    }
-    
     return $self;
 }
 
@@ -696,8 +670,6 @@ sub __getOptions {
         # We allow multiple files.
         'x|exclude-file=s@' => \$options{exclude_file},
         'c|add-comments:s@' => \$options{add_comments},
-        'check=s@' => \$options{check},
-        'sentence_end=s' => \$options{sentence_end},
 
         # Language specific options:
         'a|extract-all' => \$options{extract_all},
@@ -943,17 +915,6 @@ EOF
                                 preceding keyword lines in output file
   -c, --add-comments          place all comment blocks preceding keyword lines
                                 in output file
-EOF
-
-    print __(<<EOF);
-      --check=NAME            perform syntax check on messages
-                                (ellipsis-unicode, space-ellipsis,
-                                 quote-unicode, bullet-unicode)
-EOF
-    print __(<<EOF);
-      --sentence-end=TYPE     type describing the end of sentence
-                                (single-space, which is the default,
-                                 or double-space)
 EOF
 
     print "\n";
