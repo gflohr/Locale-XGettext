@@ -134,6 +134,14 @@ sub new {
 
     $self->__readExcludeFiles($options->{exclude_file});
 
+    if ($options->{check}) {
+    	warn __x("warning: the option '--check' is not yet supported");
+    }
+    
+    if ($options->{sentence_end}) {
+        warn __x("warning: the option '--sentence-end' is not yet supported");
+    }
+    
     return $self;
 }
 
