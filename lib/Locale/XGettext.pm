@@ -46,14 +46,17 @@ sub empty($) {
 sub new {
     my ($class, $options, @files) = @_;
 
-    my $self = ref $class ? $class : {};
-    
+    my $self;
+    if (ref $class) {
+        $self = $class;
+    } else {
+        $self = bless {}, $class;
+    }
+
     $self->{__options} = $options;
     $self->{__comment_tag} = undef;
     $self->{__files} = [@files];
     $self->{__exclude} = {};
-    
-    bless $self, $class;
 
     if (__PACKAGE__ eq ref $self) {
     	require Carp;
@@ -122,8 +125,12 @@ sub new {
 sub newFromArgv {
 	my ($class, $argv) = @_;
 
-    my $self = {};
-    bless $self, $class;
+    my $self;
+    if (ref $class) {
+    	$self = $class;
+    } else {
+    	$self = bless {}, $class;
+    }
 
     my %options = eval { $self->__getOptions($argv) };
     if ($@) {

@@ -35,11 +35,14 @@ use strict;
 
 use base qw(Locale::XGettext);
 
-sub new {
+sub newFromArgv {
     my ($class, @args) = @_;
 
-    my $self = $class->SUPER::new(@args);
-    $self->{__helper} = PythonXGettext->new;
+    my $self = bless {
+        __helper => PythonXGettext->new,
+    }, $class;
+    
+    $self->SUPER::newFromArgv(@args);
 
     return $self;
 }
