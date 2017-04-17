@@ -172,11 +172,12 @@ sub run {
     my $po = $self->{__po} = Locale::XGettext::Util::POEntries->new;
     
     if ($self->getOption('join_existing')) {
-    	my $output_file = $self->getOption('output');
+    	my $output_file = $self->__getOutputFilename;
     	if ('-' eq $output_file) {
     		$self->__usageError(__"--join-existing cannot be used when output"
     		                      . " is written to stdout");
     	}
+    	$self->readPO($output_file);
     }
     
     foreach my $filename (@{$self->{__files}}) {
@@ -411,6 +412,28 @@ sub po {
     shift->{__po}->entries;
 }
 
+sub __getOutputFilename {
+	my ($self) = @_;
+	
+	my $options = $self->{__options};
+    if (exists $options->{output}) {
+        if (File::Spec->file_name_is_absolute($options->{output})
+            || '-' eq $options->{output}) {
+            return $options->{output}; 
+        } else {
+            return File::Spec->catfile($options->{output_dir},
+                                       $options->{output})
+        }
+    } elsif ('-' eq $options->{default_domain}) {
+        return '-';
+    } else {
+        return File::Spec->catfile($options->{output_dir}, 
+                                   $options->{default_domain} . '.po');
+    }
+	
+	# NOT REACHED!
+}
+
 sub output {
     my ($self) = @_;
     
@@ -427,22 +450,8 @@ sub output {
     return if !$self->{__po}->entries && !$self->{__options}->{force_po};
 
     my $options = $self->{__options};
-    my $filename;
-    if (exists $options->{output}) {
-        if (File::Spec->file_name_is_absolute($options->{output})
-            || '-' eq $options->{output}) {
-            $filename = $options->{output};	
-        } else {
-        	$filename = File::Spec->catfile($options->{output_dir},
-        	                                $options->{output})
-        }
-    } elsif ('-' eq $options->{default_domain}) {
-        $filename = '-';
-    } else {
-        $filename = File::Spec->catfile($options->{output_dir}, 
-                                        $options->{default_domain} . '.po');
-    }
-    
+    my $filename = $self->__getOutputFilename;
+
     open my $fh, ">$filename"
         or die __x("Error writing '{file}': {error}.\n",
                    file => $filename, error => $!);
