@@ -79,17 +79,17 @@ class JavaXGettext extends InlineJavaPerlCaller {
    		        "test-binding",
    		        
    		        /* The "name" of the option variable.  This is the argument
-   		         * to getOptionValue().
+   		         * to getOption().
    		         */
    		        "test_binding", 
    		        
    		        /* The option as displayed in the usage description.  The
-   		         * leading four spaces compensate for the missing shor
+   		         * leading four spaces compensate for the missing short
    		         * option.
    		         */
    		        "    --test-binding",
    		        
-   		        /* The explanation of the option.  */
+   		        /* The explanation of the option in the usage information.  */
                 "print additional information for testing the language binding"
 	        }
             /* Add more option specifications here.  */

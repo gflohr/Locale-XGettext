@@ -644,7 +644,7 @@ sub __getOptions {
     
     my $lang_options = $self->getLanguageSpecificOptions(\%options);
     my %lang_options;
-    foreach my $optspec (@{$lang_options || []}) {
+    foreach my $optspec (@$lang_options) {
     	my ($optstring, $optvar,
     	    $usage, $description) = @$optspec;
         $lang_options{$optstring} = \$options{$optvar};
@@ -795,6 +795,12 @@ sub __makeHash {
     }
 
     return @values;
+}
+
+sub __makeArray {
+    my ($self, @values) = @_;
+    
+    return $self->__makeHash(@values);
 }
 
 sub __parseFlag {
