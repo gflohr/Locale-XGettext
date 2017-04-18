@@ -1,27 +1,30 @@
 class PythonXGettext:
-    def readFile(self, xgettext, filename):
+    def __init__(self, xgettext):
+        self.xgettext = xgettext
+
+    def readFile(self, filename):
         with open(filename) as f:
             for line in f:
                 # You don't have to check that the line is empty.  The
                 # PO header gets added after input has been processed.
-                xgettext.addEntry({'msgid': line});
+                self.xgettext.addEntry({'msgid': line});
 
     # Optional methods.
     
     # This method gets called right after all input files have been
     # processed and before the PO entries are sorted.  That means that you
     # can add more entries here.
-    def extractFromNonFiles(self, xgettext):
+    def extractFromNonFiles(self):
         return
 
     # Describe the type of input files.
-    def fileInformation(self, xgettext):
+    def fileInformation(self):
         return "Input files are plain text files and are converted into one PO entry\nfor every non-empty line."
     
     # Return an array with the default keywords.  This is only used if the
     # method canKeywords() (see below) returns a truth value.  For the lines
     # extractor you would rather return None or an empty hash.
-    def defaultKeywords(self, xgettext):
+    def defaultKeywords(self):
         return { 
                    'gettext': ['1'], 
                    'ngettext': ['1', '2'],
@@ -32,7 +35,7 @@ class PythonXGettext:
     # You can add more language specific options here.  It is your
     # responsibility that the option names do not conflict with those of the
     # wrapper.
-    def getLanguageSpecificOptions(self, xgettext, options = None):
+    def getLanguageSpecificOptions(self, options = None):
         return [
                    [
                        # The option specification for Getopt::Long.  If you would
@@ -58,15 +61,15 @@ class PythonXGettext:
 
     # Does the program honor the option -a, --extract-all?  The default
     # implementation returns false.
-    def canExtractAll(self, xgettext):
+    def canExtractAll(self):
         return
     
     # Does the program honor the option -k, --keyword?  The default
     # implementation returns true.
-    def canExtractAll(self, xgettext):
+    def canExtractAll(self):
         return 1
     
     # Does the program honor the option --flag?  The default
     # implementation returns true.
-    def canFlags(self, xgettext):
+    def canFlags(self):
         return 1

@@ -22,7 +22,7 @@ foreach my $key (keys %PythonXGettext::) {
         *{"Locale::XGettext::Python::$key"} = sub {
             my ($self, @args) = @_;
 
-            $self->{__helper}->$key($self, @args);
+            $self->{__helper}->$key(@args);
         };
     }
 }
@@ -38,9 +38,8 @@ use base qw(Locale::XGettext);
 sub newFromArgv {
     my ($class, @args) = @_;
 
-    my $self = bless {
-        __helper => PythonXGettext->new,
-    }, $class;
+    my $self = bless {}, $class;
+    $self->{__helper} = PythonXGettext->new($self);
     
     $self->SUPER::newFromArgv(@args);
 
