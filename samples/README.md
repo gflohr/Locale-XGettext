@@ -202,3 +202,28 @@ Look at the usage information:
     ...
 
 Your description is now printed after the generic usage information.
+
+### Language-specific Options
+
+In order to add your own command-line options you have to override the method
+`getLanguageSpecificOptions`.  See this example:
+
+    def getLanguageSpecificOptions(self, options = None):
+        return [
+                   [
+                       'test-binding',
+                       'test_binding',
+                       '    --test-binding',
+                       'print additional information for testing the language binding'
+                   ]
+        ];
+
+Additional commandline options are defined as an array of arrays.  Each
+definition has four elements:
+
+The first element (`'test-binding'`) contains the option specification.
+The default are binary options that do not take arguments.  For a string
+argument you would use `'test-binding=s'`, for an integer argument
+`'test-binding=i'`.  For a complete description please see
+[http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm](http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm).
+
