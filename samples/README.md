@@ -48,11 +48,9 @@ for details about the methods you can implement.
 
 The minimal implementation in `PythonGettext.py` will look like this:
 
-{% highlight python %}
     class PythonXGettext:
         def __init__(self, xgettext):
             self.xgettext = xgettext
-{% endhighlight %}
 
 The constructor is called with the instance of the Perl in the variable
 `xgettext`.  Note that the Perl object is not initialzed at this point and
@@ -86,12 +84,10 @@ you are currently reading:
 The method `readFile` gets called for every input file and has to be 
 implemented.  Let's add it to `PythonGettext.py`:
 
-{% highlight python %}
         def readFile(self, filename):
         with open(filename) as f:
             for line in f:
                 self.xgettext.addEntry({'msgid': line})
-{% endhighlight %}
 
 Now try it again:
 
@@ -175,12 +171,10 @@ Another option is to override the method `extractFromNonFiles`.  This
 method is invoked after all input files have been but before the output
 is created:
 
-{% highlight python %}
     def extractFromNonFiles(self):
         # Read, for example from a database.
         for string in database_records:
             self.xgettext.addEntry({'msgid': line})
-{% endhighlight %}
 
 ## Calling Perl Methods
 

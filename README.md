@@ -57,3 +57,17 @@ are also able to extract strings from `.po` or `.pot` files.  So you
 can also make do completely without GNU gettext as far as string
 extraction is concerned.
 
+## Writing Extractors
+
+Writing an extractor is as easy as implementing one single method that
+takes a filename argument and extract strings from that file.  See 
+the manual page
+[Locale::XGettext(3pm)](http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm)
+for more information.  If you want to write an extractor in another language
+than Perl see
+https://github.com/gflohr/Locale-XGettext/blob/master/samples/README.md
+as a starting point.
+
+## TODO
+
+Flags (xgettext option `--flag`) are not yet supported!
