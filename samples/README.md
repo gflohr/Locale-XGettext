@@ -103,7 +103,7 @@ files.
 ## Implementation in one single file
 
 The Perl wrapper script `xgettext-lines.pl` reads the python codde from a 
-separate file, the Python module `PythonXGettext.py` so that the two 
+separate file, the Python module `PythonXGettext.py`, so that the two 
 languages are separated cleanly.  The script `xgettext-lines.py` shows 
 another approach.  It still contains Perl code at the top but the Python
 code is added to the bottom.  The overall layout of the script looks like
@@ -155,8 +155,9 @@ to the Perl library:
     ./xgettext-lines.py: no input file given
     Try './xgettext-lines.py --help' for more information!
 
-Whether you want to mix Perl and Python in one file, or keep them separate
-- as described above - is a matter of taste.
+Whether you want to mix Perl and Python in one file, or keep them 
+separate - as described above - is a matter of taste and your
+individual requirements.
 
 ## Reading Strings From Other Data Sources
 
@@ -170,10 +171,23 @@ Another option is to override the method `extractFromNonFiles`.  This
 method is invoked after all input files have been but before the output
 is created:
 
+{% highlight Python %}
     def extractFromNonFiles(self):
         # Read, for example from a database.
         for string in database_records:
             self.xgettext.addEntry({'msgid': line})
+{% endhighlight %}
+
+## Calling Perl Methods
+
+Your Python code can invoke all methods of the Perl object (that is
+the property `xgettext` of the Python object):
+
+    self.xgettext.addEntry({'msgid': line})
+
+Adding a new message ID is just one example.  See the documentation in
+[http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm](http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm).
+for the complete interface.
 
 ## Extending the CLI
 
@@ -218,7 +232,23 @@ In order to add your own command-line options you have to override the method
                    ]
         ];
 
-Additional commandline options are defined as an array of arrays.  Each
+Print the usage description to see the effect:
+
+    $ ./xgettext-lines.pl --help
+    ...
+    Language specific options:
+      -a, --extract-all           extract all strings
+      -kWORD, --keyword=WORD      look for WORD as an additional keyword
+      -k, --keyword               do not to use default keywords"));
+          --flag=WORD:ARG:FLAG    additional flag for strings inside the argument
+                                  number ARG of keyword WORD
+          --test-binding          print additional information for testing the
+                                    language binding
+    ...
+
+Your new option `--test-binding` is printed after generic options.
+
+Custom ptions are defined as an array of arrays.  Each
 definition has four elements:
 
 The first element (`'test-binding'`) contains the option specification.
@@ -226,4 +256,79 @@ The default are binary options that do not take arguments.  For a string
 argument you would use `'test-binding=s'`, for an integer argument
 `'test-binding=i'`.  For a complete description please see
 [http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm](http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm).
+
+The next element (`'test_binding'`) is the name of the option.  It is the
+identifier that you have to use in order to access the value of the option.
+See below for details.
+
+The third element (`'    --test-binding'`) contains the left part of the
+usage description.  You can use leading spaces for aligning the string with
+the rest of the usage description.
+
+The last element contains the description of the option in the usage
+description.
+
+### Accessing Commandline Options
+
+You access command line options with the method `getOption()`:
+
+    self.xgettext.getOption('test_binding')
+
+The argument to the method is the name (the second element) from the
+option definition.
+
+You can access the values of all other options as well.  The option name
+is always the bare option description with hyphens converted to
+underscores:
+
+    self.xgettext.getOption('extract_all')
+
+The above would extract the value of the option `'--extract-all'`.
+
+### More Modifications To the CLI
+
+By overriding certain methods you can enable or disable more options in
+your extractor:
+
+    def canExtractAll(self):
+        return 1
+
+If `canExtractAll()` returns a truthy value, the option `--extract-all`
+is offered to the user.  The default is `false`.
+
+    def canKeywords(self):
+        return 1
+
+If `canKeywords` returns a truthy value, options for keyword specification
+(see below) are added to the interface.  The default is `true`.
+
+    def canFlags(self):
+        return 1
+
+If `canFlags` returns a truthy value, options for flag specification
+are added to the interface.  The default is `true`.
+
+Note: `Locale::XGettext` does not yet support flags.
+
+## Keyword Specification
+
+If your extractor does not honor keyword specifications, you should override
+the method `canKeywords()` and return `false`.  If it does, you can
+define the default keywords for your language like this:
+
+    def defaultKeywords(self):
+        return { 
+                   'gettext': ['1'], 
+                   'ngettext': ['1', '2'],
+                   'pgettext': ['1c', '2'],
+                   'npgettext': ['1c', '2', '3'] 
+               }
+
+The return value of `defaultKeywords()` should be an associative array.
+The keys are the keywords themselves, the values define the position of
+the keyword in the invocation.  In the above example, the extractor
+should extract the first argument to the function `npgettext()` and
+interpret it as the message context (hence the `c` after the position),
+arguments 2 and 3 should be interpreted as the singular and plural form
+of the message.
 
