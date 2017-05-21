@@ -19,19 +19,23 @@ BEGIN {
 
 use Inline Java => $code;
 
-Locale::XGettext::Lines->newFromArgv(\@ARGV)->run->output;
+Locale::XGettext::Language::Java->newFromArgv(\@ARGV)->run->output;
 
-package Locale::XGettext::Lines;
+package Locale::XGettext::Language::Java;
 
 use strict;
 
 use base 'Locale::XGettext';
 
-sub new {
+sub newFromArgv {
     my ($class, @args) = @_;
 
-    my $self = $xgettext = $class->SUPER::new(@args);
-    $self->{__java_extractor} = JavaXGettext->new;
+    my $self = $xgettext = {};
+    bless $self, $class;
+
+    $self->{__helper} = JavaXGettext->new;
+
+    $self->SUPER::newFromArgv(@args);
 
     return $self;
 }
@@ -39,7 +43,7 @@ sub new {
 sub readFile {
     my ($self, $filename) = @_;
 
-    $self->{__java_extractor}->readFile($filename);
+    $self->{__helper}->readFile($filename);
 }
 
 # See the comments in JavaXGettext.java for more information about the 
@@ -50,15 +54,16 @@ sub extractFromNonFiles {
     return $self->SUPER::extractFromNonFiles()
         if !$self->can('extractFromNonFiles');
     
-    return $self->{__java_extractor}->extractFromNonFiles;
+    return $self->{__helper}->extractFromNonFiles;
 }
 
 # We have to translate that from Java.
 sub defaultKeywords {
 	my ($self) = @_;
 
+    $DB::single = 1;
     return $self->SUPER::defaultKeywords()
-        if !JavaXGettext->can('defaultKeywords');
+        if !$self->{__helper}->can('defaultKeywords');
     
     # Turn the array of arrays returned by the Java class method into a Perl
     # Hash.  The array returned from Java is an Inline::Java::Array which
@@ -67,7 +72,7 @@ sub defaultKeywords {
     my %keywords = map { 
         my @keyword = @{$_};
     	$keyword[0] => [splice @keyword, 1] 
-    } @{JavaXGettext->defaultKeywords};
+    } @{$self->{__helper}->defaultKeywords};
 
     return %keywords;
 }
@@ -76,45 +81,45 @@ sub getLanguageSpecificOptions {
 	my ($self) = @_;
 	
     return $self->SUPER::extractFromNonFiles() 
-        if !JavaXGettext->can('getLanguageSpecificOptions');
+        if !$self->{__helper}->can('getLanguageSpecificOptions');
 
-    return JavaXGettext->getLanguageSpecificOptions;
+    return $self->{__helper}->getLanguageSpecificOptions;
 }
 
 sub fileInformation {
     my ($self) = @_;
     
     return $self->SUPER::fileInformation() 
-        if !JavaXGettext->can('fileInformation');
+        if !$self->{__helper}->can('fileInformation');
     
-    return JavaXGettext->fileInformation;
+    return $self->{__helper}->fileInformation;
 }
 
 sub canExtractAll {
     my ($self) = @_;
     
     return $self->SUPER::canExtractAll() 
-        if !JavaXGettext->can('canExtractAll');
+        if !$self->{__helper}->can('canExtractAll');
     
-    return JavaXGettext->canExtractAll; 
+    return $self->{__helper}->canExtractAll;
 }
 
 sub canKeywords {
     my ($self) = @_;
     
     return $self->SUPER::canKeywords() 
-        if !JavaXGettext->can('canKeywords');
+        if !$self->{__helper}->can('canKeywords');
     
-    return JavaXGettext->canKeywords; 
+    return $self->{__helper}->canKeywords;
 }
 
 sub canFlags {
     my ($self) = @_;
     
     return $self->SUPER::canFlags() 
-        if !JavaXGettext->can('canFlags');
+        if !$self->{__helper}->can('canFlags');
     
-    return JavaXGettext->canFlags; 
+    return $self->{__helper}->canFlags;
 }
 
 # This will not win a prize for clean software design.  You cannot invoke

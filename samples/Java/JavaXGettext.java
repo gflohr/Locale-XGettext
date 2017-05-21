@@ -39,10 +39,12 @@ class JavaXGettext extends InlineJavaPerlCaller {
     public void extractFromNonFiles() throws InlineJavaException {
     }
 
+    /* The following methods can also be implemented as class methods.  */
+
     /*
      * Return an array of arrays with the default keywords of this language.
      */
-    public static String[][] defaultKeywords() {
+    public String[][] defaultKeywords() {
     	return new String[][] {
     			{"gettext", "1"},
     			{"ngettext", "1", "2"},
@@ -51,14 +53,9 @@ class JavaXGettext extends InlineJavaPerlCaller {
     	};
     }
     
-    /*
-     * The following optional methods must be implemented as class methods
-     * because they are called from the Perl constructor.
-     */
-    
     /* Implement this method if you want to describe the type of input
      * files.  */
-    public static String fileInformation() {
+    public String fileInformation() {
     	return "Input files are plain text files and are converted into one"
     			+ " PO entry\nfor every non-empty line.";
     }
@@ -67,7 +64,7 @@ class JavaXGettext extends InlineJavaPerlCaller {
      * responsibility that the option names do not conflict with those of the
      * wrapper.
      */
-    public static String[][] getLanguageSpecificOptions() {
+    public String[][] getLanguageSpecificOptions() {
     	return new String[][] {
             {
             	/* The option specification for Getopt::Long.  If you would
@@ -99,21 +96,21 @@ class JavaXGettext extends InlineJavaPerlCaller {
     /* Does the program honor the option -a, --extract-all?  The default
      * implementation returns false.
      */
-    public static boolean canExtractAll() {
+    public boolean canExtractAll() {
     	return false;
     }
     
     /* Does the program honor the option -k, --keyword?  The default
      * implementation returns true.
      */
-    public static boolean canKeywords() {
+    public boolean canKeywords() {
     	return false;
     }
     
     /* Does the program honor the option --flag?  The default implementation 
      * returns true.
      */
-    public static boolean canFlags() {
+    public boolean canFlags() {
     	return false;
     }
        
