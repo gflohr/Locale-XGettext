@@ -61,7 +61,6 @@ sub extractFromNonFiles {
 sub defaultKeywords {
 	my ($self) = @_;
 
-    $DB::single = 1;
     return $self->SUPER::defaultKeywords()
         if !$self->{__helper}->can('defaultKeywords');
     
@@ -132,10 +131,38 @@ package Locale::XGettext::Callbacks;
 
 use strict;
 
+use Scalar::Util qw(reftype);
+
+sub __unbless($);
+
 sub addEntry {
     my ($class, %entry) = @_;
 
     $xgettext->addEntry(\%entry);
 
     return 1;
+}
+
+sub getOption {
+    my ($class, $name) = @_;
+
+    my $value = $xgettext->getOption($name);
+    if ('keyword' eq $name) {
+        my $keywords = JavaXGettextKeywords->new;
+
+        foreach my $key (keys %$value) {
+            my $perldef = $value->{$key};
+            my $forms = $perldef->forms;
+            my $javadef = JavaXGettextKeyword->new(
+                $perldef->method,
+                $forms->[0], $forms->[1],
+                $perldef->context, $perldef->comment
+            );
+            $keywords->put($key, $javadef);
+        }
+
+        $value = $keywords;
+    }
+
+    return $value;
 }

@@ -125,4 +125,8 @@ sub context {
 	shift->{context};
 }
 
+sub comment {
+    shift->{comment};
+}
+
 1;
