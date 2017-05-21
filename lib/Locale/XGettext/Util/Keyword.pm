@@ -37,8 +37,8 @@ sub new {
     my $context_seen;
     my @forms;
     my $self = {
-    	__method => $method,
-        __forms => \@forms,
+    	method => $method,
+        forms => \@forms,
     };
     
     # If you specify just the method name on the commandline you want to
@@ -57,7 +57,7 @@ sub new {
                 die __x("Multiple context arguments for method '{method}'!\n",
                          method => $method) 
                     if $context_seen++;
-                $self->{__context} = $pos;
+                $self->{context} = $pos;
     		} else {
     		    push @forms, $pos;
                 die __x("Too many forms for '{method}'!\n",
@@ -68,7 +68,7 @@ sub new {
               die __x("Multiple automatic comments for method '{method}'!\n",
                       method => $method)
                   if $comment_seen++;
-              $self->{__comment} = $1;	    	
+              $self->{comment} = $1;
     	} else {
               die __x("Invalid argument specification '{spec}' for method '{method}'!\n",
                       method => $method, spec => $arg);
@@ -114,15 +114,15 @@ sub newFromString {
 }
 
 sub method {
-    shift->{__method};
+    shift->{method};
 }
 
 sub forms {
-	shift->{__forms};
+	shift->{forms};
 }
 
 sub context {
-	shift->{__context};
+	shift->{context};
 }
 
 1;
