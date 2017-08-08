@@ -10,7 +10,7 @@
 # any later version.
 
 # This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY; without even the implied warrant y of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Library General Public License for more details.
 
@@ -148,11 +148,11 @@ sub newFromArgv {
 }
 
 sub defaultKeywords {
-    return;
+    return [];
 }
 
 sub defaultFlags {
-	return;
+	return [];
 }
 
 sub run {
@@ -759,7 +759,7 @@ sub getBugTrackingAddress {}
 sub __setKeywords {
     my ($self, $options) = @_;
     
-    my %keywords = $self->__makeHash($self->defaultKeywords);
+    my %keywords = $self->__makeHash(@{$self->defaultKeywords});
     while (my ($method, $argspec) = each %keywords) {
         $keywords{$method} = Locale::XGettext::Util::Keyword->new($method, 
                                                                   @$argspec);
@@ -821,7 +821,7 @@ sub __parseFlag {
 sub __setFlags {
     my ($self, $options) = @_;
     
-    my @defaults = $self->defaultFlags;
+    my @defaults = @{$self->defaultFlags};
     
     foreach my $flag (@defaults, @$options) {
     	my @spec = $self->__parseFlag($flag)
