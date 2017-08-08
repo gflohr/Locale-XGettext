@@ -233,9 +233,9 @@ Your description is now printed after the generic usage information.
 ### Language-specific Options
 
 In order to add your own command-line options you have to override the method
-`getLanguageSpecificOptions`.  See this example:
+`languageSpecificOptions`.  See this example:
 
-    def getLanguageSpecificOptions(self, options = None):
+    def languageSpecificOptions(self, options = None):
         return [
                    [
                        'test-binding',
@@ -283,9 +283,9 @@ description.
 
 ### Accessing Commandline Options
 
-You access command line options with the method `getOption()`:
+You access command line options with the method `option()`:
 
-    self.xgettext.getOption('test_binding')
+    self.xgettext.option('test_binding')
 
 The argument to the method is the name (the second element) from the
 option definition.
@@ -294,7 +294,7 @@ You can access the values of all other options as well.  The option name
 is always the bare option description with hyphens converted to
 underscores:
 
-    self.xgettext.getOption('extract_all')
+    self.xgettext.option('extract_all')
 
 The above would extract the value of the option `'--extract-all'`.
 

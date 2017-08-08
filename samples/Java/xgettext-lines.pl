@@ -76,13 +76,13 @@ sub defaultKeywords {
     return %keywords;
 }
 
-sub getLanguageSpecificOptions {
+sub languageSpecificOptions {
 	my ($self) = @_;
 	
     return $self->SUPER::extractFromNonFiles() 
-        if !$self->{__helper}->can('getLanguageSpecificOptions');
+        if !$self->{__helper}->can('languageSpecificOptions');
 
-    return $self->{__helper}->getLanguageSpecificOptions;
+    return $self->{__helper}->languageSpecificOptions;
 }
 
 sub fileInformation {
@@ -143,10 +143,10 @@ sub addEntry {
     return 1;
 }
 
-sub getOption {
+sub option {
     my ($class, $name) = @_;
 
-    my $value = $xgettext->getOption($name);
+    my $value = $xgettext->option($name);
     if ('keyword' eq $name) {
         my $keywords = JavaXGettextKeywords->new;
 

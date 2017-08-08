@@ -45,14 +45,14 @@ class JavaXGettext extends InlineJavaPerlCaller {
                                              InlineJavaPerlException {
         /* Check whether --test-binding was specified.  */
         Object test = CallPerlStaticMethod("Locale::XGettext::Callbacks",
-                                            "getOption",
+                                            "option",
                                             new Object [] {
                                                 "test_binding"
                                             });
         if (test != null) {
             JavaXGettextKeywords keywords = (JavaXGettextKeywords)
                     CallPerlStaticMethod("Locale::XGettext::Callbacks",
-                            "getOption",
+                            "option",
                             new Object [] {
                                     "keyword"
                             });
@@ -112,7 +112,7 @@ class JavaXGettext extends InlineJavaPerlCaller {
      * responsibility that the option names do not conflict with those of the
      * wrapper.
      */
-    public String[][] getLanguageSpecificOptions() {
+    public String[][] languageSpecificOptions() {
     	return new String[][] {
             {
             	/* The option specification for Getopt::Long.  If you would

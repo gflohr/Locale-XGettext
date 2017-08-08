@@ -166,8 +166,8 @@ sub run {
 
     my $po = $self->{__po} = Locale::XGettext::Util::POEntries->new;
     
-    if ($self->getOption('join_existing')) {
-    	my $output_file = $self->__getOutputFilename;
+    if ($self->option('join_existing')) {
+    	my $output_file = $self->__outputFilename;
     	if ('-' eq $output_file) {
     		$self->__usageError(__"--join-existing cannot be used when output"
     		                      . " is written to stdout");
@@ -253,7 +253,7 @@ sub addFlaggedEntry {
     	return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
     }
     
-    my $comment_keywords = $self->getOption('add_comments');
+    my $comment_keywords = $self->option('add_comments');
     if (defined $comment && $comment_keywords) {
     	foreach my $keyword (@$comment_keywords) {
     		if ($comment =~ /($keyword.*)/s) {
@@ -397,7 +397,7 @@ sub options {
 	shift->{__options};
 }
 
-sub getOption {
+sub option {
 	my ($self, $key) = @_;
 
 	return if !exists $self->{__options}->{$key};
@@ -421,7 +421,7 @@ sub output {
     return if !$self->{__po}->entries && !$self->{__options}->{force_po};
 
     my $options = $self->{__options};
-    my $filename = $self->__getOutputFilename;
+    my $filename = $self->__outputFilename;
 
     open my $fh, ">$filename"
         or die __x("Error writing '{file}': {error}.\n",
@@ -439,12 +439,12 @@ sub output {
     return $self;
 }
 
-sub getLanguageSpecificOptions {}
+sub languageSpecificOptions {}
 
 sub printLanguageSpecificUsage {
     my ($self) = @_;
     
-    my $options = $self->getLanguageSpecificOptions;
+    my $options = $self->languageSpecificOptions;
     
     foreach my $optspec (@{$options || []}) {
         my ($optstring, $optvar,
@@ -482,7 +482,7 @@ sub printLanguageSpecificUsage {
 
 sub fileInformation {}
 
-sub getBugTrackingAddress {}
+sub bugTrackingAddress {}
 
 sub versionInformation {
 	my ($self) = @_;
@@ -560,7 +560,7 @@ sub __conversionError {
             conversion_error => $cd->getError);
 }
 
-sub __getOutputFilename {
+sub __outputFilename {
 	my ($self) = @_;
 	
 	my $options = $self->{__options};
@@ -717,7 +717,7 @@ sub __getOptions {
     
     my %options;
     
-    my $lang_options = $self->getLanguageSpecificOptions(\%options);
+    my $lang_options = $self->languageSpecificOptions(\%options);
     my %lang_options;
     foreach my $optspec (@$lang_options) {
     	my ($optstring, $optvar,
@@ -1070,7 +1070,7 @@ EOF
   -V, --version               output version information and exit
 EOF
 
-    my $url = $self->getBugTrackingAddress;
+    my $url = $self->bugTrackingAddress;
 
     printf "\n";
 
@@ -1231,8 +1231,6 @@ then all messages from other input files are added.
 For obvious reasons, you cannot use this option if output is written
 to standard output.
 
-=back
-
 =item B<-x FILE.po>
 
 =item B<--exclude-file=FILE.po>
@@ -1289,7 +1287,7 @@ B<Not all extractors support this option!>
 
 Not yet implemented.  The option is ignored for compatibility reasons.
 
-Individual extractor may define more language-specific options.
+Individual extractors may define more language-specific options.
 
 =back
 
@@ -1518,11 +1516,11 @@ understand it and use it.  But it's not recommended.
 
 Get all commandline options as a hash reference.
 
-=item B<getOption OPTION>
+=item B<option OPTION>
 
 Get the value for command line option B<OPTION>.
 
-=item B<getLanguageSpecificOptions>
+=item B<languageSpecificOptions>
 
 The default representation returns nothing.
 
@@ -1540,7 +1538,7 @@ string argument.
 
 =item *
 
-The name of the option.  This is what gets passed to getOption()
+The name of the option.  This is what gets passed to option()
 above.  It should generally be the long option name with hyphens
 converted to underscores.
 
