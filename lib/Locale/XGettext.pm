@@ -500,7 +500,7 @@ sub options {
 
 sub getOption {
 	my ($self, $key) = @_;
-	
+
 	return if !exists $self->{__options}->{$key};
 	
 	return $self->{__options}->{$key};

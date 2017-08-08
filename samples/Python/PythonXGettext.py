@@ -7,7 +7,7 @@ class PythonXGettext:
             for line in f:
                 # You don't have to check that the line is empty.  The
                 # PO header gets added after input has been processed.
-                self.xgettext.addEntry({'msgid': line});
+                self.xgettext.addEntry({'msgid': line})
 
     # Optional methods.
     
@@ -57,7 +57,7 @@ class PythonXGettext:
                        # The explanation of the option in the usage description.
                        'print additional information for testing the language binding'
             ]
-        ];
+        ]
 
     # Does the program honor the option -a, --extract-all?  The default
     # implementation returns false.
@@ -66,7 +66,7 @@ class PythonXGettext:
     
     # Does the program honor the option -k, --keyword?  The default
     # implementation returns true.
-    def canExtractAll(self):
+    def canKeywords(self):
         return 1
     
     # Does the program honor the option --flag?  The default
