@@ -54,8 +54,8 @@ templates and plain text files that have to be translated.
  
 By the way, all xgettext flavors based on this library `Locale::XGettext`
 are also able to extract strings from `.po` or `.pot` files.  So you
-can also make do completely without GNU gettext as far as string
-extraction is concerned.
+can also make do completely without GNU gettext and use any `Locale::XGettext`
+extractor instead of GNU gettext for the last step.
 
 ## Writing Extractors
 
@@ -70,4 +70,15 @@ as a starting point.
 
 ## TODO
 
-Flags (xgettext option `--flag`) are not yet supported!
+Flags (xgettext option `--flag`) are not yet supported.
+
+The module should ship with its own PO parser and writer.
+
+## BUGS
+
+Please report bugs on https://github.com/gflohr/Locale-XGettext/issues
+
+## COPYRIGHT
+
+Copyright (C) 2017, Guido Flohr, <guido.flohr@cantanea.com>, 
+all rights reserved.

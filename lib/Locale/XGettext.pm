@@ -35,6 +35,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
 
+# Helper method, not exported!
 sub empty($) {
     my ($what) = @_;
 
@@ -199,6 +200,23 @@ sub run {
 
 sub extractFromNonFiles { shift }
 
+sub resolveFilename {
+    my ($self, $filename) = @_;
+    
+    my $directories = $self->{__options}->{directory} || [''];
+    foreach my $directory (@$directories) {
+    	my $path = length $directory 
+    	    ? File::Spec->catfile($directory, $filename) : $filename;
+    	stat $path && return $path;
+    }
+    
+    return;
+}
+
+sub po {
+    shift->{__po}->entries;
+}
+
 sub readPO {
 	my ($self, $path) = @_;
 	
@@ -215,44 +233,6 @@ sub readPO {
 	}
 	
 	return $self;
-}
-
-sub __readExcludeFiles {
-	my ($self, $files) = @_;
-	
-	return $self if !$files;
-	
-	foreach my $file (@$files) {
-	   my $entries = Locale::PO->load_file_asarray($file)
-        or die __x("error reading '{filename}': {error}!\n",
-                   filename => $file, error => $!);
-    
-		foreach my $entry (@$entries) {
-			my $msgid = $entry->msgid;
-			next if empty $msgid;
-			
-			my $ctx = $entry->msgctxt;
-			$ctx = '' if empty $ctx;
-			
-			$self->{__exclude}->{$msgid}->{$ctx} = $entry;
-		}
-	}
-	
-	return $self;
-}
-
-sub __promoteEntry {
-	my ($self, $entry) = @_;
-	
-	if (!blessed $entry) {
-        my $po_entry = Locale::PO->new;
-        foreach my $method (keys %$entry) {
-            $po_entry->$method($entry->{$method});
-        }
-        $entry = $po_entry;
-    }
-
-	return $entry;
 }
 
 sub addFlaggedEntry {
@@ -413,51 +393,16 @@ sub recodeEntry {
     return $self;    	
 }
 
-sub __conversionError {
-    my ($self, $reference, $cd) = @_;
-    
-    die __x("{reference}: {conversion_error}\n",
-            reference => $reference,
-            conversion_error => $cd->getError);
+sub options {
+	shift->{__options};
 }
 
-sub resolveFilename {
-    my ($self, $filename) = @_;
-    
-    my $directories = $self->{__options}->{directory} || [''];
-    foreach my $directory (@$directories) {
-    	my $path = length $directory 
-    	    ? File::Spec->catfile($directory, $filename) : $filename;
-    	stat $path && return $path;
-    }
-    
-    return;
-}
+sub getOption {
+	my ($self, $key) = @_;
 
-sub po {
-    shift->{__po}->entries;
-}
-
-sub __getOutputFilename {
-	my ($self) = @_;
+	return if !exists $self->{__options}->{$key};
 	
-	my $options = $self->{__options};
-    if (exists $options->{output}) {
-        if (File::Spec->file_name_is_absolute($options->{output})
-            || '-' eq $options->{output}) {
-            return $options->{output}; 
-        } else {
-            return File::Spec->catfile($options->{output_dir},
-                                       $options->{output})
-        }
-    } elsif ('-' eq $options->{default_domain}) {
-        return '-';
-    } else {
-        return File::Spec->catfile($options->{output_dir}, 
-                                   $options->{default_domain} . '.po');
-    }
-	
-	# NOT REACHED!
+	return $self->{__options}->{$key};
 }
 
 sub output {
@@ -494,18 +439,148 @@ sub output {
     return $self;
 }
 
-sub options {
-	shift->{__options};
+sub getLanguageSpecificOptions {}
+
+sub printLanguageSpecificUsage {
+    my ($self) = @_;
+    
+    my $options = $self->getLanguageSpecificOptions;
+    
+    foreach my $optspec (@{$options || []}) {
+        my ($optstring, $optvar,
+            $usage, $description) = @$optspec;
+        
+        print "  $usage ";
+        my $pos = 3 + length $usage;
+        
+        my @description = split /[ \x09-\x0d]+/, $description;
+        my $lineno = 0;
+        while (@description) {
+            my $limit = $lineno ? 31 : 29;
+            if ($pos < $limit) {
+                print ' ' x ($limit - $pos);
+                $pos = $limit;
+            }
+            
+            while (@description) {
+                my $word = shift @description;
+                print " $word";
+                $pos += 1 + length $word;
+                if (@description && $pos > 77 - length $description[-1]) {
+                	++$lineno;
+                	print "\n";
+                	$pos = 0;
+                	last;
+                }
+            }
+        }
+        print "\n";
+    }
+    
+    return $self;
 }
 
-sub getOption {
-	my ($self, $key) = @_;
+sub fileInformation {}
 
-	return if !exists $self->{__options}->{$key};
+sub getBugTrackingAddress {}
+
+sub versionInformation {
+	my ($self) = @_;
 	
-	return $self->{__options}->{$key};
+	my $package = ref $self;
+	
+	my $version = eval { eval "$package::VERSION" };
+	$version = '' if !defined $version;
+	
+    $package =~ s/::/-/g;
+	
+	return __x('{program} ({package}) {version}
+Please see the source for copyright information!
+', program => $0, package => $package, version => $version);
 }
 
+sub canExtractAll {
+	return;
+}
+
+sub canKeywords {
+    shift;
+}
+
+sub canFlags {
+    shift;
+}
+
+sub needInputFiles {
+	shift;
+}
+
+sub __readExcludeFiles {
+	my ($self, $files) = @_;
+	
+	return $self if !$files;
+	
+	foreach my $file (@$files) {
+	   my $entries = Locale::PO->load_file_asarray($file)
+        or die __x("error reading '{filename}': {error}!\n",
+                   filename => $file, error => $!);
+    
+		foreach my $entry (@$entries) {
+			my $msgid = $entry->msgid;
+			next if empty $msgid;
+			
+			my $ctx = $entry->msgctxt;
+			$ctx = '' if empty $ctx;
+			
+			$self->{__exclude}->{$msgid}->{$ctx} = $entry;
+		}
+	}
+	
+	return $self;
+}
+
+sub __promoteEntry {
+	my ($self, $entry) = @_;
+	
+	if (!blessed $entry) {
+        my $po_entry = Locale::PO->new;
+        foreach my $method (keys %$entry) {
+            $po_entry->$method($entry->{$method});
+        }
+        $entry = $po_entry;
+    }
+
+	return $entry;
+}
+sub __conversionError {
+    my ($self, $reference, $cd) = @_;
+    
+    die __x("{reference}: {conversion_error}\n",
+            reference => $reference,
+            conversion_error => $cd->getError);
+}
+
+sub __getOutputFilename {
+	my ($self) = @_;
+	
+	my $options = $self->{__options};
+    if (exists $options->{output}) {
+        if (File::Spec->file_name_is_absolute($options->{output})
+            || '-' eq $options->{output}) {
+            return $options->{output}; 
+        } else {
+            return File::Spec->catfile($options->{output_dir},
+                                       $options->{output})
+        }
+    } elsif ('-' eq $options->{default_domain}) {
+        return '-';
+    } else {
+        return File::Spec->catfile($options->{output_dir}, 
+                                   $options->{default_domain} . '.po');
+    }
+	
+	# NOT REACHED!
+}
 sub __poHeader {
     my ($self) = @_;
 
@@ -710,52 +785,6 @@ sub __getOptions {
     
     return %options;   
 }
-
-sub getLanguageSpecificOptions {}
-
-sub printLanguageSpecificUsage {
-    my ($self) = @_;
-    
-    my $options = $self->getLanguageSpecificOptions;
-    
-    foreach my $optspec (@{$options || []}) {
-        my ($optstring, $optvar,
-            $usage, $description) = @$optspec;
-        
-        print "  $usage ";
-        my $pos = 3 + length $usage;
-        
-        my @description = split /[ \x09-\x0d]+/, $description;
-        my $lineno = 0;
-        while (@description) {
-            my $limit = $lineno ? 31 : 29;
-            if ($pos < $limit) {
-                print ' ' x ($limit - $pos);
-                $pos = $limit;
-            }
-            
-            while (@description) {
-                my $word = shift @description;
-                print " $word";
-                $pos += 1 + length $word;
-                if (@description && $pos > 77 - length $description[-1]) {
-                	++$lineno;
-                	print "\n";
-                	$pos = 0;
-                	last;
-                }
-            }
-        }
-        print "\n";
-    }
-    
-    return $self;
-}
-
-sub fileInformation {}
-
-sub getBugTrackingAddress {}
-
 sub __setKeywords {
     my ($self, $options) = @_;
     
@@ -1071,37 +1100,6 @@ sub __usageError {
                        program_name => $0);
 }
 
-sub versionInformation {
-	my ($self) = @_;
-	
-	my $package = ref $self;
-	
-	my $version = eval { eval "$package::VERSION" };
-	$version = '' if !defined $version;
-	
-    $package =~ s/::/-/g;
-	
-	return __x('{program} ({package}) {version}
-Please see the source for copyright information!
-', program => $0, package => $package, version => $version);
-}
-
-sub canExtractAll {
-	return;
-}
-
-sub canKeywords {
-    shift;
-}
-
-sub canFlags {
-    shift;
-}
-
-sub needInputFiles {
-	shift;
-}
-
 1;
 
 =head1 NAME
@@ -1122,6 +1120,10 @@ See L<https://github.com/gflohr/Locale-XGettext> for an overall picture of
 the software.
 
 =head1 USAGE
+
+This section describes the usage of extractors based on this library.
+See L</SUBCLASSING> and the sections following it for the API 
+documentation!
 
     xgettext-LANG [OPTIONS] [INPUTFILE]...
 
@@ -1213,3 +1215,431 @@ By default the input files are assumed to be in ASCII.
 B<Note!> Some extractors have a fixed input set, UTF-8 most of the times.
 
 =back
+
+=head2 OPERATION MODE
+
+=over 4
+
+=item B<-j>
+
+=item B<--join-existing>
+
+Join messages with existing files.  This is a shortcut for adding the
+output file to the list of input files.  The output file is read, and
+then all messages from other input files are added.
+
+For obvious reasons, you cannot use this option if output is written
+to standard output.
+
+=back
+
+=item B<-x FILE.po>
+
+=item B<--exclude-file=FILE.po>
+
+PO entries that are present in F<FILE.po> are not extracted.
+
+=item B<-c TAG>
+
+=item B<--add-comments=TAG>
+
+Place comment blocks starting with B<TAG> in the output
+if they precede a keyword line.
+
+=item B<-c>
+
+=item B<--add-comments>
+
+Place all comment blocks that precede a keyword line in the output.
+
+=back
+
+=head2 LANGUAGE-SPECIFIC-OPTIONS
+
+=over 4
+
+=item B<-a>
+
+=item B<--extract-all>
+
+Extract B<all> strings, not just the ones marked with keywords.
+
+B<Not all extractors support this option!>
+
+=item B<-k WORD>
+
+=item B<--keyword=WORD>
+
+Use B<WORD> as an additional keyword.
+
+B<Not all extractors support this option!>
+
+=item B<-k>
+
+=item B<--keyword>
+
+Do not use default keywords!  If you define your own keywords, you
+use usually give the option '--keyword' first without an argument to
+reset the keyword list to empty, and then you give a '--keyword'
+option for everyt keyword wanted.
+
+B<Not all extractors support this option!>
+
+=item B<--flag=WORD:ARG:FLAG>
+
+Not yet implemented.  The option is ignored for compatibility reasons.
+
+Individual extractor may define more language-specific options.
+
+=back
+
+=head2
+
+=over 4
+
+=item B<--force-po>
+
+Write PO file even if empty.  Normally, empty PO files are not written,
+and existing output files are not overwritten if they would be empty.
+
+=item B<--no-location>
+
+Do not write '#: filename:line' lines into the output PO files.
+
+=item B<-n>
+
+=item B<--add-location>
+
+Generate '#: filename:line' lines in the output PO files.  This is the
+default.
+
+=item B<-s>
+
+=item B<--sort-output>
+
+Sort output entries alphanumerically.
+
+=item B<-F>
+
+=item B<--sort-by-file>
+
+Sort output entries by source file location.
+
+=item B<--omit-header>
+
+Do not write header with meta information.  The meta information is
+normally included as the "translation" for the empty string.
+
+If you want to hava a translation for an empty string you should also
+consider using message contexts.
+
+=item B<--copyright-holder=STRING>
+
+Set the copyright holder to B<STRING> in the output PO file.
+
+=item B<--foreign-user>
+
+Omit FSF copyright in output for foreign user.
+
+=item B<--package-name=PACKAGE>
+
+Set package name in output
+
+=item B<--package-version=VERSION>
+
+Set package version in output.
+
+=item B<--msgid-bugs-address=EMAIL@ADDRESS>
+
+Set report address for msgid bugs.
+
+=item B<-m[STRING]>
+
+=item B<--msgstr-prefix[=STRING]>
+
+Use STRING or "" as prefix for msgstr values.
+
+=item B<-M[STRING]>
+
+=item B<--msgstr-suffix[=STRING]>
+
+Use STRING or "" as suffix for msgstr values.
+
+=back
+
+=head2 INFORMATIVE OUTPUT
+
+=over 4
+
+=item B<-h>
+
+=item B<--help>
+
+Display short help and exit.
+
+=item B<-V>
+
+=item B<--version>
+
+Output version information and exit.
+
+=back
+
+=head1 SUBCLASSING
+
+Writing a complete extractor script in Perl with B<Locale::XGettext>
+is as simple as:
+
+    #! /usr/bin/env perl
+
+    use Locale::Messages qw(setlocale LC_MESSAGES);
+    use Locale::TextDomain qw(YOURTEXTDOMAIN);
+
+    use Locale::XGettext::YOURSUBCLASS;
+
+    Locale::Messages::setlocale(LC_MESSAGES, "");
+    Locale::XGettext::YOURSUBCLASS->newFromArgv(\@ARGV)->run->output;
+
+Writing the extractor class is also trivial:
+
+    package Locale::XGettext::YOURSUBCLASS;
+
+    use base 'Locale::XGettext';
+
+    sub readFile {
+        my ($self, $filename) = @_;
+
+        foreach my $found (search_for_strings_in $filename) {
+            $self->addEntry({
+                msgid => $found->{string},
+                # More possible fields following, see 
+                # addEntry() below!
+            }, $found->{possible_comment});
+        }
+
+        # The return value is actually ignored.
+        return $self;
+    }
+
+All the heavy lifting happens in the method B<readFile()> that you have
+to implement yourself.  All other methods are optional.
+
+See the section L</METHODS> below for information on how to
+additionally modify the behavior your extractor.
+
+=head1 CONSTRUCTORS
+
+=over 4
+
+=item B<new $OPTIONS, @FILES>
+
+B<OPTIONS> is a hash reference containing the above commandline
+options but with every hyphen replaced by an underscore.  You
+should normally not use this constructor!
+
+=item B<newFromArgv $ARGV>
+
+B<ARGV> is a reference to a an array of commandline arguments
+that is passed verbatim to B<Getopt::Long::GetOptionsFromArray>.
+After processing all options and arguments, the constructor
+B<new()> above is then invoked with the cooked commandline
+arguments.
+
+This is the constructor that you should normally use in 
+custom extractors that you write.
+
+=back
+
+=head1 METHODS
+
+B<Locale::XGettext> is an abstract base class.  All public methods
+may be overridden by subclassed extractors.
+
+=over 4
+
+=item B<readFile FILENAME>
+
+You have to implement this method yourself.  In it, read B<FILENAME>,
+extract all relevant entries, and call B<addEntry()> for each entry
+found.
+
+The method is not invoked for filenames ending in ".po" or ".pot"!
+For those files, B<readPO()> is invoked instead.
+
+This method is the only one that you have to implement!
+
+=item B<addEntry ENTRY[, COMMENT]>
+
+You should invoke this  method for every entry found.  
+
+B<COMMENT> is an optional comment that you may have extracted along 
+with the message.  Note that B<addEntry()> checks whether this
+comment should make it into the output.  Therefore, just pass any
+comment that you have found preceding the keyword.
+
+B<ENTRY> should be a reference to a hash with these possible
+keys:
+
+=over 8
+
+=item B<msgid>
+
+The entry's message id.
+
+=item B<msgid_plural>
+
+A possible plural form.
+
+=item B<msgctxt>
+
+A possible message context.
+
+=item B<reference>
+
+A source reference in the form "FILENAME: LINENO".
+
+=item B<add_flag>
+
+Set a flag for this entry, for example "perl-brace-format" or
+"no-perl-brace-format".
+
+=item B<fuzzy>
+
+True if the entry is fuzzy.  There is no reason to use this.
+
+=item B<automatic>
+
+Do not use! Well, okay, if you know Locale::PO(3pm) you may
+understand it and use it.  But it's not recommended.
+
+=back 
+
+=item B<options>
+
+Get all commandline options as a hash reference.
+
+=item B<getOption OPTION>
+
+Get the value for command line option B<OPTION>.
+
+=item B<getLanguageSpecificOptions>
+
+The default representation returns nothing.
+
+Your own implementation can return an reference to an array of
+arrays, each of them containing one option specification
+consisting of four items:
+
+=over 8
+
+=item *
+
+The option specification for Getopt::Long(3pm), for example
+"-f|--filename=s" for an option expexting a mandatory
+string argument.
+
+=item *
+
+The name of the option.  This is what gets passed to getOption()
+above.  It should generally be the long option name with hyphens
+converted to underscores.
+
+=item *
+
+The option description for the usage information, for example
+"-f, --files=STRING" for options taking arguments or 
+something like "    --verbose" for long-only options.  This
+is printed in the left column, when you invoke your extractor
+with "--help".
+
+=item *
+
+The description of this option.  This is printed in the right
+column, when you invoke your extractor with "--help".
+
+=back
+
+=item B<run>
+
+Runs the extractor once.  The default implementation scans all
+input sources for translatable strings and collects them.
+
+=item B<output>
+
+Print the output as a PO file to the specified output location.
+
+=item B<extractFromNonFiles>
+
+This method is invoked after all input files have been processed.
+The default implementation does nothing.  You may use the method
+for extracting strings from additional sources like a database.
+
+=item B<resolveFilename FILENAME>
+
+Given an input filename B<FILENAME> the method returns the absolute
+location of the file.  The default implementation honors the
+option "-D, --directory".
+
+=item B<defaultKeywords>
+
+Returns a reference to an emtpy array.
+
+Subclasses may return a reference to an array with default keyword
+definitions for the specific language.  The default keywords 
+(actually just a subset for it) for the language C would look like 
+this (expressed in JSON):
+
+    {
+        "gettext": [1],
+        "ngettext": [1, 2],
+        "pgettext": ["1c", 2],
+        "npgettext": ["1c", 2, 3]
+    }
+
+Instead of a hasn reference you can also pass an array reference
+or a list.  The reason for that is that other languages than Perl
+may not support hashes or lists.
+
+In either case, each entry consists of a keyword and an argument
+specification.  The first position specification without a 
+modifier (only "c" is possible) is the position of the message
+id.  The second one is the position of the plural form.  The
+location specification with a trailing "c" denoteas the position
+of the message context.
+
+=item B<defaultFlags>
+
+Not yet implemented.  Do not use!
+
+=item B<recodeEntry ENTRY>
+
+Gets invoked for every PO entry but I<after> it has been
+promoted to a B<Locale::PO(3pm)> object.  The implementation
+of this method is likely to be changed in the future.
+
+Do not use!
+
+=item B<readPO FILENAME>
+
+Reads B<FILENAME> as .po or .pot file.  There is no reason why
+you should override or invoke this method.
+
+=item B<po>
+
+Returns a list of PO entries represented by hash references.
+Do not use or override this method!
+
+=back
+
+=head1 BUGS
+
+Flags are not yet supported.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
+all rights reserved.
+
+=head1 SEE ALSO
+
+Getopt::Long(3pm), xgettext(1), perl(1)

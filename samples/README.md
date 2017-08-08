@@ -17,6 +17,21 @@ Replace LANGUAGE with the language you want to test.  In the case of
 Java you have to run the command "sudo cpan install Inline::Java::Class"
 (not just "Inline::Java").
 
+Following is a list of possible candidate languages for that 
+"Inline::*" bindings exists:
+
+* C
+* C++
+* Guile
+* Java
+* Lua
+* Python
+* Ruby
+* Tcl
+
+The list is not complete, but the languages Go and JavaScript
+(via NodeJS) are still missing at the time of this writing.
+
 # Walk-through example for Python
 
 Let's look at a step-by-step instruction for writing an xgettext
@@ -40,8 +55,8 @@ Python module `PythonGettext.py`.
 
 The Perl script can be used without modification for any extractor that
 you want to write in Python.  It will turn every method it finds in
-`PythongGettext.py` into a Perl method.  See
-[Locale::XGettext(3pm)](http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/TextDomain.pm)
+`PythonGettext.py` into a Perl method.  See
+[Locale::XGettext(3pm)](http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm)
 for details about the methods you can implement.
 
 ## Minimal Implementation
@@ -71,8 +86,8 @@ source instead:
     $ perl -I../../lib xgettext-lines.pl --help
     Usage: xgettext-lines.pl [OPTION] [INPUTFILE]...
 
-You can see that the Python code was really executed by the presence of a
-directory `_Inline` which contains cached information from `Inline::Python`.
+Not much happens but a directory `_Inline` that contains cached information
+from `Inline::Python` was executed.
 You can safely delete this directory at any point in time.
 
 Now let's try our extractor with a real input file, for example the one that
@@ -102,7 +117,7 @@ files.
 
 ## Implementation in one single file
 
-The Perl wrapper script `xgettext-lines.pl` reads the python codde from a 
+The Perl wrapper script `xgettext-lines.pl` reads the python code from a 
 separate file, the Python module `PythonXGettext.py`, so that the two 
 languages are separated cleanly.  The script `xgettext-lines.py` shows 
 another approach.  It still contains Perl code at the top but the Python
@@ -168,7 +183,7 @@ URLs, and then change the method `readFile()` to read from that data
 source.
 
 Another option is to override the method `extractFromNonFiles`.  This
-method is invoked after all input files have been but before the output
+method is invoked after all input files have been read but before the output
 is created:
 
     def extractFromNonFiles(self):
@@ -195,8 +210,8 @@ the command line interface of your extractor to a certain degree.
 
 ### Describing the Expected Input
 
-If you implement the method fileInformation() you can describe the type
-of your input files.
+If you implement the method `fileInformation()` you can describe the type
+of input files you expect.
 
     def fileInformation(self):
         return "Input files are plain text files and are converted into one PO entry\nfor every non-empty line."
@@ -329,4 +344,3 @@ should extract the first argument to the function `npgettext()` and
 interpret it as the message context (hence the `c` after the position),
 arguments 2 and 3 should be interpreted as the singular and plural form
 of the message.
-
