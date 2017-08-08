@@ -1557,6 +1557,43 @@ column, when you invoke your extractor with "--help".
 
 =back
 
+=item B<printLanguageSpecificOptions>
+
+Prints all language-specific options to standard output, calls
+languageSpecificOptions() internally.  This is used for the
+output for the option "--help".
+
+=item B<fileInformation>
+
+Returns nothing by default.  You can return a string describing
+the expected input format, when invoked with "--help".
+
+=item B<bugTrackingAddress>
+
+Returns nothing by default.  You can return a string describing
+the bug tracking address, when invoked with "--help".
+
+=item B<canExtractAll>
+
+Returns false by default.  Return a truthy value if your extractor
+supports the option "--extract-all".
+
+=item B<canKeywords>
+
+Returns true by default.  Return a false value if your extractor
+does not support the option "--keyword".
+
+=item B<canFlags>
+
+Returns true by default.  Return a false value if your extractor
+does not support the option "--flag".
+
+=item B<needInputFiles>
+
+Returns true by default.  Return a false value if your extractor
+does not support input from files.  In this case you should
+implement readFromNonFiles().
+
 =item B<run>
 
 Runs the extractor once.  The default implementation scans all
