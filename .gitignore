@@ -8,3 +8,5 @@
 /blib/
 /pm_to_blib
 _Inline/
+.DS_Store
+/Makefile.old
