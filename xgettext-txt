@@ -26,7 +26,4 @@ use Locale::XGettext::Text;
 
 Locale::Messages::setlocale(LC_MESSAGES, "");
 
-my %options;
-
 Locale::XGettext::Text->newFromArgv(\@ARGV)->run->output;
-
