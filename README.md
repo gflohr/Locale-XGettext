@@ -63,11 +63,13 @@ Writing an extractor is as easy as implementing one single method that
 takes a filename argument and extract strings from that file.  See 
 the manual page
 [Locale::XGettext(3pm)](http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm)
-for more information.  If you want to write an extractor in another language
-than Perl see
+for more information.  See
 https://github.com/gflohr/Locale-XGettext/blob/master/samples/README.md
-as a starting point.
-
+as a starting point for writing an extractor in Perl or many
+other languages.  The distribution currently contains fully function
+examples written in [Java](samples/Java/README.md), 
+[Python](samples/Python/README.md), and [Ruby](samples/Ruby/README.md).
+ 
 ## TODO
 
 Flags (xgettext option `--flag`) are not yet supported.

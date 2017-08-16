@@ -1,11 +1,12 @@
-# Using Locale::XGettext From Other Programming Languages
+# Using Locale::XGettext From Various Programming Languages
 
 In this subdirectory you will find implementations of a very simple
 string extractor in a number of languages.  The extractor will split
 its input into lines and make every non-empty line into a PO entry.
 
-The examples all use the "Inline" Perl module that allows to embed
-code written in other languages directly into Perl code.
+All examples --- except for the one in Perl --- use the `Inline` Perl 
+module that allows embedding code written in other languages directly 
+into Perl code.
 
 In order to use the example scanners you usually have to do the following:
 
@@ -17,17 +18,23 @@ Replace LANGUAGE with the language you want to test.  In the case of
 Java you have to run the command "sudo cpan install Inline::Java::Class"
 (not just "Inline::Java").
 
+If your package manager already has a prebuilt package for the
+`Inline` module of your choice you should give it a try.  In general,
+installing `Inline` modules is quite challenging.
+
 Following is a list of possible candidate languages for that 
 "Inline::*" bindings exists:
 
 * C
 * C++
 * Guile
-* Java
+* [Java](Java/README.md)
 * Lua
-* Python
-* Ruby
+* [Python](Python/README.md)
+* [Ruby](Ruby/README.md)
 * Tcl
+
+Some of the language names above link to a fully function example.
 
 The list is not complete, but the languages Go and JavaScript
 (via NodeJS) are still missing at the time of this writing.
