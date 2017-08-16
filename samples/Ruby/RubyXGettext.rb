@@ -1,5 +1,17 @@
 class RubyXGettext
     def initialize(xgettext)
+        # The hash xgettext contains 'Proc' objects for every method of
+        # the 'Locale::XGettext' API.  The Perl wrapper also injects
+        # a Ruby (instance) method into this class for every method
+        # available from Perl.  For example, the method 'addEntry()'
+        # looks like this:
+        #
+        # def addEntry()
+        #     @xgettext['addEntry'].call(*args)
+        # end
+        # 
+        # As a result, this Ruby class behaves as if it was subclassed
+        # directly from the Perl class 'Inline::XGettext'.
         @xgettext = xgettext
     end
 

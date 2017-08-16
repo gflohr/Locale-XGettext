@@ -62,10 +62,6 @@ EOF
 
 }
 
-#foreach my $method (sort keys %Locale::XGettext::Ruby::) {
-#    print "Locale::XGettext::Ruby::$method\n";
-#}
-
 Locale::XGettext::Ruby->newFromArgv(\@ARGV)->run->output;
 
 package Locale::XGettext::Ruby;
