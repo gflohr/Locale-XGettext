@@ -35,7 +35,7 @@ class PythonXGettext:
     # You can add more language specific options here.  It is your
     # responsibility that the option names do not conflict with those of the
     # wrapper.
-    def languageSpecificOptions(self, options = None):
+    def languageSpecificOptions(self):
         return [
                    [
                        # The option specification for Getopt::Long.  If you would

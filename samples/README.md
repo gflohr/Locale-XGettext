@@ -235,7 +235,7 @@ Your description is now printed after the generic usage information.
 In order to add your own command-line options you have to override the method
 `languageSpecificOptions`.  See this example:
 
-    def languageSpecificOptions(self, options = None):
+    def languageSpecificOptions(self):
         return [
                    [
                        'test-binding',
