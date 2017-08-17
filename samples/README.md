@@ -25,7 +25,7 @@ installing `Inline` modules is quite challenging.
 Following is a list of possible candidate languages for that 
 "Inline::*" bindings exists:
 
-* C
+* [C](C/README.md)
 * C++
 * Guile
 * [Java](Java/README.md)

@@ -268,6 +268,19 @@ sub addFlaggedEntry {
 
 sub addEntry {
 	my ($self, $entry, $comment) = @_;
+
+    # Simplify calling from languages that do not have hashes.
+    if (!ref $entry) {
+        my @args = splice @_, 1;
+        if (@args % 2) {
+            # Odd number of arguments.  A comment was passed.
+            $comment = pop @args;
+        } else {
+            undef $comment;
+        }
+
+        $entry = {@args};
+    }
 	
 	if (defined $comment) {
         $entry = $self->__promoteEntry($entry);
@@ -441,10 +454,28 @@ sub output {
 
 sub languageSpecificOptions {}
 
+# In order to simplify the code in other languages, we allow returning
+# a flat list instead of an array of arrays.  This wrapper checks the
+# return value and converts it accordingly.
+sub __languageSpecificOptions {
+    my ($self) = @_;
+
+    my @options = $self->languageSpecificOptions;
+    return $options[0] if @options & 0x3;
+
+    # Number of items is a multiple of 4.
+    my @retval;
+    while (@options) {
+            push @retval, [splice @options, 0, 4];
+    }
+
+    return \@retval;
+}
+
 sub printLanguageSpecificUsage {
     my ($self) = @_;
   
-    my $options = $self->languageSpecificOptions;
+    my $options = $self->__languageSpecificOptions;
     
     foreach my $optspec (@{$options || []}) {
         my ($optstring, $optvar,
@@ -717,7 +748,7 @@ sub __getOptions {
     
     my %options;
     
-    my $lang_options = $self->languageSpecificOptions;
+    my $lang_options = $self->__languageSpecificOptions;
     my %lang_options;
     foreach my $optspec (@$lang_options) {
     	my ($optstring, $optvar,
@@ -787,8 +818,16 @@ sub __getOptions {
 }
 sub __setKeywords {
     my ($self, $options) = @_;
-    
-    my %keywords = $self->__makeHash(@{$self->defaultKeywords});
+   
+    my $keywords = $self->defaultKeywords;
+    my %keywords;
+
+    if ('HASH' eq reftype $keywords) {
+        %keywords = %$keywords;
+    } else {
+        %keywords = $self->__makeHash(@$keywords);
+    }
+
     while (my ($method, $argspec) = each %keywords) {
         $keywords{$method} = Locale::XGettext::Util::Keyword->new($method, 
                                                                   @$argspec);
