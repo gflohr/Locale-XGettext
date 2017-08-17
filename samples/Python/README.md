@@ -49,7 +49,7 @@ sudo make install
 ```
 
 Note that dependencies are not automatically installed! Please read
-the output of ```perlMakefile.PL``` carefully!
+the output of ```perl Makefile.PL``` carefully!
 
 #### From Git
 
