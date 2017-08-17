@@ -12,7 +12,10 @@
  * if we are using Inline::C.  If you are really interested, read
  * "perldoc perlapi" and "perldoc perlcall" for FMTYEWTK.  But the
  * sample code should contain Cut & Paste templates for everything
- * that you need.
+ * that you need.  Note that we use stack macros from "INLINE.h" 
+ * here that are a little bit more readable. see
+ * http://search.cpan.org/~tinita/Inline-C/lib/Inline/C.pod#THE_INLINE_STACK_MACROS
+ * for more details!
  *
  * All C functions are in the namespace of the extractor class and are
  * therefore automatically methods.
@@ -41,6 +44,10 @@ readFile(SV* self, const char *filename)
         reference = malloc(reflen);
         
         while ((linelen = getline(&line, &linecap, fp)) > 0) {
+                /* When calling a Perl method we have to use the regular
+                 * macros from the Perl API, not the Inline stack
+                 * macros.
+                 */
                 dSP; /* Declares a local copy of the Perl stack.  */
 
                 snprintf(reference, reflen, "%s:%u", filename, ++lineno);
@@ -49,15 +56,22 @@ readFile(SV* self, const char *filename)
                  * have to push the instance (variable "self") on the
                  * Perl stack followed by all the arguments.  
                  */
+
                 ENTER;
                 SAVETMPS;
 
                 PUSHMARK(SP);
+
                 /* Make space for five items on the stack.  That has to
                  * be 6 if you also want to pass a comment.
                  */
                 EXTEND(SP, 5);
+
+                /* The first item on the stack must be the instance
+                 * that the method is called upon.
+                 */
                 PUSHs(self);
+
                 /* The second argument to newSVpv is the length of the
                  * string.  If you pass 0 then the length is calculated
                  * using strlen().
