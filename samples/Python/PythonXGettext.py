@@ -4,10 +4,13 @@ class PythonXGettext:
 
     def readFile(self, filename):
         with open(filename) as f:
+            lineno = 0
             for line in f:
                 # You don't have to check that the line is empty.  The
                 # PO header gets added after input has been processed.
-                self.xgettext.addEntry({'msgid': line})
+                lineno = lineno + 1
+                reference = "%s:%u" % (str(filename)[2:-1], ++lineno)
+                self.xgettext.addEntry({'msgid': line, 'reference': reference})
 
     # Optional methods.
     
@@ -30,7 +33,7 @@ class PythonXGettext:
                    'ngettext': ['1', '2'],
                    'pgettext': ['1c', '2'],
                    'npgettext': ['1c', '2', '3'] 
-               }
+               }               
 
     # You can add more language specific options here.  It is your
     # responsibility that the option names do not conflict with those of the

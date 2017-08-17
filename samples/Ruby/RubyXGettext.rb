@@ -18,8 +18,11 @@ class RubyXGettext
     def readFile(filename)
         # You don't have to check that the line is empty.  The
         # PO header gets added after input has been processed.
+        lineno = 0
         File.readlines(filename).each do |line|
-            self.addEntry({'msgid': line})
+            lineno = lineno + 1
+            reference = "#{filename}:#{lineno}"
+            self.addEntry({'msgid': line, 'reference': reference})
         end 
     end
 
