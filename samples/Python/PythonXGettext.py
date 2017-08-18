@@ -17,7 +17,53 @@ class PythonXGettext:
     # This method gets called right after all input files have been
     # processed and before the PO entries are sorted.  That means that you
     # can add more entries here.
+    #
+    # In this example we don't add any strings here but rather abuse the
+    # method for showing advanced stuff like getting option values or
+    # interpreting keywords.  Invoke the extractor with the option
+    # "--test-binding" in order to see this in action.  */
     def extractFromNonFiles(self):
+        if self.xgettext.option('test_binding') is None:
+                return
+
+        print("Keywords:")
+
+        keywords = self.xgettext.option('keyword')
+        for keyword, definition in keywords.items():
+                if isinstance(keyword, bytes):
+                    keyword = keyword.decode()
+                print("method: " + keyword)
+
+                context = definition.context()
+                if isinstance(context, bytes):
+                    context = context.decode()
+                if context is not None:
+                    print("  message context: argument#" + context)
+                else:
+                    print("  message context: [none]")
+
+                forms = definition.forms()
+                sg = forms[0]
+                if isinstance(sg, bytes):
+                    sg = sg.decode()
+                print("  singular form: argument#" + sg)
+
+                if len(forms) > 1 and forms[1] is not None:
+                    pl = forms[1]
+                    if isinstance(pl, bytes):
+                        pl = pl.decode()
+                    print("  plural form: argument#" + sg)
+                else:
+                    print("  plural form: [none]")
+
+                comment = definition.comment()
+                if comment is None:
+                    comment = "[none]"
+                elif isinstance(comment, bytes):
+                    comment = comment.decode()
+                
+                print("  automatic comment: " + comment)
+                    
         return
 
     # Describe the type of input files.
