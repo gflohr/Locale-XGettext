@@ -1,3 +1,12 @@
+# Helper function.  Check whether a Perl scalar evaluates to true.
+def ptruthy(str)
+    if str == 0 || str == '' || str == '0' || str == nil
+        return false
+    else
+        return true
+    end
+end
+
 class RubyXGettext
     def initialize(xgettext)
         # The hash xgettext contains 'Proc' objects for every method of
@@ -31,7 +40,42 @@ class RubyXGettext
     # This method gets called right after all input files have been
     # processed and before the PO entries are sorted.  That means that you
     # can add more entries here.
+    #
+    # In this example we don't add any strings here but rather abuse the
+    # method for showing advanced stuff like getting option values or
+    # interpreting keywords.  Invoke the extractor with the option
+    # "--test-binding" in order to see this in action.  */
     def extractFromNonFiles()
+        if !ptruthy self.option("test_binding")
+            return self
+        end
+
+        puts "Keywords:"
+
+        keywords = self.option("keyword")
+        keywords.each do |keyword, definition|
+            puts "method: #{keyword}"
+            
+            if definition['context'] == nil
+                puts "  message context: [none]"
+            else
+                puts "  message context: argument ##{definition['context']}"
+            end
+
+            forms = definition['forms']
+
+            puts "  singular form: #{forms[0]}"
+
+            if forms.length > 1
+                puts "  plural form: #{forms[1]}"
+            else
+                puts "  plural form: [none]"
+            end
+        
+            # Try --keyword=hello:1c,2,3,'"Hello, world!"' to see an
+            # automatic comment.
+            puts "  automatic comment: #{definition['comment']}"
+        end
     end
 
     # Describe the type of input files.
