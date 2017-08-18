@@ -21,6 +21,11 @@
  * therefore automatically methods.
  */
 
+/* Helper methods.  Since they are static, they won't be visible to
+ * Perl.
+ */
+static SV* get_option(SV *self, const char *option);
+
 /*
  * The most important method.
  */
@@ -109,6 +114,10 @@ readFile(SV* self, const char *filename)
 void
 extractFromNonFiles(SV* self)
 {
+    if (!SvTRUE(get_option(self, "test_binding")))
+           return;
+
+    puts("Keyword definitions:");
 }
 
 /*
@@ -134,3 +143,37 @@ languageSpecificOptions(SV* self)
     Inline_Stack_Done;
 }
 
+/* Get the value of a certain option.  Note that the return value can be
+ * just about anything!
+ */
+static SV *
+get_option(SV *self, const char *option)
+{
+        dSP;
+        int count;
+        SV *retval;
+
+        ENTER;
+        SAVETMPS;
+        PUSHMARK(SP);
+        EXTEND(SP, 2);
+
+        PUSHs(self);
+        PUSHs(sv_2mortal(newSVpv(option, 0)));
+        PUTBACK;
+
+        count = call_method("option", G_SCALAR);
+
+        SPAGAIN;
+
+        if (count != 1)
+                croak("option() returned %d values.\n", count);
+
+        retval = newSVsv(POPs);
+
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+
+        return retval;
+}
