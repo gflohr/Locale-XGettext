@@ -67,7 +67,7 @@ for more information.  See
 https://github.com/gflohr/Locale-XGettext/blob/master/samples/README.md
 as a starting point for writing an extractor in Perl or many
 other languages.  The distribution currently contains fully function
-examples written in [Java](samples/Java/README.md), 
+examples written in [C](samples/C/README.md), [Java](samples/Java/README.md), 
 [Python](samples/Python/README.md), and [Ruby](samples/Ruby/README.md).
  
 ## TODO
