@@ -856,24 +856,20 @@ sub __getOptions {
 }
 sub __setKeywords {
     my ($self, $options) = @_;
-   
-    my $keywords = $self->defaultKeywords;
-    my %keywords;
 
-    if ('HASH' eq reftype $keywords) {
-        %keywords = %$keywords;
-    } else {
-        %keywords = $self->__makeHash(@$keywords);
+    my $keywords = $self->defaultKeywords || {};
+    if ('ARRAY' eq reftype $keywords) {
+        $keywords = {@$keywords};
     }
 
-    while (my ($method, $argspec) = each %keywords) {
-        $keywords{$method} = Locale::XGettext::Util::Keyword->new($method, 
-                                                                  @$argspec);
+    while (my ($method, $argspec) = each %$keywords) {
+        $keywords->{$method} = Locale::XGettext::Util::Keyword->new($method, 
+                                                                    @$argspec);
     }
     
     foreach my $option (@$options) {
         if ('' eq $option) {
-            undef %keywords;
+            $keywords = {};
             next;
         }
 
@@ -883,30 +879,10 @@ sub __setKeywords {
         } else {
         	$keyword = Locale::XGettext::Util::Keyword->newFromString($option);
         }
-        $keywords{$keyword->method} = $keyword;
+        $keywords->{$keyword->method} = $keyword;
     }
 
-    return \%keywords;
-}
-
-sub __makeHash {
-    my ($self, @values) = @_;
-
-    if (1 == @values) {
-        if ('HASH' eq reftype $values[0]) {
-            return %{$values[0]};
-        } else {
-            return @{$values[0]};
-        }
-    }
-
-    return @values;
-}
-
-sub __makeArray {
-    my ($self, @values) = @_;
-    
-    return $self->__makeHash(@values);
+    return $keywords;
 }
 
 sub __parseFlag {
