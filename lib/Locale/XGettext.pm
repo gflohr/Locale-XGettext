@@ -235,6 +235,21 @@ sub readPO {
 	return $self;
 }
 
+sub __setAutomaticComment {
+    my ($self, $entry) = @_;
+
+    my $keyword = delete $entry->{keyword};
+    return if !defined $keyword;
+
+    my $keywords = $self->option('keyword');
+    if (exists $keywords->{$keyword}) {
+        my $comment = $keywords->{$keyword}->comment;
+        $entry->{automatic} = $comment if !empty $comment;
+    }
+
+    return $self;
+}
+
 sub addFlaggedEntry {
 	my ($self, $entry, $comment) = @_;
     
@@ -242,6 +257,21 @@ sub addFlaggedEntry {
         require Carp;
         Carp::croak(__"Attempt to add entries before run");
     }
+
+    # Simplify calling from languages that do not have hashes.
+    if (!ref $entry) {
+        my @args = splice @_, 1;
+        if (@args % 2) {
+            # Odd number of arguments.  A comment was passed.
+            $comment = pop @args;
+        } else {
+            undef $comment;
+        }
+
+        $entry = {@args};
+    }
+
+    $self->__setAutomaticComment($entry);
 
     $entry = $self->__promoteEntry($entry);
     
@@ -282,6 +312,8 @@ sub addEntry {
         $entry = {@args};
     }
 	
+    $self->__setAutomaticComment($entry);
+
 	if (defined $comment) {
         $entry = $self->__promoteEntry($entry);
         
@@ -750,6 +782,7 @@ sub __getOptions {
     
     my $lang_options = $self->__languageSpecificOptions;
     my %lang_options;
+    
     foreach my $optspec (@$lang_options) {
     	my ($optstring, $optvar,
     	    $usage, $description) = @$optspec;

@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use Locale::XGettext::Text;
 
@@ -83,3 +83,9 @@ $xgettext->_feedEntry($entry, $multi_comment2);
 @po = $xgettext->run->po;
 is scalar @po, 2;
 is $po[1]->automatic, $multi_comment2, '"xgettext:" without valid flags';
+
+$xgettext = Locale::XGettext::Test->new({keyword => ['greet:1,"Hello!"']});
+$xgettext->_feedEntry({msgid => 'world', keyword => 'greet'});
+@po = $xgettext->run->po;
+is scalar @po, 2;
+is $po[1]->automatic, "Hello!", "automatic keyword comment not used";
