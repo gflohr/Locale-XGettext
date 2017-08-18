@@ -24,15 +24,15 @@
 /* Helper methods.  Since they are static, they won't be visible to
  * Perl.
  */
-static SV* get_option(SV *self, const char *option);
+static SV *get_option(SV *self, const char *option);
 
 /*
  * The most important method.
  */
 void 
-readFile(SV* self, const char *filename)
+readFile(SV *self, const char *filename)
 {
-        FILE* fp = fopen(filename, "r");
+        FILE *fp = fopen(filename, "r");
         char *line = NULL;
         size_t linecap = 0;
         ssize_t linelen;
@@ -112,12 +112,72 @@ readFile(SV* self, const char *filename)
  * "--test-binding" in order to see this in action.  
  */
 void
-extractFromNonFiles(SV* self)
+extractFromNonFiles(SV *self)
 {
-    if (!SvTRUE(get_option(self, "test_binding")))
-           return;
+        SV* keywords;
+        HV* keyword_hash;
+        int num_keywords;
 
-    puts("Keyword definitions:");
+        if (!SvTRUE(get_option(self, "test_binding")))
+               return;
+
+        puts("Keyword definitions:");
+
+        keywords = get_option(self, "keyword");
+        if (!SvROK(keywords))
+                croak("keywords is not a reference");
+
+        keyword_hash = (HV*)SvRV(keywords);
+        num_keywords = hv_iterinit(keyword_hash);
+        printf("number of keywords: %d\n", num_keywords);
+}
+
+/* Describe the type of input files.  */
+char *
+fileInformation(SV *self)
+{
+    /* For simple types like this, the return value is automatically
+     * converted.  No need to use the Perl API.
+     */
+    return "\
+Input files are plain text files and are converted into one PO entry\n\
+for every non-empty line.";
+}
+
+/* Return an array with the default keywords.  This is only used if the
+ * method canKeywords() (see below) returns a truth value.  For the lines
+ * extractor you would rather return None or an empty array.
+ */
+SV *
+defaultKeywords(SV *self)
+{
+        /* We have to return a hash of arrays which is not trivial.
+         * Alternatively, you can define the method inside xgettext-lines.pl
+         * in Perl.
+         */
+        HV *keywords = newHV();
+        AV *gettext = newAV();
+        AV *ngettext = newAV();
+        AV *pgettext = newAV();
+        AV *npgettext = newAV();
+
+        av_push(gettext, newSViv(1));
+        hv_store(keywords, "gettext", 7, newRV_noinc((SV *) gettext), 0);
+
+        av_push(ngettext, newSViv(1));
+        av_push(ngettext, newSViv(2));
+        hv_store(keywords, "ngettext", 8, newRV_noinc((SV *) ngettext), 0);
+
+        av_push(pgettext, newSVpv("1c", 0));
+        av_push(pgettext, newSViv(2));
+        hv_store(keywords, "pgettext", 8, newRV_noinc((SV *) pgettext), 0);
+
+        av_push(npgettext, newSVpv("1c", 0));
+        av_push(npgettext, newSViv(2));
+        hv_store(keywords, "npgettext", 9, newRV_noinc((SV *) npgettext), 0);
+
+        return newRV_noinc((SV *) keywords);
+
 }
 
 /*
@@ -131,7 +191,7 @@ extractFromNonFiles(SV* self)
  * to return them on the Perl stack.
  */
 void 
-languageSpecificOptions(SV* self) 
+languageSpecificOptions(SV *self) 
 {
     Inline_Stack_Vars;
 
@@ -141,6 +201,33 @@ languageSpecificOptions(SV* self)
     Inline_Stack_Push(sv_2mortal(newSVpv("    --test-binding", 0)));
     Inline_Stack_Push(sv_2mortal(newSVpv("print additional information for testing the language binding", 0)));
     Inline_Stack_Done;
+}
+
+/* Does the program honor the option -a, --extract-all?  The default
+ * implementation returns false.
+ */
+int
+canExtractAll(SV *self)
+{
+        return 0;
+}
+
+/* Does the program honor the option -k, --keyword?  The default
+ * implementation returns true.
+ */
+int 
+canKeywords(SV *self)
+{
+        return 1;
+}
+
+/* Does the program honor the option --flag?  The default
+ * implementation returns true.
+ */
+int
+canFlags(SV *self)
+{
+        return 1;
 }
 
 /* Get the value of a certain option.  Note that the return value can be
