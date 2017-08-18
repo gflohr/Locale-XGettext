@@ -284,14 +284,19 @@ sub addFlaggedEntry {
     }
     
     my $comment_keywords = $self->option('add_comments');
+    my @automatic;
     if (defined $comment && $comment_keywords) {
     	foreach my $keyword (@$comment_keywords) {
     		if ($comment =~ /($keyword.*)/s) {
-    			$entry->automatic($1);
+                push @automatic, $1;
     			last;
     		}
     	}
     }
+    my $old_automatic = $entry->automatic;
+    push @automatic, $entry->dequote($old_automatic) if !empty $old_automatic;
+
+    $entry->automatic(join "\n", @automatic) if @automatic;
     
     $self->{__po}->add($entry);
 }

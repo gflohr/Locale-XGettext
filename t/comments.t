@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 11;
+use Test::More tests => 13;
 
 use Locale::XGettext::Text;
 
@@ -89,3 +89,13 @@ $xgettext->_feedEntry({msgid => 'world', keyword => 'greet'});
 @po = $xgettext->run->po;
 is scalar @po, 2;
 is $po[1]->automatic, "Hello!", "automatic keyword comment not used";
+
+$xgettext = Locale::XGettext::Test->new({keyword => ['greet:1,"world!"'],
+                                         add_comments => ['TRANSLATORS:']});
+my $comment3 = "TRANSLATORS: Hello,";
+$DB::single = 1;
+$xgettext->_feedEntry({msgid => 'world', keyword => 'greet'}, $comment3);
+@po = $xgettext->run->po;
+is scalar @po, 2;
+is $po[1]->automatic, "TRANSLATORS: Hello,\nworld!", 
+   "automatic comments not joined";
