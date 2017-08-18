@@ -41,6 +41,7 @@ class PythonXGettext:
     def languageSpecificOptions(self):
         return [
                    [
+                       [
                        # The option specification for Getopt::Long.  If you would
                        # expect a string argument, you would have to specify
                        # "test-binding=s" here, see 
@@ -59,8 +60,9 @@ class PythonXGettext:
                        
                        # The explanation of the option in the usage description.
                        'print additional information for testing the language binding'
-            ]
-        ]
+                       ]
+                   ]
+               ]
 
     # Does the program honor the option -a, --extract-all?  The default
     # implementation returns false.

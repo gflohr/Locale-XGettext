@@ -73,7 +73,7 @@ sub defaultKeywords {
     	$keyword[0] => [splice @keyword, 1] 
     } @{$self->{__helper}->defaultKeywords};
 
-    return %keywords;
+    return \%keywords;
 }
 
 sub languageSpecificOptions {
