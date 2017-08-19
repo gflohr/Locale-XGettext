@@ -62,12 +62,12 @@ class RubyXGettext
                 puts "  message context: argument ##{definition['context']}"
             end
 
-            forms = definition['forms']
+            singular = definition['singular']
 
-            puts "  singular form: #{forms[0]}"
+            puts "  singular form: #{definition['singular']}"
 
-            if forms.length > 1
-                puts "  plural form: #{forms[1]}"
+            if definition['plural'] != 0
+                puts "  plural form: #{definition['plural']}"
             else
                 puts "  plural form: [none]"
             end

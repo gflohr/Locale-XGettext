@@ -35,19 +35,15 @@ sub new {
     my $comment;
     my $comment_seen;
     my $context_seen;
-    my @forms;
     my $self = {
     	method => $method,
-        forms => \@forms,
+        singular => 0,
+        plural => 0,
     };
-    
-    # If you specify just the method name on the commandline you want to
-    # extract the first argument.
-    if (!@args || (1 == @args && (!defined $args[0] || '' eq $args[0]))) {
-    	@args = '1';
-    }
-    
+        
     foreach my $arg (@args) {
+        $arg = 1 if !defined $arg;
+        $arg = 1 if !length $arg;
         if ($arg =~ /^([1-9][0-9]*)(c?)$/) {
             my ($pos, $is_ctx) = ($1, $2);
             die __x("Multiple meanings for argument #{num} for method '{method}'!\n",
@@ -58,12 +54,14 @@ sub new {
                          method => $method) 
                     if $context_seen++;
                 $self->{context} = $pos;
-    		} else {
-    		    push @forms, $pos;
+            } elsif ($self->{plural}) {
                 die __x("Too many forms for '{method}'!\n",
-                        method => $method) 
-                    if @forms > 2;
-    		}
+                        method => $method); 
+    		} elsif ($self->{singular}) {
+    		    $self->{plural} = $pos;
+    		} else {
+                $self->{singular} = $pos;
+            }
         } elsif ($arg =~ /^"(.*)"$/) {
               die __x("Multiple automatic comments for method '{method}'!\n",
                       method => $method)
@@ -74,6 +72,8 @@ sub new {
                       method => $method, spec => $arg);
     	}
     }
+
+    $self->{singular} ||= 1;
 
     bless $self, $class;
 }
@@ -117,8 +117,12 @@ sub method {
     shift->{method};
 }
 
-sub forms {
-	shift->{forms};
+sub singular {
+	shift->{singular};
+}
+
+sub plural {
+    shift->{plural}
 }
 
 sub context {

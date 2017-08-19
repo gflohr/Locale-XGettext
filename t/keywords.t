@@ -44,12 +44,12 @@ ok $okay, $@;
 # Invalid method name.
 %keywords = ('foo bar' => ['']);
 $okay = eval { use_keywords \%keywords };
-ok !$okay;
+ok !$okay, 'invalid method name';
 
 # Too many elements.
 %keywords = (foo => ['1', '2', '3', '4', '5']);
 $okay = eval { use_keywords \%keywords };
-ok !$okay;
+ok !$okay, 'too many forms';
 
 # Extract first argument.
 %keywords = (foo => []);

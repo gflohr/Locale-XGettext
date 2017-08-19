@@ -42,17 +42,17 @@ class PythonXGettext:
                 else:
                     print("  message context: [none]")
 
-                forms = definition.forms()
-                sg = forms[0]
+                sg = definition.singular() 
                 if isinstance(sg, bytes):
                     sg = sg.decode()
                 print("  singular form: argument#" + sg)
 
-                if len(forms) > 1 and forms[1] is not None:
-                    pl = forms[1]
-                    if isinstance(pl, bytes):
-                        pl = pl.decode()
-                    print("  plural form: argument#" + sg)
+                pl = definition.plural()
+                if isinstance(pl, bytes):
+                    pl = pl.decode()
+
+                if pl != 0:
+                    print("  plural form: argument#" + pl)
                 else:
                     print("  plural form: [none]")
 

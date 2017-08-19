@@ -73,10 +73,9 @@ class JavaXGettext extends InlineJavaPerlCaller {
                     System.out.println("  message context: [none]");
                 }
 
-                int[] forms = keyword.forms();
-                System.out.println("  singular form: " + forms[0]);
-                if (forms.length > 1) {
-                    System.out.println("  plural form: " + forms[1]);
+                System.out.println("  singular form: " + keyword.singular());
+                if (keyword.plural() > 0) {
+                    System.out.println("  plural form: " + keyword.plural());
                 } else {
                     System.out.println("  plural form: [none]");
                 }
@@ -169,7 +168,8 @@ class JavaXGettext extends InlineJavaPerlCaller {
  */
 class JavaXGettextKeyword {
     String method;
-    int[] forms;
+    int singular;
+    int plural; 
     Integer context;
     String comment;
 
@@ -194,13 +194,8 @@ class JavaXGettextKeyword {
         this.method = method;
         if (singular < 1)
             throw new InlineJavaException("Singular must always be defined");
-        if (plural > 0) {
-            this.forms = new int[2];
-            this.forms[1] = plural;
-        } else {
-            this.forms = new int[1];
-        }
-        this.forms[0] = singular;
+        this.singular = singular;
+        this.plural = plural;
         if (context > 0)
             this.context = context;
         if (comment != null)
@@ -217,14 +212,21 @@ class JavaXGettextKeyword {
     }
 
     /**
-     * Return the indices of the singular and plural form.  The array has
-     * either one or two elements, depending on whether a plural form is
-     * defined.
+     * Return the singular form.  This is guaranteed to be greater than zero!!
      *
-     * @return      indices of singular and plural forms
+     * @return      index of the singular
      */
-    public int[] forms() {
-        return this.forms;
+    public Integer singular() {
+        return this.singular;
+    }
+
+    /**
+     * Return the plural form or 0 if there is no such form.
+     *
+     * @return      index of the plural
+     */
+    public Integer plural() {
+        return this.plural;
     }
 
     /**
