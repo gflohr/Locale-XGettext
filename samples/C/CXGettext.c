@@ -21,10 +21,40 @@
  * therefore automatically methods.
  */
 
-/* Helper methods.  Since they are static, they won't be visible to
- * Perl.
+/* Some helper functions and definitions.  Note that static functions are
+ * not visible to Perl.
  */
-static SV *get_option(SV *self, const char *option);
+struct keyword {
+        /* The name of the method.  */
+        const char *method;
+
+        /* Position of singular form.  */
+        unsigned int singular;
+
+        /* Position of plural form or 0.  */
+        unsigned int plural;
+
+        /* Position of message context argument or 0.  */
+        unsigned int *context;
+
+        /* Automatic comment for that keyword or NULL.  */
+        const char *comment;
+};
+
+/* Get all keyword definitions (default keywords and those specified
+ * on the commandline).  The list is NULL-terminated and should be 
+ * freed with free_keywords().
+ */
+ static struct keyword **keywords(SV *self);
+ 
+/* Free all resources associated with the set of keywords.  */
+static void free_keywords(struct keyword **keywords);
+
+/* Free all resources associated with one keyword.  */
+static void free_keyword(struct keyword *keyword);
+
+/* Get value of a certain option.  */
+static SV *option(SV *self, const char *option);
 
 /*
  * The most important method.
@@ -114,22 +144,20 @@ readFile(SV *self, const char *filename)
 void
 extractFromNonFiles(SV *self)
 {
-        SV* keywords;
-        HV* keyword_hash;
-        int num_keywords;
+        struct keyword *keywords;
+        struct keyword *keyword;
 
-        if (!SvTRUE(get_option(self, "test_binding")))
+        if (!SvTRUE(option(self, "test_binding")))
                return;
 
         puts("Keyword definitions:");
 
-        keywords = get_option(self, "keyword");
-        if (!SvROK(keywords))
-                croak("keywords is not a reference");
+        keyword = keywords;
+        while (keyword) {
+                ++keyword;
+        }
 
-        keyword_hash = (HV*)SvRV(keywords);
-        num_keywords = hv_iterinit(keyword_hash);
-        printf("number of keywords: %d\n", num_keywords);
+        free_keywords(keyword);
 }
 
 /* Describe the type of input files.  */
@@ -196,10 +224,14 @@ languageSpecificOptions(SV *self)
     Inline_Stack_Vars;
 
     Inline_Stack_Reset;
+
     Inline_Stack_Push(sv_2mortal(newSVpv("test-binding", 0)));
     Inline_Stack_Push(sv_2mortal(newSVpv("test_binding", 0)));
     Inline_Stack_Push(sv_2mortal(newSVpv("    --test-binding", 0)));
     Inline_Stack_Push(sv_2mortal(newSVpv("print additional information for testing the language binding", 0)));
+
+    /* Add more groups of 4 items for more options.  */
+
     Inline_Stack_Done;
 }
 
@@ -230,11 +262,43 @@ canFlags(SV *self)
         return 1;
 }
 
+static struct keyword **
+keywords(SV *self)
+{
+        SV *records;
+        HV *keyword_hash;
+        HE *keyword_entry;
+        int num_keywords, i;
+        SV *sv_key;
+        SV *sv_val;
+        struct keyword **retval;
+
+        records = option(self, "keyword");
+        if (!SvROK(records))
+                croak("keywords is not a reference");
+
+        keyword_hash = (HV*)SvRV(records);
+        num_keywords = hv_iterinit(keyword_hash);
+
+        retval = calloc(sizeof(struct keyword *), 1 + num_keywords);
+        if (!retval)
+                croak("virtual memory exhausted");
+                
+        for (i = 0; i < num_keywords; ++i) {
+                retval[0] = (struct keyword *) NULL;
+        //        keyword_entry = hv_iternext(keyword_hash);
+        //        sv_key = hv_iterkeysv(keyword_entry);
+        //        sv_val = hv_iterval(keyword_hash, keyword_entry);
+        }
+        
+        return retval;
+}
+
 /* Get the value of a certain option.  Note that the return value can be
  * just about anything!
  */
 static SV *
-get_option(SV *self, const char *option)
+option(SV *self, const char *option)
 {
         dSP;
         int count;
@@ -263,4 +327,34 @@ get_option(SV *self, const char *option)
         LEAVE;
 
         return retval;
+}
+
+
+static void
+free_keywords(struct keyword **keywords)
+{
+        struct keyword *current = keywords;
+
+        while (current) {
+                free_keyword(current);
+                ++current;
+        }
+
+        if (keywords)
+                free(keywords);
+}
+
+static void
+free_keyword(struct keyword *self)
+{
+        if (!self)
+                return;
+        
+        if (self->method)
+                free(self->method);
+        
+        if (self->comment)
+                free(self->comment);
+        
+        free(self);
 }
