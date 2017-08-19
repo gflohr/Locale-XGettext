@@ -173,14 +173,21 @@ extractFromNonFiles(SV *self)
                         printf("  context: argument #%u\n", keyword->context);
                 else
                         puts("  context: [none]");
+
                 if (keyword->singular)
                         printf("  singular: argument #%u\n", keyword->singular);
                 else
                         puts("  singular: [none]");
-                if (keyword->singular)
+
+                if (keyword->plural)
                         printf("  plural: argument #%u\n", keyword->plural);
                 else
                         puts("  plural: [none]");
+
+                if (keyword->comment)
+                        printf("  automatic comment %s\n", keyword->comment);
+                else
+                        puts("  automatic comment: [none]");
 
                 ++crs;
         }
@@ -340,19 +347,11 @@ keywords(SV *self)
                         croak("entry for keyword is not a hash reference");
 
                 hv = (HV*) SvRV(sv_val);
-                printf ("got an hv\n");
 
-                //sv_val = MUTABLE_HV(SvRV(hv_iterval(keyword_hash, entry)));
-                //sv_val = (HV *) hv_iterval(keyword_hash, entry);
-                
                 keyword->singular = fetch_hash_uvalue(hv, "singular");
                 keyword->plural = fetch_hash_uvalue(hv, "plural");
                 keyword->context = fetch_hash_uvalue(hv, "context");
-                keyword->comment = strdup("hello");
-                
-        //        keyword_entry = hv_iternext(keyword_hash);
-        //        sv_key = hv_iterkeysv(keyword_entry);
-        //        sv_val = hv_iterval(keyword_hash, keyword_entry);
+                keyword->comment = fetch_hash_svalue(hv, "comment");
         }
         retval[num_keywords] = (struct keyword *) NULL;
 
@@ -429,9 +428,25 @@ fetch_hash_uvalue(HV *hv, const char *key)
 {
         SV **value = hv_fetch(hv, key, strlen(key), 0);
 
-        printf("hv_fetch(%s): %p\n", key, value);
         if (!value)
                 return 0;
         
         return SvUV(*value);
+}
+
+
+static char *
+fetch_hash_svalue(HV *hv, const char *key)
+{
+        SV **value = hv_fetch(hv, key, strlen(key), 0);
+        char *retval;
+
+        if (!value)
+                return 0;
+        
+        retval = strdup(SvPV_nolen(*value));
+        if (!retval)
+                croak("virtual memory exhausted");
+        
+        return retval;
 }
