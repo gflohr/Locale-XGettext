@@ -56,6 +56,16 @@ static void free_keyword(struct keyword *keyword);
 /* Get value of a certain option.  */
 static SV *option(SV *self, const char *option);
 
+/* Retreive an unsigned integer from a hash (reference) or 0.
+ */
+static unsigned int fetch_hash_uvalue(HV *hash, const char *key);
+
+/* Retreive a string from a hash (reference).  The return value
+ * is either NULL or the string that has to be free()d, when
+ * no longer used.
+ */
+static char *fetch_hash_svalue(HV *hash, const char *key);
+
 /*
  * The most important method.
  */
@@ -125,7 +135,7 @@ readFile(SV *self, const char *filename)
                 /* Done calling the Perl method.  */
         }
 
-        free(reference);
+        free((void *) reference);
 }
 
 /* All of the following methods are optional.  You do not have to
@@ -158,6 +168,20 @@ extractFromNonFiles(SV *self)
         while (*crs) {
                 keyword = *crs;
                 printf("method: %s\n", keyword->method);
+
+                if (keyword->context)
+                        printf("  context: argument #%u\n", keyword->context);
+                else
+                        puts("  context: [none]");
+                if (keyword->singular)
+                        printf("  singular: argument #%u\n", keyword->singular);
+                else
+                        puts("  singular: [none]");
+                if (keyword->singular)
+                        printf("  plural: argument #%u\n", keyword->plural);
+                else
+                        puts("  plural: [none]");
+
                 ++crs;
         }
 
@@ -271,12 +295,14 @@ keywords(SV *self)
 {
         SV *records;
         HV *keyword_hash;
-        HE *keyword_entry;
+        HE *entry;
         int num_keywords, i;
         SV *sv_key;
         SV *sv_val;
         struct keyword **retval;
         struct keyword *keyword;
+        SV **keyword_entry;
+        HV *hv;
 
         setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -297,16 +323,31 @@ keywords(SV *self)
                 if (!keyword)
                         croak("virtual memory exhausted");
 
-                keyword_entry = hv_iternext(keyword_hash);
-                sv_key = hv_iterkeysv(keyword_entry);
+                entry = hv_iternext(keyword_hash);
+                sv_key = hv_iterkeysv(entry);
 
                 keyword->method = strdup(SvPV(sv_key, PL_na));
                 if (!keyword->method)
                         croak("virtual memory exhausted");
-                        
-                keyword->singular = 2;
-                keyword->plural = 3;
-                keyword->context = 1;
+                
+                /* The values are objects of type Locale::XGettext::Util::Keyword.
+                 * These objects have getter methods but for simplicity we
+                 * access the members directly.  First we retrieve the value and
+                 * convert it into a new hash.
+                 */
+                sv_val = hv_iterval(keyword_hash, entry);
+                if (!SvROK(sv_val) || SvTYPE(SvRV(sv_val)) != SVt_PVHV)
+                        croak("entry for keyword is not a hash reference");
+
+                hv = (HV*) SvRV(sv_val);
+                printf ("got an hv\n");
+
+                //sv_val = MUTABLE_HV(SvRV(hv_iterval(keyword_hash, entry)));
+                //sv_val = (HV *) hv_iterval(keyword_hash, entry);
+                
+                keyword->singular = fetch_hash_uvalue(hv, "singular");
+                keyword->plural = fetch_hash_uvalue(hv, "plural");
+                keyword->context = fetch_hash_uvalue(hv, "context");
                 keyword->comment = strdup("hello");
                 
         //        keyword_entry = hv_iternext(keyword_hash);
@@ -365,7 +406,7 @@ free_keywords(struct keyword **keywords)
         }
 
         if (keywords)
-                free(keywords);
+                free((void *) keywords);
 }
 
 static void
@@ -375,10 +416,22 @@ free_keyword(struct keyword *self)
                 return;
         
         if (self->method)
-                free(self->method);
+                free((void *) self->method);
 
         if (self->comment)
-                free(self->comment);
+                free((void *) self->comment);
         
-        free(self);
+        free((void *) self);
+}
+
+static unsigned int
+fetch_hash_uvalue(HV *hv, const char *key)
+{
+        SV **value = hv_fetch(hv, key, strlen(key), 0);
+
+        printf("hv_fetch(%s): %p\n", key, value);
+        if (!value)
+                return 0;
+        
+        return SvUV(*value);
 }
