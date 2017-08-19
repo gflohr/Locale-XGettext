@@ -35,7 +35,7 @@ struct keyword {
         unsigned int plural;
 
         /* Position of message context argument or 0.  */
-        unsigned int *context;
+        unsigned int context;
 
         /* Automatic comment for that keyword or NULL.  */
         const char *comment;
@@ -144,7 +144,8 @@ readFile(SV *self, const char *filename)
 void
 extractFromNonFiles(SV *self)
 {
-        struct keyword *keywords;
+        struct keyword **records;
+        struct keyword **crs;
         struct keyword *keyword;
 
         if (!SvTRUE(option(self, "test_binding")))
@@ -152,12 +153,15 @@ extractFromNonFiles(SV *self)
 
         puts("Keyword definitions:");
 
-        keyword = keywords;
-        while (keyword) {
-                ++keyword;
+        records = crs = keywords(self);
+
+        while (*crs) {
+                keyword = *crs;
+                printf("method: %s\n", keyword->method);
+                ++crs;
         }
 
-        free_keywords(keyword);
+        free_keywords(records);
 }
 
 /* Describe the type of input files.  */
@@ -272,6 +276,9 @@ keywords(SV *self)
         SV *sv_key;
         SV *sv_val;
         struct keyword **retval;
+        struct keyword *keyword;
+
+        setvbuf(stdout, NULL, _IONBF, 0);
 
         records = option(self, "keyword");
         if (!SvROK(records))
@@ -280,17 +287,34 @@ keywords(SV *self)
         keyword_hash = (HV*)SvRV(records);
         num_keywords = hv_iterinit(keyword_hash);
 
+        size_t size = sizeof(struct keyword *);
         retval = calloc(sizeof(struct keyword *), 1 + num_keywords);
         if (!retval)
                 croak("virtual memory exhausted");
                 
         for (i = 0; i < num_keywords; ++i) {
-                retval[0] = (struct keyword *) NULL;
+                keyword = retval[i] = malloc(sizeof *keyword);
+                if (!keyword)
+                        croak("virtual memory exhausted");
+
+                keyword_entry = hv_iternext(keyword_hash);
+                sv_key = hv_iterkeysv(keyword_entry);
+
+                keyword->method = strdup(SvPV(sv_key, PL_na));
+                if (!keyword->method)
+                        croak("virtual memory exhausted");
+                        
+                keyword->singular = 2;
+                keyword->plural = 3;
+                keyword->context = 1;
+                keyword->comment = strdup("hello");
+                
         //        keyword_entry = hv_iternext(keyword_hash);
         //        sv_key = hv_iterkeysv(keyword_entry);
         //        sv_val = hv_iterval(keyword_hash, keyword_entry);
         }
-        
+        retval[num_keywords] = (struct keyword *) NULL;
+
         return retval;
 }
 
@@ -333,10 +357,10 @@ option(SV *self, const char *option)
 static void
 free_keywords(struct keyword **keywords)
 {
-        struct keyword *current = keywords;
+        struct keyword **current = keywords;
 
-        while (current) {
-                free_keyword(current);
+        while (*current) {
+                free_keyword(*current);
                 ++current;
         }
 
@@ -352,7 +376,7 @@ free_keyword(struct keyword *self)
         
         if (self->method)
                 free(self->method);
-        
+
         if (self->comment)
                 free(self->comment);
         
