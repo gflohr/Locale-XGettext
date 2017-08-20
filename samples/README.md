@@ -4,7 +4,7 @@ In this subdirectory you will find implementations of a very simple
 string extractor in a number of languages.  The extractor will split
 its input into lines and make every non-empty line into a PO entry.
 
-All examples --- except for the one in Perl --- use the `Inline` Perl 
+All examples --- except for the [Perl example](perl/README.md) --- use the `Inline` Perl 
 module that allows embedding code written in other languages directly 
 into Perl code.
 
@@ -210,7 +210,7 @@ in particular the following:
 </dl>
 
 See
-[http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm#METHODS]
+[http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm#METHODS](http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm#METHODS)
 or try the command `perldoc Locale::XGettext` for more information.
 
 ## Reading Strings From Other Data Sources
