@@ -106,10 +106,13 @@ you are currently reading:
 The method `readFile` gets called for every input file and has to be 
 implemented.  Let's add it to `PythonGettext.py`:
 
-        def readFile(self, filename):
+    def readFile(self, filename):
         with open(filename) as f:
+            lineno = 0
             for line in f:
-                self.xgettext.addEntry({'msgid': line})
+                lineno = lineno + 1
+                reference = "%s:%u" % (str(filename)[2:-1], ++lineno)
+                self.xgettext.addEntry({'msgid': line, 'reference': reference})
 
 Now try it again:
 
@@ -123,6 +126,10 @@ sufficient and you can now focus on writing a real parser for your source
 files.
 
 ## Implementation in one single file
+
+Note that this is only implemented in the Python example.  if you want to
+do the same for another language, please refer to the Python source
+code!
 
 The Perl wrapper script `xgettext-lines.pl` reads the python code from a 
 separate file, the Python module `PythonXGettext.py`, so that the two 
@@ -151,8 +158,6 @@ this:
         def readFile(self, filename):
             with open(filename) as f:
                 for line in f:
-                    # You don't have to check that the line is empty.  The
-                    # PO header gets added after input has been processed.
                     self.xgettext.addEntry({'msgid': line});
 
 The line `use Inline Python => 'DATA'` has the effect that Perl, resp.
@@ -180,6 +185,33 @@ to the Perl library:
 Whether you want to mix Perl and Python in one file, or keep them 
 separate - as described above - is a matter of taste and your
 individual requirements.
+
+## `addEntry()` Revisited
+
+In the example, the PO entries only contain the message id and
+the source reference.  You can set a lot more properties though,
+in particular the following:
+
+<dl>
+  <dt>msgid_plural</dt>
+  <dd>A possible plural form for the entry.</dd>
+
+  <dt>keyword</dt>
+  <dd>
+    The name of the keyword used, such as "gettext" or "ngettext".
+    Users can specify automatic comments for certain keywords
+    with the option "--keyword".  You have to tell B<Locale::XGettext>
+    which keyword triggered the entry.
+  </dd>
+
+  <dt>flags</dt>
+  <dd>A comma-separated list of flags to add to the entry,
+      for example "perl-brace-format, no-wrap".</dd>
+</dl>
+
+See
+[http://search.cpan.org/~guido/Locale-XGettext/lib/Locale/XGettext.pm#METHODS]
+or try the command `perldoc Locale::XGettext` for more information.
 
 ## Reading Strings From Other Data Sources
 
