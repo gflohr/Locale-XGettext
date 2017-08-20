@@ -23,7 +23,7 @@ package Locale::XGettext;
 
 use strict;
 
-our $VERSION = '0.1';
+our $VERSION = '0.01';
 
 use Locale::TextDomain qw(Locale-XGettext);
 use File::Spec;
@@ -36,7 +36,7 @@ use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
 
 # Helper method, not exported!
-sub empty($) {
+sub __empty($) {
     my ($what) = @_;
 
     return if defined $what && length $what;
@@ -66,13 +66,13 @@ sub new {
     	                package => __PACKAGE__));
     }
     
-    $options->{default_domain} = 'messages' if empty $options->{default_domain};
-    $options->{from_code} = 'ASCII' if empty $options->{default_domain};
-    $options->{output_dir} = '.' if empty $options->{output_dir};
+    $options->{default_domain} = 'messages' if __empty $options->{default_domain};
+    $options->{from_code} = 'ASCII' if __empty $options->{default_domain};
+    $options->{output_dir} = '.' if __empty $options->{output_dir};
 
     if (exists $options->{add_location}) {
         my $option = $options->{add_location};
-        if (empty $option) {
+        if (__empty $option) {
             $option = 'full';
         }
         die __"The argument to '--add-location' must be 'full', 'file', or 'never'.\n"
@@ -91,7 +91,7 @@ sub new {
         }
     }
     
-    $options->{from_code} = 'ASCII' if empty $options->{from_code};
+    $options->{from_code} = 'ASCII' if __empty $options->{from_code};
 
     my $from_code = $options->{from_code};
     my $cd = Locale::Recode->new(from => $from_code,
@@ -226,7 +226,7 @@ sub readPO {
 	
 	foreach my $entry (@$entries) {
 		if ('""' eq $entry->msgid
-		    && empty $entry->dequote($entry->msgctxt)) {
+		    && __empty $entry->dequote($entry->msgctxt)) {
 			next;
 		}
 		$self->addEntry($entry);
@@ -235,7 +235,7 @@ sub readPO {
 	return $self;
 }
 
-sub addFlaggedEntry {
+sub _addFlaggedEntry {
 	my ($self, $entry, $comment) = @_;
     
     if (!$self->{__run}) {
@@ -259,9 +259,9 @@ sub addFlaggedEntry {
     $entry = $self->__promoteEntry($entry);
     
     my ($msgid) = $entry->msgid;
-    if (!empty $msgid) {
+    if (!__empty $msgid) {
     	my $ctx = $entry->msgctxt;
-    	$ctx = '' if empty $ctx;
+    	$ctx = '' if __empty $ctx;
     	
     	return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
     }
@@ -277,7 +277,7 @@ sub addFlaggedEntry {
     	}
     }
     my $old_automatic = $entry->automatic;
-    push @automatic, $entry->dequote($old_automatic) if !empty $old_automatic;
+    push @automatic, $entry->dequote($old_automatic) if !__empty $old_automatic;
 
     $entry->automatic(join "\n", @automatic) if @automatic;
     
@@ -337,7 +337,7 @@ sub addEntry {
         $comment = $cleaned;
 	}
 	
-	$self->addFlaggedEntry($entry, $comment);
+	$self->_addFlaggedEntry($entry, $comment);
 }
 
 sub recodeEntry {
@@ -381,21 +381,21 @@ sub recodeEntry {
     } else {
         # Convert.
         my $msgid = Locale::PO->dequote($entry->msgid);
-        if (!empty $msgid) {
+        if (!__empty $msgid) {
             $cd->recode($msgid) 
                 or $self->__conversionError($entry->reference, $cd);
             $entry->msgid($msgid);
         }
         
         my $msgid_plural = Locale::PO->dequote($entry->msgid_plural);
-        if (!empty $msgid_plural) {
+        if (!__empty $msgid_plural) {
             $cd->recode($msgid_plural) 
                 or $self->__conversionError($entry->reference, $cd);
             $entry->msgid($msgid_plural);
         }
         
         my $msgstr = Locale::PO->dequote($entry->msgstr);
-        if (!empty $msgstr) {
+        if (!__empty $msgstr) {
             $cd->recode($msgstr) 
                 or $self->__conversionError($entry->reference, $cd);
             $entry->msgid($msgstr);
@@ -576,10 +576,10 @@ sub __readExcludeFiles {
     
 		foreach my $entry (@$entries) {
 			my $msgid = $entry->msgid;
-			next if empty $msgid;
+			next if __empty $msgid;
 			
 			my $ctx = $entry->msgctxt;
-			$ctx = '' if empty $ctx;
+			$ctx = '' if __empty $ctx;
 			
 			$self->{__exclude}->{$msgid}->{$ctx} = $entry;
 		}
@@ -597,7 +597,7 @@ sub __promoteEntry {
             my $keywords = $self->option('keyword');
             if (exists $keywords->{$keyword}) {
                 my $comment = $keywords->{$keyword}->comment;
-                $entry->{automatic} = $comment if !empty $comment;
+                $entry->{automatic} = $comment if !__empty $comment;
             }
         }
 
@@ -1642,6 +1642,11 @@ output for the option "--help".
 Returns nothing by default.  You can return a string describing
 the expected input format, when invoked with "--help".
 
+=item B<versionInformation>
+
+Returns nothing by default.  You can return a string that is
+printed, when invoked with "--version".
+
 =item B<bugTrackingAddress>
 
 Returns nothing by default.  You can return a string describing
@@ -1737,6 +1742,11 @@ you should override or invoke this method.
 
 Returns a list of PO entries represented by hash references.
 Do not use or override this method!
+
+=item B<printLanguageSpecificUsage>
+
+Prints the help for language-specific options.  Override it, 
+if you are not happy with the formatting.
 
 =back
 

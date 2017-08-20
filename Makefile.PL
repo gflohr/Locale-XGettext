@@ -28,10 +28,10 @@ push @extra, 'META_MERGE' => {
             #    web => 'https://github.com/gflohr/qgoda',
             #},
             repository => 'git://github.com/gflohr/locale-xgettext.git',
-            bugtracker => 'https://rt.perl.org/rt3/',
+            bugtracker => 'https://github.com/gflohr/Locale-XGettext/issues',
             homepage   => 'http://www.guido-flohr.net/en/projects#locale-xgettext',
         },
-        release_status => 'stable'
+        release_status => 'beta'
     } unless $ExtUtils::MakeMaker::VERSION < 6.46;
 
 WriteMakefile (
