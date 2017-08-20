@@ -62,7 +62,8 @@ sub readFile {
 sub versionInformation {
     return __x('{program} (Locale-XGettext) {version}
 Copyright (C) {years} Cantanea EOOD (http://www.cantanea.com/).
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+License LGPLv3+: GNU Lesser General Public Licence version 3 
+or later <http://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 Written by Guido Flohr (http://www.guido-flohr.net/).
@@ -72,7 +73,7 @@ Written by Guido Flohr (http://www.guido-flohr.net/).
 sub fileInformation {
 	return __(<<EOF);
 Input files are interpreted as plain text files with each paragraph being
-a separately translatable unit.  
+a separately translatable unit.
 EOF
 }
 
