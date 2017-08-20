@@ -85,3 +85,33 @@ sub canKeywords {
 }
 
 1;
+
+
+=head1 NAME
+
+Locale::XGettext::Text - Create PO files from text files
+
+=head1 USAGE
+
+    use Locale::XGettext::Text;
+
+    Locale::XGettext::Text->newFromArgv(\@ARGV)->run->po;
+
+=head1 DESCRIPTION
+
+See L<xgettext-txt> for more information!
+
+=head1 AUTHOR
+
+Written by Guido Flohr (http://www.guido-flohr.net/).
+
+=head1 COPYRIGHT
+
+Copyright (C) 2016 Guido Flohr (http://www.guido-flohr.net/).
+License LGPLv1.1+: L<GNU General Public License version 2.1 or later|http://gnu.org/licenses/lgpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+=head1 SEE ALSO
+
+L<xgettext-txt>, L<Locale::XGettext>, L<perl>, B<xgettext(1)>

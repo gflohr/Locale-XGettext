@@ -43,7 +43,7 @@ WriteMakefile (
         'Locale::TextDomain' => '1.20',
         'Locale::PO' => '0.27',
     },
-    EXE_FILES => [],
+    EXE_FILES => [ 'xgettext-txt.pl' ],
     PL_FILES => {},
     (MM->can ('signature_target') ? (SIGN => 1) : ()),
     LICENSE => 'lgpl',
