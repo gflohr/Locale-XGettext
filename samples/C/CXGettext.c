@@ -1,7 +1,22 @@
 /*
- * "perl.h" that in turn includes "stdio.h" was automatically included by
- * Inline::C.
+ * This file is in the public domain.
+ * 
+ * Extractor example in C.
+ * 
+ * It should show you all you need to write a typical string extractor in C.
+ *
+ * It is not a tutorial for writing portable C code.  It may not even 
+ * compile on your platform but then you will know how to fix it.
+ *
+ * It is also not a tutorial for accessing the Perl API.  I know
+ * way to little about the Perl API for writing such a tutorial.  In
+ * particular, the code could leak memory.
+ *
+ * Last but not least, this is not a good example for writing C
+ * code at all.
  */
+
+ /* "perl.h" was automatically included by Inline::C.  */
 #include <stdio.h>
 #include <sys/types.h>
 #include <limits.h>
@@ -17,13 +32,54 @@
  * http://search.cpan.org/~tinita/Inline-C/lib/Inline/C.pod#THE_INLINE_STACK_MACROS
  * for more details!
  *
- * All C functions are in the namespace of the extractor class and are
- * therefore automatically methods.
+ * All non-static C functions are in the namespace of the extractor class 
+ * and are therefore automatically methods.
  */
 
-/* Some helper functions and definitions.  Note that static functions are
+/* 
+ * Some helper functions and definitions.  Note that static functions are
  * not visible to Perl.
  */
+
+/* One entry for a PO file.  */
+struct po_entry {
+        const char *msgid;
+        const char *msgid_plural;
+
+        /* These two items will be merged into a reference of the
+         * form "FILENAME:LINENO"
+         */
+        const char *filename;
+        size_t lineno;
+
+        /* If you set this to non-NULL, Locale::XGettext will add
+         * automatic comments for you, if they had been specified
+         * on the command-line for that particular keyword. 
+         */
+        const char *keyword;
+
+        /* Set this to something like "c-format" or "no-c-format"
+         * as appropriate.  You can comma-separate multiple flags.
+         */
+        const char *flags;
+         
+        /* This is a so-called automatic comment.  Automatic
+         * commands are prefixed with "#." in the PO files.
+         * The only reason why you want to add them is actually
+         * that it had been specified on the commandline with
+         * "--add-comment."  But in that case it is actually
+         * easier to just specify the keyword and then Locale::XGettext
+         * will do that automaticaslly for you, when it is 
+         * needed.
+         */
+        const char *comment;
+
+        /* Add more members here, when you need them.  But in that case
+         * you have to add the required code to addEntry() as well!
+         */
+};
+
+/* The equivalent of Locale::XGettext::Util::Keyword in C.  */
 struct keyword {
         /* The name of the method.  */
         const char *method;
@@ -41,27 +97,45 @@ struct keyword {
         const char *comment;
 };
 
-/* Get all keyword definitions (default keywords and those specified
- * on the commandline).  The list is NULL-terminated and should be 
- * freed with free_keywords().
+/* Add ENTRY to the extractor SELF.  COMMENT should point to any
+ * source code comment preceding the message but without the
+ * comment delimiter of your language.  The string is then parsed
+ * by Locale::XGettext, especially for translator comments specified
+ * on the commandline with "--add-comment".
+ *
+ * The method is just a thin wrapper against addEntry() of the 
+ * underlying Perl object.
  */
- static struct keyword **keywords(SV *self);
- 
+static void addEntry(SV *self, struct po_entry *entry, const char *comment);
+
+/* Initialize a "struct entry".  The argument is not(!) the pointer
+ * but the structure.  Why would you need a pointer in the first
+ * place?
+ */
+#define init_po_entry(entry) memset(&entry, 0, sizeof(struct po_entry))
+
+/* Get all valid keyword definitions.  That is the merge of 
+ * default keywords and those specified on the commandline.
+ * Pass the return value to free_keywords() in order to free
+ * all resources again.
+ */
+static struct keyword **keywords(SV *self);
+
+/* Get the value of a certain option.  */
+static SV *option(SV *self, const char *option);
+
 /* Free all resources associated with the set of keywords.  */
 static void free_keywords(struct keyword **keywords);
 
 /* Free all resources associated with one keyword.  */
 static void free_keyword(struct keyword *keyword);
 
-/* Get value of a certain option.  */
-static SV *option(SV *self, const char *option);
-
 /* Retreive an unsigned integer from a hash (reference) or 0.
  */
 static unsigned int fetch_hash_uvalue(HV *hash, const char *key);
 
 /* Retreive a string from a hash (reference).  The return value
- * is either NULL or the string that has to be free()d, when
+ * is either NULL or the string that should be free()d, when
  * no longer used.
  */
 static char *fetch_hash_svalue(HV *hash, const char *key);
@@ -74,11 +148,10 @@ readFile(SV *self, const char *filename)
 {
         FILE *fp = fopen(filename, "r");
         char *line = NULL;
+        size_t lineno = 0;
         size_t linecap = 0;
         ssize_t linelen;
-        unsigned lineno = 0;
-        size_t reflen = strlen(filename) + 3 + (size_t) floor(log10(UINT_MAX));
-        char *reference;
+        struct po_entry entry;
 
         if (!fp) {
 
@@ -86,56 +159,25 @@ readFile(SV *self, const char *filename)
                      filename, strerror(errno));
         }
 
-        reference = malloc(reflen);
-        
         while ((linelen = getline(&line, &linecap, fp)) > 0) {
-                /* When calling a Perl method we have to use the regular
-                 * macros from the Perl API, not the Inline stack
-                 * macros.
+                /* Clear the PO entry.  */
+                init_po_entry(entry);
+
+                entry.msgid = line;
+                entry.filename = filename;
+                entry.lineno = ++lineno;
+
+                /* For a real language you should also set the keyword
+                 * for this entry.
                  */
-                dSP; /* Declares a local copy of the Perl stack.  */
+                entry.keyword = "greet";
+                entry.flags = "no-perl-format, c-format";
 
-                snprintf(reference, reflen, "%s:%u", filename, ++lineno);
-
-                /* We have to call the method "addEntry().  For that we
-                 * have to push the instance (variable "self") on the
-                 * Perl stack followed by all the arguments.  
+                /* In our case we don't have a comment and pass NULL
+                 * as the third argument.  
                  */
-
-                ENTER;
-                SAVETMPS;
-
-                PUSHMARK(SP);
-
-                /* Make space for five items on the stack.  That has to
-                 * be 6 if you also want to pass a comment.
-                 */
-                EXTEND(SP, 5);
-
-                /* The first item on the stack must be the instance
-                 * that the method is called upon.
-                 */
-                PUSHs(self);
-
-                /* The second argument to newSVpv is the length of the
-                 * string.  If you pass 0 then the length is calculated
-                 * using strlen().
-                 */
-                PUSHs(sv_2mortal(newSVpv("msgid", 5)));
-                PUSHs(sv_2mortal(newSVpv(line, 0)));
-                PUSHs(sv_2mortal(newSVpv("reference", 9)));
-                PUSHs(sv_2mortal(newSVpv(reference, 0)));
-                /* PUSHs(sv_2mortal(newSVpv(comment, 0))); */
-                PUTBACK;
-
-                call_method("addEntry", G_DISCARD);
-
-                FREETMPS;
-                LEAVE;
-                /* Done calling the Perl method.  */
+                addEntry(self, &entry, NULL);
         }
-
-        free((void *) reference);
 }
 
 /* All of the following methods are optional.  You do not have to
@@ -295,6 +337,102 @@ int
 canFlags(SV *self)
 {
         return 1;
+}
+
+static void
+addEntry(SV *self, struct po_entry *entry, const char *comment)
+{
+        /* When calling a Perl method we have to use the regular
+         * macros from the Perl API, not the Inline stack
+         * macros.
+         */
+        dSP; /* Declares a local copy of the Perl stack.  */
+        size_t reflen;
+        char *reference = NULL;
+        size_t num_items;
+                 
+        /* We have to call the method "addEntry().  For that we
+         * have to push the instance (variable "self") on the
+         * Perl stack followed by all the arguments.  
+         *
+         * The method has to alternative calling conventions.
+         * We pick the simpler one, where we pass key-value
+         * pairs, followed by one optional comment.
+         */
+
+        /* Boilerplate Perl API code.  */
+        ENTER;
+        SAVETMPS;
+                 
+        PUSHMARK(SP);
+                 
+        /* Make space for all items on the stack.  */
+        num_items = 3;  /* The instance plus 2 for the msgid.  */
+        if (entry->msgid_plural) num_items += 2;
+        if (entry->filename) num_items += 2;
+        if (entry->keyword) num_items += 2;
+        if (entry->flags) num_items += 2;
+        if (entry->comment) num_items += 2;
+        if (comment) num_items += 1;
+
+        EXTEND(SP, num_items);
+                 
+        /* The first item on the stack must be the instance
+         * that the method is called upon.
+         */
+        PUSHs(self);
+                 
+        /* The second argument to newSVpv is the length of the
+         * string.  If you pass 0 then the length is calculated
+         * using strlen().
+         */
+        PUSHs(sv_2mortal(newSVpv("msgid", 5)));
+        PUSHs(sv_2mortal(newSVpv(entry->msgid, 0)));
+
+        if (entry->msgid_plural) {
+                PUSHs(sv_2mortal(newSVpv("msgid_plural", 5)));
+                PUSHs(sv_2mortal(newSVpv(entry->msgid_plural, 0)));        
+        }
+
+        if (entry->filename) {
+                reflen = strlen(entry->filename) + 3 + (size_t) floor(log10(UINT_MAX));
+                reference = malloc(reflen);
+                if (!reference) croak("virtual memory exhausted");
+                snprintf(reference, "%s:%u", entry->filename, entry->lineno);
+                PUSHs(sv_2mortal(newSVpv("reference", 9)));
+                PUSHs(sv_2mortal(newSVpv(reference, 0)));
+        }
+
+        if (entry->keyword) {
+                PUSHs(sv_2mortal(newSVpv("keyword", 7)));
+                PUSHs(sv_2mortal(newSVpv(entry->keyword, 0)));        
+        }
+
+        if (entry->flags) {
+                PUSHs(sv_2mortal(newSVpv("flags", 5)));
+                PUSHs(sv_2mortal(newSVpv(entry->flags, 0)));        
+        }
+
+        if (entry->comment) {
+                PUSHs(sv_2mortal(newSVpv("comment", 7)));
+                PUSHs(sv_2mortal(newSVpv(entry->comment, 0)));
+        }
+
+        if (comment) {
+                PUSHs(sv_2mortal(newSVpv(comment, 0)));
+        }
+        
+        /* More Perl stuff.  */
+        PUTBACK;
+                 
+        call_method("addEntry", G_DISCARD);
+        
+        /* Closing bracket for Perl calling.  */
+        FREETMPS;
+        LEAVE;
+        /* Done calling the Perl method.  */
+ 
+        if (reference) free(reference);        
 }
 
 static struct keyword **
