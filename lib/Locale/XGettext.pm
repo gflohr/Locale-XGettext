@@ -235,21 +235,6 @@ sub readPO {
 	return $self;
 }
 
-sub __setAutomaticComment {
-    my ($self, $entry) = @_;
-
-    my $keyword = delete $entry->{keyword};
-    return if !defined $keyword;
-
-    my $keywords = $self->option('keyword');
-    if (exists $keywords->{$keyword}) {
-        my $comment = $keywords->{$keyword}->comment;
-        $entry->{automatic} = $comment if !empty $comment;
-    }
-
-    return $self;
-}
-
 sub addFlaggedEntry {
 	my ($self, $entry, $comment) = @_;
     
@@ -270,8 +255,6 @@ sub addFlaggedEntry {
 
         $entry = {@args};
     }
-
-    $self->__setAutomaticComment($entry);
 
     $entry = $self->__promoteEntry($entry);
     
@@ -316,8 +299,6 @@ sub addEntry {
 
         $entry = {@args};
     }
-	
-    $self->__setAutomaticComment($entry);
 
 	if (defined $comment) {
         $entry = $self->__promoteEntry($entry);
@@ -611,15 +592,34 @@ sub __promoteEntry {
 	my ($self, $entry) = @_;
 	
 	if (!blessed $entry) {
+        my $keyword = delete $entry->{keyword};
+        if (defined $keyword) {
+            my $keywords = $self->option('keyword');
+            if (exists $keywords->{$keyword}) {
+                my $comment = $keywords->{$keyword}->comment;
+                $entry->{automatic} = $comment if !empty $comment;
+            }
+        }
+
         my $po_entry = Locale::PO->new;
+        my $flags = delete $entry->{flags};
+        if (defined $flags) {
+            my @flags = split /[ \t\r\n]*,[ \t\r\n]*/, $flags;
+            foreach my $flag (@flags) {
+                $po_entry->add_flag($flag);
+            }
+        }
+
         foreach my $method (keys %$entry) {
             $po_entry->$method($entry->{$method});
         }
+
         $entry = $po_entry;
     }
 
 	return $entry;
 }
+
 sub __conversionError {
     my ($self, $reference, $cd) = @_;
     
@@ -1549,21 +1549,42 @@ A possible message context.
 
 A source reference in the form "FILENAME: LINENO".
 
-=item B<add_flag>
+=item B<flags>
 
 Set a flag for this entry, for example "perl-brace-format" or
-"no-perl-brace-format".
+"no-perl-brace-format".  You can comma-separate multiple
+flags.
+
+=item B<keyword>
+
+The keyword that triggered the entry.  If you set this
+property and the keyword definition contained an automatic
+comment, the comment will be added.  You can try this out
+like this:
+
+    xgettext-my.pl --keyword=greet:1,'"Hello, world!"'
+
+If you set B<keyword> to "greet", the comment "Hello, world"
+will be added.  Note that the "double quotes" are part of the
+command-line argument!
 
 =item B<fuzzy>
 
-True if the entry is fuzzy.  There is no reason to use this.
+True if the entry is fuzzy.  There is no reason to use this
+in string extractors because they typically product .pot
+files without translations.
 
 =item B<automatic>
 
-Do not use! Well, okay, if you know Locale::PO(3pm) you may
-understand it and use it.  But it's not recommended.
+Sets an automatic comment, not recommended.  Rather set
+the keyword (see above) and let B<Locale::XGettext> set the
+comment as appropriate.
 
 =back 
+
+Instead of a hash you can currently also pass a 
+B<Locale::PO> object.  This may no longer be supported in
+the future.  Do not use!
 
 =item B<options>
 
