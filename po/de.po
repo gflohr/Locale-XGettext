@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Locale-XGettext 0.1\n"
 "Report-Msgid-Bugs-To: Guido Flohr <guido.flohr@cantanea.com>\n"
 "POT-Creation-Date: 2017-08-20 22:39+0200\n"
-"PO-Revision-Date: 2017-08-20 22:56+0200\n"
+"PO-Revision-Date: 2017-08-20 23:51+0200\n"
 "Last-Translator: Guido Flohr <guido.flohr@cantanea.com>\n"
 "Language-Team: Guido Flohr <guido.flohr@cantanea.com>\n"
 "Language: de\n"
@@ -33,9 +33,8 @@ msgid ""
 "There is NO WARRANTY, to the extent permitted by law.\n"
 "Written by Guido Flohr (http://www.guido-flohr.net/).\n"
 msgstr ""
-"Copyright © %s Free Software Foundation, Inc.\n"
-"Lizenz GPLv3: GNU GPL Version 3 oder neuer <http://gnu.org/licenses/gpl."
-"html>\n"
+"Copyright © {years} Cantanea EOOD (http://www.cantanea.com/).\n"
+"Lizenz GPLv3: GNU GPL Version 3 oder neuer <http://gnu.org/licenses/gpl.html>\n"
 "\n"
 "Dies ist freie Software; es steht Ihnen frei, sie zu verändern und\n"
 "weiterzugeben.\n"
@@ -50,7 +49,7 @@ msgstr ""
 #: ../lib/Locale/XGettext/Util/Keyword.pm:30
 #, perl-brace-format
 msgid "Invalid method name '{method}'!\n"
-msgstr ""
+msgstr "Unzulässiger Methodenname »{method}«!\n"
 
 #: ../lib/Locale/XGettext/Util/Keyword.pm:49
 #, perl-brace-format
@@ -60,36 +59,36 @@ msgstr "Mehrere Bedeutungen für Argument #{num} für »{method}«!\n"
 #: ../lib/Locale/XGettext/Util/Keyword.pm:53
 #, perl-brace-format
 msgid "Multiple context arguments for method '{method}'!\n"
-msgstr ""
+msgstr "Mehrere Kontextargument für Methode  »{method}«!\n"
 
 #: ../lib/Locale/XGettext/Util/Keyword.pm:58
 #, perl-brace-format
 msgid "Too many forms for '{method}'!\n"
-msgstr ""
+msgstr "Zu viele Formen für Methode  »{method}«!\n"
 
 #: ../lib/Locale/XGettext/Util/Keyword.pm:66
 #, perl-brace-format
 msgid "Multiple automatic comments for method '{method}'!\n"
-msgstr ""
+msgstr "Mehrere automatische Kommentare für Methode  »{method}«!\n"
 
 #: ../lib/Locale/XGettext/Util/Keyword.pm:71
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "Invalid argument specification '{spec}' for method '{method}'!\n"
-msgstr "mehrdeutige Argumentspezifikation für das Schlüsselwort »%.*s«"
+msgstr "Unzulässige Argumentspezifikation »{spec}« für die Methode »{method}«!\n"
 
 #: ../lib/Locale/XGettext/Util/Keyword.pm:88
 #, perl-brace-format
 msgid "Invalid method name in keyword specification '{spec}'!\n"
-msgstr ""
+msgstr "Unzulässiger Methodenname in Schlüsselwort-Spezifikation  »{spec}«!\n"
 
 #: ../lib/Locale/XGettext/Util/POEntries.pm:105
 msgid "conflicting plural forms"
-msgstr ""
+msgstr "in Konflikt stehende Pluralformen"
 
 #: ../lib/Locale/XGettext/Util/POEntries.pm:151
 #: ../lib/Locale/XGettext/Util/POEntries.pm:155
 msgid "conflicting flags"
-msgstr ""
+msgstr "in Konflikt stehende Flags"
 
 #: ../lib/Locale/XGettext/Util/POEntries.pm:170
 #, perl-brace-format
@@ -97,12 +96,14 @@ msgid ""
 "{new_ref}: conflicts with ...\n"
 "{old_ref}: {msg}\n"
 msgstr ""
+"{new_ref}: steht in Konflikt mit ...\n"
+"{old_ref}: {msg}\n"
 
 #: ../lib/Locale/XGettext.pm:62
 #, perl-brace-format
 msgid ""
 "{package} is an abstract base class and must not be instantiated directly"
-msgstr ""
+msgstr "»{package}« ist eine abstrakte Basisklasse kann nicht direkt instantiiert werden"
 
 #: ../lib/Locale/XGettext.pm:76
 msgid "The argument to '--add-location' must be 'full', 'file', or 'never'.\n"
@@ -113,13 +114,11 @@ msgid "Option 'add_comments' must be an array reference.\n"
 msgstr ""
 
 #: ../lib/Locale/XGettext.pm:98
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "warning: '{from_code}' is not a valid encoding name.  Using ASCII as "
 "fallback."
-msgstr ""
-"»%s« ist kein gültiger Name für eine Zeichenkodierung. ASCII wird "
-"ersatzweise verwendet.\n"
+msgstr " »{from_code}« ist kein gültiger Name für eine Zeichenkodierung. ASCII wird ersatzweise verwendet."
 
 #: ../lib/Locale/XGettext.pm:109
 msgid "no input file given"
@@ -127,7 +126,7 @@ msgstr "Eingabedatei fehlt"
 
 #: ../lib/Locale/XGettext.pm:162
 msgid "Attempt to re-run extractor"
-msgstr ""
+msgstr "Versuch, den Extrahierer erneut zu starten"
 
 #: ../lib/Locale/XGettext.pm:170
 msgid "--join-existing cannot be used when output is written to stdout"
@@ -165,11 +164,11 @@ msgstr "ungültige Multibyte-Sequenz"
 
 #: ../lib/Locale/XGettext.pm:442
 msgid "Attempt to output from extractor before run"
-msgstr ""
+msgstr "Versuch, die Ausgabe des Extrahierers zu starten, bevor run() aufgerufen wurde"
 
 #: ../lib/Locale/XGettext.pm:447
 msgid "No PO data"
-msgstr ""
+msgstr "Keine PO-Daten"
 
 #: ../lib/Locale/XGettext.pm:456 ../lib/Locale/XGettext.pm:461
 #: ../lib/Locale/XGettext.pm:465
