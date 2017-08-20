@@ -30,7 +30,7 @@ use base qw(Locale::XGettext);
 sub readFile {
     my ($self, $filename) = @_;
 
-    open my $fh, "<$filename" 
+    open my $fh, '<', $filename
         or die __x("Error reading '{filename}': {error}!\n",
                    filename => $filename, error => $!);
     
@@ -100,6 +100,27 @@ Locale::XGettext::Text - Create PO files from text files
 =head1 DESCRIPTION
 
 See L<xgettext-txt> for more information!
+
+=head1 METHODS
+
+The following methods are implemented.  Everything else is inherited
+from L<Locale::XGettext>.
+
+=over 4
+
+=item B<readFile FILENAME>
+
+Read B<FILENAME> and add a PO entry for every paragraph in B<FILENAME>.
+
+=item B<versionInformation>
+
+Returns version information for the module.
+
+=item B<fileInformation>
+
+Returns information about the expected input file format.
+
+=back
 
 =head1 AUTHOR
 

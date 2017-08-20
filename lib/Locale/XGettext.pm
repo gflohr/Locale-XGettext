@@ -23,9 +23,7 @@ package Locale::XGettext;
 
 use strict;
 
-our $VERSION = '0.01';
-
-use Locale::TextDomain qw(Locale-XGettext);
+use Locale::TextDomain 1.20 qw(Locale-XGettext);
 use File::Spec;
 use Locale::PO 0.27;
 use Scalar::Util qw(reftype blessed);
@@ -454,7 +452,7 @@ sub output {
     my $options = $self->{__options};
     my $filename = $self->__outputFilename;
 
-    open my $fh, ">$filename"
+    open my $fh, '>', $filename
         or die __x("Error writing '{file}': {error}.\n",
                    file => $filename, error => $!);
     
@@ -537,8 +535,16 @@ sub versionInformation {
 	my ($self) = @_;
 	
 	my $package = ref $self;
-	
-	my $version = eval { eval "$package::VERSION" };
+
+    my $version;
+    {
+        ## no critic
+        no strict 'refs';
+
+        my $varname = "${package}::VERSION";
+        $version = ${$varname};
+    };
+
 	$version = '' if !defined $version;
 	
     $package =~ s/::/-/g;
@@ -711,7 +717,7 @@ EOF
 sub __getEntriesFromFile {
     my ($self, $filename) = @_;
 
-    open my $fh, "<$filename" 
+    open my $fh, '<', $filename
         or die __x("Error reading '{filename}': {error}!\n",
                    filename => $filename, error => $!);
     
@@ -760,7 +766,7 @@ sub __readFilesFrom {
     # empty lines (after whitespace stripping).  All other lines are treated
     # as filenames with trailing (not leading!) space stripped off.
     foreach my $potfile (@$list) {
-        open my $fh, "<$potfile"
+        open my $fh, '<', $potfile
             or die __x("Error opening '{file}': {error}!\n",
                        file => $potfile, error => $!);
         while (my $file = <$fh>) {

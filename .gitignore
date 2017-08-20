@@ -1,7 +1,9 @@
+/.build
 /.idea
 /.project
 /.includepath
 /.vscode
+/Locale-XGettext*
 /ReleaseNotes
 /MYMETA.json
 /MYMETA.yml

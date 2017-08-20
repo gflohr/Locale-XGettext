@@ -10,6 +10,8 @@ use strict;
 
 use base qw(Locale::XGettext);
 
+our $VERSION = '23.4.89';
+
 sub readFile {
     my ($self, $filename) = @_;
 
