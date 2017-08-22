@@ -92,19 +92,19 @@ class JavaXGettext extends InlineJavaPerlCaller {
      * Return an array of arrays with the default keywords of this language.
      */
     public String[][] defaultKeywords() {
-    	return new String[][] {
-    			{"gettext", "1"},
-    			{"ngettext", "1", "2"},
-    			{"pgettext", "1c", "2"},
-    			{"npgettext", "1c", "2", "3"}
-    	};
+        return new String[][] {
+                {"gettext", "1"},
+                {"ngettext", "1", "2"},
+                {"pgettext", "1c", "2"},
+                {"npgettext", "1c", "2", "3"}
+        };
     }
     
     /* Implement this method if you want to describe the type of input
      * files.  */
     public String fileInformation() {
-    	return "Input files are plain text files and are converted into one"
-    			+ " PO entry\nfor every non-empty line.";
+        return "Input files are plain text files and are converted into one"
+                + " PO entry\nfor every non-empty line.";
     }
     
     /* You can add more language specific options here.  It is your
@@ -112,30 +112,30 @@ class JavaXGettext extends InlineJavaPerlCaller {
      * wrapper.
      */
     public String[][] languageSpecificOptions() {
-    	return new String[][] {
+        return new String[][] {
             {
-            	/* The option specification for Getopt::Long.  If you would
-            	 * expect a string argument, you would have to specify
-            	 * "test-binding=s" here, see 
-            	 * http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm 
-            	 * for details!
-            	 */
-   		        "test-binding",
-   		        
-   		        /* The "name" of the option variable.  This is the argument
-   		         * to getOption().
-   		         */
-   		        "test_binding", 
-   		        
-   		        /* The option as displayed in the usage description.  The
-   		         * leading four spaces compensate for the missing short
-   		         * option.
-   		         */
-   		        "    --test-binding",
-   		        
-   		        /* The explanation of the option in the usage information.  */
+                /* The option specification for Getopt::Long.  If you would
+                 * expect a string argument, you would have to specify
+                 * "test-binding=s" here, see 
+                 * http://search.cpan.org/~jv/Getopt-Long/lib/Getopt/Long.pm 
+                 * for details!
+                 */
+                   "test-binding",
+                   
+                   /* The "name" of the option variable.  This is the argument
+                    * to getOption().
+                    */
+                   "test_binding", 
+                   
+                   /* The option as displayed in the usage description.  The
+                    * leading four spaces compensate for the missing short
+                    * option.
+                    */
+                   "    --test-binding",
+                   
+                   /* The explanation of the option in the usage information.  */
                 "print additional information for testing the language binding"
-	        }
+            }
             /* Add more option specifications here.  */
         };
     }
@@ -144,21 +144,21 @@ class JavaXGettext extends InlineJavaPerlCaller {
      * implementation returns false.
      */
     public boolean canExtractAll() {
-    	return false;
+        return false;
     }
     
     /* Does the program honor the option -k, --keyword?  The default
      * implementation returns true.
      */
     public boolean canKeywords() {
-    	return false;
+        return false;
     }
     
     /* Does the program honor the option --flag?  The default implementation 
      * returns true.
      */
     public boolean canFlags() {
-    	return false;
+        return false;
     }
        
 }

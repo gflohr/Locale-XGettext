@@ -114,11 +114,11 @@ sub languageSpecificOptions {
 }
 
 sub canExtractAll {
-	return;
+    return;
 }
 
 sub canKeywords {
-	return 1;
+    return 1;
 }
 
 sub canFlags {

@@ -36,7 +36,7 @@ sub new {
     my $comment_seen;
     my $context_seen;
     my $self = {
-    	method => $method,
+        method => $method,
         singular => 0,
         plural => 0,
     };
@@ -48,8 +48,8 @@ sub new {
             my ($pos, $is_ctx) = ($1, $2);
             die __x("Multiple meanings for argument #{num} for method '{method}'!\n",
                      method => $method, num => $pos)
-    		    if ($seen{$pos}++);
-    		if ($is_ctx) {
+                if ($seen{$pos}++);
+            if ($is_ctx) {
                 die __x("Multiple context arguments for method '{method}'!\n",
                          method => $method) 
                     if $context_seen++;
@@ -57,9 +57,9 @@ sub new {
             } elsif ($self->{plural}) {
                 die __x("Too many forms for '{method}'!\n",
                         method => $method); 
-    		} elsif ($self->{singular}) {
-    		    $self->{plural} = $pos;
-    		} else {
+            } elsif ($self->{singular}) {
+                $self->{plural} = $pos;
+            } else {
                 $self->{singular} = $pos;
             }
         } elsif ($arg =~ /^"(.*)"$/) {
@@ -67,10 +67,10 @@ sub new {
                       method => $method)
                   if $comment_seen++;
               $self->{comment} = $1;
-    	} else {
+        } else {
               die __x("Invalid argument specification '{spec}' for method '{method}'!\n",
                       method => $method, spec => $arg);
-    	}
+        }
     }
 
     $self->{singular} ||= 1;
@@ -79,8 +79,8 @@ sub new {
 }
 
 sub newFromString {
-	my ($class, $spec) = @_;
-	
+    my ($class, $spec) = @_;
+    
     my ($method, $string) = split /:/, $spec, 2;
     $method =~ s/^\s+//;
     $method =~ s/\s+$//;
@@ -89,10 +89,10 @@ sub newFromString {
             spec => $spec)
         if $method !~ /^[a-zA-Z][_a-zA-Z0-9]*$/;
         
-	$string = '' if !defined $string;
-	
-	
-	my @tokens;
+    $string = '' if !defined $string;
+    
+    
+    my @tokens;
     push @tokens, '' if $string =~ s/^,//;
     my @chunks = split /(\s*".*"\s*|[^,]*)/, $string;
     for (my $i = 0; $i < @chunks; $i += 2) {
@@ -107,10 +107,10 @@ sub newFromString {
         }
         push @tokens, $token;
     }
-	
-	@tokens = (1) if !@tokens;
-	
-	return $class->new($method, @tokens);
+    
+    @tokens = (1) if !@tokens;
+    
+    return $class->new($method, @tokens);
 }
 
 sub method {
@@ -118,7 +118,7 @@ sub method {
 }
 
 sub singular {
-	shift->{singular};
+    shift->{singular};
 }
 
 sub plural {
@@ -126,7 +126,7 @@ sub plural {
 }
 
 sub context {
-	shift->{context};
+    shift->{context};
 }
 
 sub comment {

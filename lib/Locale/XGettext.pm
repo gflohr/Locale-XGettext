@@ -58,10 +58,10 @@ sub new {
     $self->{__exclude} = {};
 
     if (__PACKAGE__ eq ref $self) {
-    	require Carp;
-    	Carp::croak(__x("{package} is an abstract base class and must not"
-    	                . " be instantiated directly",
-    	                package => __PACKAGE__));
+        require Carp;
+        Carp::croak(__x("{package} is an abstract base class and must not"
+                        . " be instantiated directly",
+                        package => __PACKAGE__));
     }
     
     $options->{default_domain} = 'messages' if __empty $options->{default_domain};
@@ -80,12 +80,12 @@ sub new {
     if (exists $options->{add_comments}) {
         if (!ref $options->{add_comments} 
             && 'ARRAY' ne $options->{add_comments}) {
-        	die __"Option 'add_comments' must be an array reference.\n";
+            die __"Option 'add_comments' must be an array reference.\n";
         }
         
         foreach my $comment (@{$options->{add_comments}}) {
-        	$comment =~ s/^[ \t\n\f\r\013]+//;
-        	$comment = quotemeta $comment;
+            $comment =~ s/^[ \t\n\f\r\013]+//;
+            $comment = quotemeta $comment;
         }
     }
     
@@ -113,7 +113,7 @@ sub new {
     $options->{flag} = $self->__setFlags($options->{flags});
 
     if (exists $options->{exclude_file} && !ref $options->{exclude_file}) {
-    	$options->{exclude_file} = [$options->{exclude_file}];
+        $options->{exclude_file} = [$options->{exclude_file}];
     }
 
     $self->__readExcludeFiles($options->{exclude_file});
@@ -122,18 +122,18 @@ sub new {
 }
 
 sub newFromArgv {
-	my ($class, $argv) = @_;
+    my ($class, $argv) = @_;
 
     my $self;
     if (ref $class) {
-    	$self = $class;
+        $self = $class;
     } else {
-    	$self = bless {}, $class;
+        $self = bless {}, $class;
     }
 
     my %options = eval { $self->__getOptions($argv) };
     if ($@) {
-    	$self->__usageError($@);
+        $self->__usageError($@);
     }
     
     $self->__displayUsage if $options{help};
@@ -151,7 +151,7 @@ sub defaultKeywords {
 }
 
 sub defaultFlags {
-	return [];
+    return [];
 }
 
 sub run {
@@ -165,12 +165,12 @@ sub run {
     my $po = $self->{__po} = Locale::XGettext::Util::POEntries->new;
     
     if ($self->option('join_existing')) {
-    	my $output_file = $self->__outputFilename;
-    	if ('-' eq $output_file) {
-    		$self->__usageError(__"--join-existing cannot be used when output"
-    		                      . " is written to stdout");
-    	}
-    	$self->readPO($output_file);
+        my $output_file = $self->__outputFilename;
+        if ('-' eq $output_file) {
+            $self->__usageError(__"--join-existing cannot be used when output"
+                                  . " is written to stdout");
+        }
+        $self->readPO($output_file);
     }
     
     foreach my $filename (@{$self->{__files}}) {
@@ -180,7 +180,7 @@ sub run {
         if ($path =~ /\.pot?$/i) {
             $self->readPO($path);
         } else {
-        	$self->readFile($path);
+            $self->readFile($path);
         }
     }
 
@@ -203,9 +203,9 @@ sub resolveFilename {
     
     my $directories = $self->{__options}->{directory} || [''];
     foreach my $directory (@$directories) {
-    	my $path = length $directory 
-    	    ? File::Spec->catfile($directory, $filename) : $filename;
-    	stat $path && return $path;
+        my $path = length $directory 
+            ? File::Spec->catfile($directory, $filename) : $filename;
+        stat $path && return $path;
     }
     
     return;
@@ -216,29 +216,29 @@ sub po {
 }
 
 sub readPO {
-	my ($self, $path) = @_;
-	
-	my $entries = Locale::PO->load_file_asarray($path)
-	    or die __x("error reading '{filename}': {error}!\n",
-	               filename => $path, error => $!);
-	
-	foreach my $entry (@$entries) {
-		if ('""' eq $entry->msgid
-		    && __empty $entry->dequote($entry->msgctxt)) {
-			next;
-		}
-		$self->addEntry($entry);
-	}
-	
-	return $self;
+    my ($self, $path) = @_;
+    
+    my $entries = Locale::PO->load_file_asarray($path)
+        or die __x("error reading '{filename}': {error}!\n",
+                   filename => $path, error => $!);
+    
+    foreach my $entry (@$entries) {
+        if ('""' eq $entry->msgid
+            && __empty $entry->dequote($entry->msgctxt)) {
+            next;
+        }
+        $self->addEntry($entry);
+    }
+    
+    return $self;
 }
 
 sub _addFlaggedEntry {
-	my ($self, $entry, $comment) = @_;
+    my ($self, $entry, $comment) = @_;
     
     if (!$self->{__run}) {
         require Carp;
-	# TRANSLATORS: run() is a method that should be invoked first. 
+    # TRANSLATORS: run() is a method that should be invoked first. 
         Carp::croak(__"Attempt to add entries before run");
     }
 
@@ -259,21 +259,21 @@ sub _addFlaggedEntry {
     
     my ($msgid) = $entry->msgid;
     if (!__empty $msgid) {
-    	my $ctx = $entry->msgctxt;
-    	$ctx = '' if __empty $ctx;
-    	
-    	return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
+        my $ctx = $entry->msgctxt;
+        $ctx = '' if __empty $ctx;
+        
+        return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
     }
     
     my $comment_keywords = $self->option('add_comments');
     my @automatic;
     if (defined $comment && $comment_keywords) {
-    	foreach my $keyword (@$comment_keywords) {
-    		if ($comment =~ /($keyword.*)/s) {
+        foreach my $keyword (@$comment_keywords) {
+            if ($comment =~ /($keyword.*)/s) {
                 push @automatic, $1;
-    			last;
-    		}
-    	}
+                last;
+            }
+        }
     }
     my $old_automatic = $entry->automatic;
     push @automatic, $entry->dequote($old_automatic) if !__empty $old_automatic;
@@ -284,7 +284,7 @@ sub _addFlaggedEntry {
 }
 
 sub addEntry {
-	my ($self, $entry, $comment) = @_;
+    my ($self, $entry, $comment) = @_;
 
     # Simplify calling from languages that do not have hashes.
     if (!ref $entry) {
@@ -299,50 +299,50 @@ sub addEntry {
         $entry = {@args};
     }
 
-	if (defined $comment) {
+    if (defined $comment) {
         $entry = $self->__promoteEntry($entry);
         
-		# Does it contain an "xgettext:" comment?  The original implementation
-		# is quite relaxed here, even recogizing comments like "exgettext:".
-		my $cleaned = '';
-		$comment =~ s{
-		          (.*?)xgettext:(.*?(?:\n|\Z))
-		      }{
-	              my ($lead, $string) = ($1, $2);
-		          my $valid;
-		                    
-		          my @tokens = split /[ \x09-\x0d]+/, $string;
-		                    
-		          foreach my $token (@tokens) {
-		              if ($token eq 'fuzzy') {
-		                  $entry->fuzzy(1);
-		                  $valid = 1;
-		              } elsif ($token eq 'no-wrap') {
-		              	  $entry->add_flag('no-wrap');
-		              	  $valid = 1;
-		              } elsif ($token eq 'wrap') {
+        # Does it contain an "xgettext:" comment?  The original implementation
+        # is quite relaxed here, even recogizing comments like "exgettext:".
+        my $cleaned = '';
+        $comment =~ s{
+                  (.*?)xgettext:(.*?(?:\n|\Z))
+              }{
+                  my ($lead, $string) = ($1, $2);
+                  my $valid;
+                            
+                  my @tokens = split /[ \x09-\x0d]+/, $string;
+                            
+                  foreach my $token (@tokens) {
+                      if ($token eq 'fuzzy') {
+                          $entry->fuzzy(1);
+                          $valid = 1;
+                      } elsif ($token eq 'no-wrap') {
+                            $entry->add_flag('no-wrap');
+                            $valid = 1;
+                      } elsif ($token eq 'wrap') {
                           $entry->add_flag('wrap');
                           $valid = 1;
-		              } elsif ($token =~ /^[a-z]+-(?:format|check)$/) {
-		              	  $entry->add_flag($token);
-		              	  $valid = 1;
-		              }
-		          }
-		                    
-		          $cleaned .= "${lead}xgettext:${string}" if !$valid;
-		      }exg;
+                      } elsif ($token =~ /^[a-z]+-(?:format|check)$/) {
+                            $entry->add_flag($token);
+                            $valid = 1;
+                      }
+                  }
+                            
+                  $cleaned .= "${lead}xgettext:${string}" if !$valid;
+              }exg;
 
         $cleaned .= $comment;
         $comment = $cleaned;
-	}
-	
-	$self->_addFlaggedEntry($entry, $comment);
+    }
+    
+    $self->_addFlaggedEntry($entry, $comment);
 }
 
 sub recodeEntry {
-	my ($self, $entry) = @_;
-	
-	my $from_code = $self->{__options}->{from_code};
+    my ($self, $entry) = @_;
+    
+    my $from_code = $self->{__options}->{from_code};
     $from_code = Locale::Recode->resolveAlias($from_code);
     
     my $cd;
@@ -420,19 +420,19 @@ sub recodeEntry {
         $entry->comment($comment);
     }
 
-    return $self;    	
+    return $self;        
 }
 
 sub options {
-	shift->{__options};
+    shift->{__options};
 }
 
 sub option {
-	my ($self, $key) = @_;
+    my ($self, $key) = @_;
 
-	return if !exists $self->{__options}->{$key};
-	
-	return $self->{__options}->{$key};
+    return if !exists $self->{__options}->{$key};
+    
+    return $self->{__options}->{$key};
 }
 
 sub output {
@@ -515,10 +515,10 @@ sub printLanguageSpecificUsage {
                 print " $word";
                 $pos += 1 + length $word;
                 if (@description && $pos > 77 - length $description[-1]) {
-                	++$lineno;
-                	print "\n";
-                	$pos = 0;
-                	last;
+                    ++$lineno;
+                    print "\n";
+                    $pos = 0;
+                    last;
                 }
             }
         }
@@ -533,9 +533,9 @@ sub fileInformation {}
 sub bugTrackingAddress {}
 
 sub versionInformation {
-	my ($self) = @_;
-	
-	my $package = ref $self;
+    my ($self) = @_;
+    
+    my $package = ref $self;
 
     my $version;
     {
@@ -546,17 +546,17 @@ sub versionInformation {
         $version = ${$varname};
     };
 
-	$version = '' if !defined $version;
-	
+    $version = '' if !defined $version;
+    
     $package =~ s/::/-/g;
-	
-	return __x('{program} ({package}) {version}
+    
+    return __x('{program} ({package}) {version}
 Please see the source for copyright information!
 ', program => $0, package => $package, version => $version);
 }
 
 sub canExtractAll {
-	return;
+    return;
 }
 
 sub canKeywords {
@@ -568,37 +568,37 @@ sub canFlags {
 }
 
 sub needInputFiles {
-	shift;
+    shift;
 }
 
 sub __readExcludeFiles {
-	my ($self, $files) = @_;
-	
-	return $self if !$files;
-	
-	foreach my $file (@$files) {
-	   my $entries = Locale::PO->load_file_asarray($file)
+    my ($self, $files) = @_;
+    
+    return $self if !$files;
+    
+    foreach my $file (@$files) {
+       my $entries = Locale::PO->load_file_asarray($file)
         or die __x("error reading '{filename}': {error}!\n",
                    filename => $file, error => $!);
     
-		foreach my $entry (@$entries) {
-			my $msgid = $entry->msgid;
-			next if __empty $msgid;
-			
-			my $ctx = $entry->msgctxt;
-			$ctx = '' if __empty $ctx;
-			
-			$self->{__exclude}->{$msgid}->{$ctx} = $entry;
-		}
-	}
-	
-	return $self;
+        foreach my $entry (@$entries) {
+            my $msgid = $entry->msgid;
+            next if __empty $msgid;
+            
+            my $ctx = $entry->msgctxt;
+            $ctx = '' if __empty $ctx;
+            
+            $self->{__exclude}->{$msgid}->{$ctx} = $entry;
+        }
+    }
+    
+    return $self;
 }
 
 sub __promoteEntry {
-	my ($self, $entry) = @_;
-	
-	if (!blessed $entry) {
+    my ($self, $entry) = @_;
+    
+    if (!blessed $entry) {
         my $keyword = delete $entry->{keyword};
         if (defined $keyword) {
             my $keywords = $self->option('keyword');
@@ -624,7 +624,7 @@ sub __promoteEntry {
         $entry = $po_entry;
     }
 
-	return $entry;
+    return $entry;
 }
 
 sub __conversionError {
@@ -636,9 +636,9 @@ sub __conversionError {
 }
 
 sub __outputFilename {
-	my ($self) = @_;
-	
-	my $options = $self->{__options};
+    my ($self) = @_;
+    
+    my $options = $self->{__options};
     if (exists $options->{output}) {
         if (File::Spec->file_name_is_absolute($options->{output})
             || '-' eq $options->{output}) {
@@ -653,8 +653,8 @@ sub __outputFilename {
         return File::Spec->catfile($options->{output_dir}, 
                                    $options->{default_domain} . '.po');
     }
-	
-	# NOT REACHED!
+    
+    # NOT REACHED!
 }
 sub __poHeader {
     my ($self) = @_;
@@ -796,15 +796,15 @@ sub __getOptions {
     my %lang_options;
     
     foreach my $optspec (@$lang_options) {
-    	my ($optstring, $optvar,
-    	    $usage, $description) = @$optspec;
+        my ($optstring, $optvar,
+            $usage, $description) = @$optspec;
         $lang_options{$optstring} = \$options{$optvar};
     }
     
     Getopt::Long::Configure('bundling');
     $SIG{__WARN__} = sub {
-    	$SIG{__WARN__} = 'DEFAULT';
-    	die shift;
+        $SIG{__WARN__} = 'DEFAULT';
+        die shift;
     };
     GetOptionsFromArray($argv,
         # Are always overridden by standard options.
@@ -882,9 +882,9 @@ sub __setKeywords {
 
         my $keyword;
         if (ref $option) {
-        	$keyword = $option;
+            $keyword = $option;
         } else {
-        	$keyword = Locale::XGettext::Util::Keyword->newFromString($option);
+            $keyword = Locale::XGettext::Util::Keyword->newFromString($option);
         }
         $keywords->{$keyword->method} = $keyword;
     }
@@ -893,18 +893,18 @@ sub __setKeywords {
 }
 
 sub __parseFlag {
-	my ($self, $flag) = @_;
-	
-	return if $flag !~ s/:([^:]+)$//;
-	my $format = $1;
-	
+    my ($self, $flag) = @_;
+    
     return if $flag !~ s/:([^:]+)$//;
-	my $argnum = $1;
-	
-	my $function = $flag;
-	return if !length $function;
-	
-	return;
+    my $format = $1;
+    
+    return if $flag !~ s/:([^:]+)$//;
+    my $argnum = $1;
+    
+    my $function = $flag;
+    return if !length $function;
+    
+    return;
 }
 
 sub __setFlags {
@@ -913,39 +913,39 @@ sub __setFlags {
     my @defaults = @{$self->defaultFlags};
     
     foreach my $flag (@defaults, @$options) {
-    	my @spec = $self->__parseFlag($flag)
-    	    or die __x("A --flag argument doesn't have the"
-    	               . " <keyword>:<argnum>:[pass-]<flag> syntax: {flag}",
-    	               $flag);
+        my @spec = $self->__parseFlag($flag)
+            or die __x("A --flag argument doesn't have the"
+                       . " <keyword>:<argnum>:[pass-]<flag> syntax: {flag}",
+                       $flag);
     }
     
     return $self;
 }
 
 sub __displayUsage {
-	my ($self) = @_;
-	
-	if ($self->needInputFiles) {
+    my ($self) = @_;
+    
+    if ($self->needInputFiles) {
         print __x("Usage: {program} [OPTION] [INPUTFILE]...\n", program => $0);
         print "\n";
     
         print __(<<EOF);
 Extract translatable strings from given input files.
 EOF
-	} else {
+    } else {
         print __x("Usage: {program} [OPTION]\n", program => $0);
         print "\n";
     
         print __(<<EOF);
 Extract translatable strings.
 EOF
-	}
-	
+    }
+    
     if (defined $self->fileInformation) {
-    	print "\n";
-    	my $description = $self->fileInformation;
-    	chomp $description;
-    	print "$description\n";
+        print "\n";
+        my $description = $self->fileInformation;
+        chomp $description;
+        print "$description\n";
     }
 
     print "\n";
@@ -1146,7 +1146,7 @@ EOF
 }
 
 sub __usageError {
-	my ($self, $message) = @_;
+    my ($self, $message) = @_;
 
     if ($message) {
         $message =~ s/\s+$//;

@@ -71,18 +71,18 @@ Written by Guido Flohr (http://www.guido-flohr.net/).
 }
 
 sub fileInformation {
-	return __(<<EOF);
+    return __(<<EOF);
 Input files are interpreted as plain text files with each paragraph being
 a separately translatable unit.
 EOF
 }
 
 sub canExtractAll {
-	shift;
+    shift;
 }
 
 sub canKeywords {
-	return;
+    return;
 }
 
 1;

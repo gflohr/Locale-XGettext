@@ -59,7 +59,7 @@ sub extractFromNonFiles {
 
 # We have to translate that from Java.
 sub defaultKeywords {
-	my ($self) = @_;
+    my ($self) = @_;
 
     return $self->SUPER::defaultKeywords()
         if !$self->{__helper}->can('defaultKeywords');
@@ -70,15 +70,15 @@ sub defaultKeywords {
     # plain array.
     my %keywords = map { 
         my @keyword = @{$_};
-    	$keyword[0] => [splice @keyword, 1] 
+        $keyword[0] => [splice @keyword, 1] 
     } @{$self->{__helper}->defaultKeywords};
 
     return \%keywords;
 }
 
 sub languageSpecificOptions {
-	my ($self) = @_;
-	
+    my ($self) = @_;
+    
     return $self->SUPER::extractFromNonFiles() 
         if !$self->{__helper}->can('languageSpecificOptions');
 
