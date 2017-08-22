@@ -11,4 +11,4 @@ TEXTDOMAIN = Locale-XGettext
 COPYRIGHT_HOLDER = Guido Flohr
 
 # Where to send msgid bugs?  
-MSGID_BUGS_ADDRESS = Guido Flohr <guido.flohr@cantanea.com>
+MSGID_BUGS_ADDRESS = guido.flohr@cantanea.com

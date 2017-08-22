@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: Guido Flohr <guido.flohr@cantanea.com>\n"
-"POT-Creation-Date: 2017-08-20 22:39+0200\n"
+"Report-Msgid-Bugs-To: guido.flohr@cantanea.com\n"
+"POT-Creation-Date: 2017-08-21 07:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,17 +27,17 @@ msgstr ""
 msgid ""
 "{program} (Locale-XGettext) {version}\n"
 "Copyright (C) {years} Cantanea EOOD (http://www.cantanea.com/).\n"
-"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
-"html>\n"
+"License LGPLv3+: GNU Lesser General Public Licence version 3 \n"
+"or later <http://gnu.org/licenses/gpl.html>.\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 "Written by Guido Flohr (http://www.guido-flohr.net/).\n"
 msgstr ""
 
-#: ../lib/Locale/XGettext/Text.pm:74
+#: ../lib/Locale/XGettext/Text.pm:75
 msgid ""
 "Input files are interpreted as plain text files with each paragraph being\n"
-"a separately translatable unit.  \n"
+"a separately translatable unit.\n"
 msgstr ""
 
 #: ../lib/Locale/XGettext/Util/Keyword.pm:30
