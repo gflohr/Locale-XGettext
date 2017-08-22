@@ -1,6 +1,6 @@
 #! /bin/false
 
-# Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
+# Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
 # all rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
@@ -224,7 +224,7 @@ The automatic comment for this keyword or the undefined value.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
+Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
 all rights reserved.
 
 =head1 SEE ALSO

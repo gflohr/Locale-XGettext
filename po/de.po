@@ -1,5 +1,5 @@
 # German translations for Locale-XGettext.
-# Copyright (C) 2016 Guido Flohr.
+# Copyright (C) 2016-2017 Guido Flohr.
 # This file is distributed under the same license as the
 # Locale-XGettext package.
 msgid ""

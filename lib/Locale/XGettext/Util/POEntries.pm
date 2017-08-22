@@ -1,7 +1,7 @@
 #! /bin/false
 # vim: ts=4:et
 
-# Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
+# Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
 # all rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
@@ -192,7 +192,7 @@ part of the API and should not be used.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 Guido Flohr <guido.flohr@cantanea.com>,
+Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
 all rights reserved.
 
 =head1 SEE ALSO
