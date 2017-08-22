@@ -175,7 +175,7 @@ sub run {
     
     foreach my $filename (@{$self->{__files}}) {
         my $path = $self->resolveFilename($filename)
-            or die __x("Error resolving '{filename}': {error}!\n",
+            or die __x("Error resolving file name '{filename}': {error}!\n",
                        filename => $filename, error => $!);
         if ($path =~ /\.pot?$/i) {
             $self->readPO($path);
@@ -238,6 +238,7 @@ sub _addFlaggedEntry {
     
     if (!$self->{__run}) {
         require Carp;
+	# TRANSLATORS: run() is a method that should be invoked first. 
         Carp::croak(__"Attempt to add entries before run");
     }
 
@@ -362,9 +363,9 @@ sub recodeEntry {
         # Check that everything is 7 bit.
         my $flesh = $toString->($entry);
         if ($flesh !~ /^[\000-\177]*$/) {
-            die __x("Non-ASCII string at {reference}.\n"
+            die __x("Non-ASCII string at '{reference}'.\n"
                     . "    Please specify the source encoding through "
-                    . "--from-code.\n",
+                    . "'--from-code'.\n",
                     reference => $entry->reference);
         }
     } elsif ($from_code eq 'UTF-8') {
@@ -929,14 +930,14 @@ sub __displayUsage {
         print "\n";
     
         print __(<<EOF);
-Extract translatable strings from given input files.  
+Extract translatable strings from given input files.
 EOF
 	} else {
         print __x("Usage: {program} [OPTION]\n", program => $0);
         print "\n";
     
         print __(<<EOF);
-Extract translatable strings.  
+Extract translatable strings.
 EOF
 	}
 	

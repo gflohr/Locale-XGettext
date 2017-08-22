@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Locale-XGettext 0.1\n"
-"Report-Msgid-Bugs-To: Guido Flohr <guido.flohr@cantanea.com>\n"
-"POT-Creation-Date: 2017-08-20 23:54+0200\n"
-"PO-Revision-Date: 2017-08-22 09:01+0200\n"
+"Report-Msgid-Bugs-To: guido.flohr@cantanea.com\n"
+"POT-Creation-Date: 2017-08-22 16:40+0200\n"
+"PO-Revision-Date: 2017-08-22 16:44+0200\n"
 "Last-Translator: Guido Flohr <guido.flohr@cantanea.com>\n"
 "Language-Team: Guido Flohr <guido.flohr@cantanea.com>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.0.1\n"
 
-#: ../lib/Locale/XGettext/Text.pm:34 ../lib/Locale/XGettext.pm:721
+#: ../lib/Locale/XGettext/Text.pm:34 ../lib/Locale/XGettext.pm:722
 #, perl-brace-format
 msgid "Error reading '{filename}': {error}!\n"
 msgstr "Fehler beim Lesen von »{filename}«: {error}!\n"
@@ -37,7 +37,8 @@ msgstr ""
 "Copyright (C) {years} Cantanea EOOD (http://www.cantanea.com/).\n"
 "License LGPLv3+: GNU Lesser General Public Licence version 3 \n"
 "oder neuer <http://gnu.org/licenses/gpl.html>.\n"
-"Dies ist freie Software: es sterht Ihnen frei, sie zu verändern und weiterzugeben.\n"
+"Dies ist freie Software: es sterht Ihnen frei, sie zu verändern und "
+"weiterzugeben.\n"
 "Es gibt KEINE GARANTIE, soweit gesetzlich zulässig.\n"
 "Geschrieben von Guido Flohr (http://www.guido-flohr.net/).\n"
 
@@ -113,7 +114,9 @@ msgstr ""
 
 #: ../lib/Locale/XGettext.pm:76
 msgid "The argument to '--add-location' must be 'full', 'file', or 'never'.\n"
-msgstr "Das Argument für »--add-location« must entweder »full«, »file« oder »never« lauten!\n"
+msgstr ""
+"Das Argument für »--add-location« must entweder »full«, »file« oder »never« "
+"lauten!\n"
 
 #: ../lib/Locale/XGettext.pm:83
 msgid "Option 'add_comments' must be an array reference.\n"
@@ -144,49 +147,50 @@ msgstr ""
 
 #: ../lib/Locale/XGettext.pm:178
 #, perl-brace-format
-msgid "Error resolving '{filename}': {error}!\n"
+msgid "Error resolving file name '{filename}': {error}!\n"
 msgstr "Fehler beim Auflösen des Dateinamens  »{filename}«: {error}!\n"
 
-#: ../lib/Locale/XGettext.pm:222 ../lib/Locale/XGettext.pm:580
+#: ../lib/Locale/XGettext.pm:222 ../lib/Locale/XGettext.pm:581
 #, perl-brace-format
 msgid "error reading '{filename}': {error}!\n"
 msgstr "Fehler beim Lesen der Datei  »{filename}«: {error}!\n"
 
-#: ../lib/Locale/XGettext.pm:241
+#. TRANSLATORS: run() is a method that should be invoked first. 
+#: ../lib/Locale/XGettext.pm:242
 msgid "Attempt to add entries before run"
 msgstr "Fehler, Einträge vor Aufruf der Methode run() zuzufügen"
 
-#: ../lib/Locale/XGettext.pm:365
-#, fuzzy, perl-brace-format
+#: ../lib/Locale/XGettext.pm:366
+#, perl-brace-format
 msgid ""
-"Non-ASCII string at {reference}.\n"
-"    Please specify the source encoding through --from-code.\n"
+"Non-ASCII string at '{reference}'.\n"
+"    Please specify the source encoding through '--from-code'.\n"
 msgstr ""
-"%s:%d: Ungültige Multibyte-Sequenz.\n"
-"Bitte die Kodierung des Quelltextes mit --from-code angeben.\n"
+"{reference}: Nicht-ASCII-String.\n"
+"  Bitte die Kodierung des Quelltextes mit »--from-code« angeben!\n"
 
-#: ../lib/Locale/XGettext.pm:376
-#, fuzzy, perl-brace-format
+#: ../lib/Locale/XGettext.pm:377
+#, perl-brace-format
 msgid "{reference}: invalid multibyte sequence\n"
-msgstr "ungültige Multibyte-Sequenz"
+msgstr "{reference}: Ungültige Multibyte-Sequenz\n"
 
-#: ../lib/Locale/XGettext.pm:442
+#: ../lib/Locale/XGettext.pm:443
 msgid "Attempt to output from extractor before run"
 msgstr ""
 "Versuch, die Ausgabe des Extrahierers zu starten, bevor run() aufgerufen "
 "wurde"
 
-#: ../lib/Locale/XGettext.pm:447
+#: ../lib/Locale/XGettext.pm:448
 msgid "No PO data"
 msgstr "Keine PO-Daten"
 
-#: ../lib/Locale/XGettext.pm:456 ../lib/Locale/XGettext.pm:461
-#: ../lib/Locale/XGettext.pm:465
+#: ../lib/Locale/XGettext.pm:457 ../lib/Locale/XGettext.pm:462
+#: ../lib/Locale/XGettext.pm:466
 #, perl-brace-format
 msgid "Error writing '{file}': {error}.\n"
-msgstr "Fehler beim Schreiben der Datei  »{filename}«: {error}!"
+msgstr "Fehler beim Schreiben der Datei  »{file}«: {error}!\n"
 
-#: ../lib/Locale/XGettext.pm:552
+#: ../lib/Locale/XGettext.pm:553
 #, perl-brace-format
 msgid ""
 "{program} ({package}) {version}\n"
@@ -195,48 +199,45 @@ msgstr ""
 "{program} ({package}) {version}\n"
 "Lesen Sie den Quelltext für Urherberrechts-Informationen!\n"
 
-#: ../lib/Locale/XGettext.pm:632
+#: ../lib/Locale/XGettext.pm:633
 #, perl-brace-format
 msgid "{reference}: {conversion_error}\n"
 msgstr "{reference}: {conversion_error}\n"
 
-#: ../lib/Locale/XGettext.pm:770
+#: ../lib/Locale/XGettext.pm:771
 #, perl-brace-format
 msgid "Error opening '{file}': {error}!\n"
-msgstr "Fehler beim Öffnen der Datei  »{filename}«: {error}!"
+msgstr "Fehler beim Öffnen der Datei  »{file}«: {error}!\n"
 
-#: ../lib/Locale/XGettext.pm:916
-#, fuzzy, perl-brace-format
+#: ../lib/Locale/XGettext.pm:917
+#, perl-brace-format
 msgid ""
 "A --flag argument doesn't have the <keyword>:<argnum>:[pass-]<flag> syntax: "
 "{flag}"
 msgstr ""
 "Ein --flag-Argument folgt nicht der <keyword>:<argnum>:[pass-]<flag>-Syntax: "
-"%s"
+"{flag}"
 
-#: ../lib/Locale/XGettext.pm:928
-#, fuzzy, perl-brace-format
+#: ../lib/Locale/XGettext.pm:929
+#, perl-brace-format
 msgid "Usage: {program} [OPTION] [INPUTFILE]...\n"
-msgstr "Aufruf: %s [OPTION] [EINGABEDATEI]...\n"
+msgstr "Aufruf: {program} [OPTION] [EINGABEDATEI]...\n"
 
-#: ../lib/Locale/XGettext.pm:932
-#, fuzzy
-msgid "Extract translatable strings from given input files.  \n"
+#: ../lib/Locale/XGettext.pm:933
+msgid "Extract translatable strings from given input files.\n"
 msgstr ""
 "Aus den Eingabedateien die zu übersetzenden Meldungen herausschreiben.\n"
 
-#: ../lib/Locale/XGettext.pm:935
-#, fuzzy, perl-brace-format
+#: ../lib/Locale/XGettext.pm:936
+#, perl-brace-format
 msgid "Usage: {program} [OPTION]\n"
-msgstr "Aufruf: %s [OPTION]\n"
+msgstr "Aufruf: {program} [OPTION]\n"
 
-#: ../lib/Locale/XGettext.pm:939
-#, fuzzy
-msgid "Extract translatable strings.  \n"
-msgstr ""
-"Aus den Eingabedateien die zu übersetzenden Meldungen herausschreiben.\n"
+#: ../lib/Locale/XGettext.pm:940
+msgid "Extract translatable strings.\n"
+msgstr "Zu übersetzenden Meldungen herausschreiben.\n"
 
-#: ../lib/Locale/XGettext.pm:953
+#: ../lib/Locale/XGettext.pm:954
 msgid ""
 "Mandatory arguments to long options are mandatory for short options too.\n"
 "Similarly for optional arguments.\n"
@@ -244,85 +245,84 @@ msgstr ""
 "Notwendige Argumente für Optionen in Langform sind auch für die Kurzform\n"
 "notwendig. Dies gilt in gleicher Weise für optionale Argumente.\n"
 
-#: ../lib/Locale/XGettext.pm:960
+#: ../lib/Locale/XGettext.pm:961
 msgid "Input file location:\n"
 msgstr "Angaben zu Eingabedateien:\n"
 
-#: ../lib/Locale/XGettext.pm:964
+#: ../lib/Locale/XGettext.pm:965
 msgid "  INPUTFILE ...               input files\n"
 msgstr "  EINGABEDATEI...             Eingabedateien\n"
 
-#: ../lib/Locale/XGettext.pm:968
+#: ../lib/Locale/XGettext.pm:969
 msgid "  -f, --files-from=FILE       get list of input files from FILE\n"
 msgstr ""
 "  -f, --files-from=DATEI      Namen der Eingabedateien aus DATEI holen\n"
 
-#: ../lib/Locale/XGettext.pm:972
+#: ../lib/Locale/XGettext.pm:973
 msgid ""
 "  -D, --directory=DIRECTORY   add DIRECTORY to list for input files search\n"
 msgstr ""
 "  -D, --directory=VERZ        VERZ der Liste der Eingabedateien hinzufügen\n"
 
-#: ../lib/Locale/XGettext.pm:976
+#: ../lib/Locale/XGettext.pm:977
 msgid "If input file is -, standard input is read.\n"
 msgstr "Wenn die Eingabedatei »-« ist, wird die Standardeingabe gelesen.\n"
 
-#: ../lib/Locale/XGettext.pm:982
+#: ../lib/Locale/XGettext.pm:983
 msgid "Output file location:\n"
 msgstr "Angaben zu Ausgabedateien:\n"
 
-#: ../lib/Locale/XGettext.pm:986
+#: ../lib/Locale/XGettext.pm:987
 msgid ""
 "  -d, --default-domain=NAME   use NAME.po for output (instead of messages."
 "po)\n"
 msgstr ""
 "  -d, --default-domain=NAME   Ausgabe in NAME.po (anstatt in messages.po)\n"
 
-#: ../lib/Locale/XGettext.pm:990
+#: ../lib/Locale/XGettext.pm:991
 msgid "  -o, --output=FILE           write output to specified file\n"
 msgstr ""
 "  -o, --output=DATEI          Ausgabe in die angegebene DATEI schreiben\n"
 
-#: ../lib/Locale/XGettext.pm:994
+#: ../lib/Locale/XGettext.pm:995
 msgid ""
 "  -p, --output-dir=DIR        output files will be placed in directory DIR\n"
 msgstr ""
 "  -p, --output-dir=VERZ       Ausgabedateien in Verzeichnis VERZ ablegen\n"
 
-#: ../lib/Locale/XGettext.pm:998
+#: ../lib/Locale/XGettext.pm:999
 msgid "If output file is -, output is written to standard output.\n"
 msgstr ""
 "Ergebnisse werden nach der Standardausgabe geschrieben, wenn »-« angegeben "
 "ist.\n"
 
-#: ../lib/Locale/XGettext.pm:1004
+#: ../lib/Locale/XGettext.pm:1005
 msgid "Input file interpretation:\n"
 msgstr "Überprüfung der Eingabedatei:\n"
 
-#: ../lib/Locale/XGettext.pm:1008
-#, fuzzy
+#: ../lib/Locale/XGettext.pm:1009
 msgid "      --from-code=NAME        encoding of input files\n"
-msgstr "  -t, --to-code=NAME          Kodierung für die Ausgabe\n"
+msgstr "      --from-code=NAME        Kodierung für die Eingabe\n"
 
-#: ../lib/Locale/XGettext.pm:1011
+#: ../lib/Locale/XGettext.pm:1012
 msgid "By default the input files are assumed to be in ASCII.\n"
 msgstr "Die Vorgabe ist, dass für Eingabedateien ASCII angenommen wird.\n"
 
-#: ../lib/Locale/XGettext.pm:1017
+#: ../lib/Locale/XGettext.pm:1018
 msgid "Operation mode:\n"
 msgstr "Art der Verarbeitung:\n"
 
-#: ../lib/Locale/XGettext.pm:1021
+#: ../lib/Locale/XGettext.pm:1022
 msgid "  -j, --join-existing         join messages with existing file\n"
 msgstr ""
 "  -j, --join-existing         Meldungen an existierende Datei anhängen\n"
 
-#: ../lib/Locale/XGettext.pm:1025
+#: ../lib/Locale/XGettext.pm:1026
 msgid "  -x, --exclude-file=FILE.po  entries from FILE.po are not extracted\n"
 msgstr ""
 "  -x, --exclude-file=DATEI.po Einträge aus DATEI.po nicht herausholen\n"
 
-#: ../lib/Locale/XGettext.pm:1029
+#: ../lib/Locale/XGettext.pm:1030
 msgid ""
 "  -cTAG, --add-comments=TAG   place comment blocks starting with TAG and\n"
 "                                preceding keyword lines in output file\n"
@@ -340,16 +340,15 @@ msgstr ""
 "                               Schlüsselworten vorausgehen, in die\n"
 "                               Ausgabedatei schreiben.\n"
 
-#: ../lib/Locale/XGettext.pm:1038
+#: ../lib/Locale/XGettext.pm:1039
 msgid "Language specific options:\n"
 msgstr "Besondere Optionen bei »Language«:\n"
 
-#: ../lib/Locale/XGettext.pm:1043
+#: ../lib/Locale/XGettext.pm:1044
 msgid "  -a, --extract-all           extract all strings\n"
 msgstr "  -a, --extract-all          alle Zeichenketten extrahieren\n"
 
-#: ../lib/Locale/XGettext.pm:1049
-#, fuzzy
+#: ../lib/Locale/XGettext.pm:1050
 msgid ""
 "  -kWORD, --keyword=WORD      look for WORD as an additional keyword\n"
 "  -k, --keyword               do not to use default keywords\"));\n"
@@ -357,75 +356,78 @@ msgid ""
 "argument\n"
 "                              number ARG of keyword WORD\n"
 msgstr ""
+"  -kWORD, --keyword=WORD      zusätzliches Schlüsselwort, nach dem gesucht\n"
+"                                wird.\n"
+"  -k, --keyword               \n"
 "      --flag=WORT:ARG:FLAG    zusätzliches Flag für Zeichenketten innerhalb "
 "der\n"
-"                               Argumentzahl ARG des Schlüsselworts WORT\n"
+"                                Argumentzahl ARG des Schlüsselworts WORT\n"
 
-#: ../lib/Locale/XGettext.pm:1061
+#: ../lib/Locale/XGettext.pm:1062
 msgid "Output details:\n"
 msgstr "Details zur Ausgabe:\n"
 
-#: ../lib/Locale/XGettext.pm:1065
+#: ../lib/Locale/XGettext.pm:1066
 msgid "      --force-po              write PO file even if empty\n"
 msgstr ""
 "      --force-po              PO-Datei erstellen, auch wenn sie leer ist\n"
 
-#: ../lib/Locale/XGettext.pm:1069
+#: ../lib/Locale/XGettext.pm:1070
 msgid "      --no-location           do not write '#: filename:line' lines\n"
 msgstr ""
 "      --no-location           Zeilen mit »#: Datei:Zeilennr.« nicht "
 "schreiben\n"
 
-#: ../lib/Locale/XGettext.pm:1073
+#: ../lib/Locale/XGettext.pm:1074
 msgid ""
 "  -n, --add-location          generate '#: filename:line' lines (default)\n"
 msgstr ""
 "  -n, --add-location          Zeilen mit »#: Datei:Zeilennr.« erhalten "
 "(Vorgabe)\n"
 
-#: ../lib/Locale/XGettext.pm:1077
+#: ../lib/Locale/XGettext.pm:1078
 msgid "  -s, --sort-output           generate sorted output\n"
 msgstr "  -s, --sort-output           sortierte Ausgabe erstellen\n"
 
-#: ../lib/Locale/XGettext.pm:1081
+#: ../lib/Locale/XGettext.pm:1082
 msgid "  -F, --sort-by-file          sort output by file location\n"
 msgstr ""
 "  -F, --sort-by-file          Ausgabe gemäß Vorkommen in Dateien erstellen\n"
 
-#: ../lib/Locale/XGettext.pm:1085
+#: ../lib/Locale/XGettext.pm:1086
 msgid ""
 "      --omit-header           don't write header with 'msgid \"\"' entry\n"
 msgstr ""
 "      --omit-header            »msgid \"\"«-Eintrag im Kopfteil nicht "
 "erstellen\n"
 
-#: ../lib/Locale/XGettext.pm:1089
+#: ../lib/Locale/XGettext.pm:1090
 msgid "      --copyright-holder=STRING  set copyright holder in output\n"
 msgstr ""
 "      --copyright-holder=KETTE   Uhrheberrechtsinhaber in Ausgabe setzen\n"
 
-#: ../lib/Locale/XGettext.pm:1093
+#: ../lib/Locale/XGettext.pm:1094
 msgid ""
 "      --foreign-user          omit FSF copyright in output for foreign user\n"
 msgstr ""
 "      --foreign-user          keine Zeile mit FSF-Copyright in Ausgabe\n"
 "                               einfügen\n"
 
-#: ../lib/Locale/XGettext.pm:1097
+#: ../lib/Locale/XGettext.pm:1098
 msgid "      --package-name=PACKAGE  set package name in output\n"
 msgstr "      --package-name=PAKET    Paketname für die Ausgabe setzen\n"
 
-#: ../lib/Locale/XGettext.pm:1101
+#: ../lib/Locale/XGettext.pm:1102
 msgid "      --package-version=VERSION  set package version in output\n"
 msgstr "      --package-version=VERSION  Paketversion in Ausgabe setzen\n"
 
-#: ../lib/Locale/XGettext.pm:1105
+#: ../lib/Locale/XGettext.pm:1106
 msgid ""
 "      --msgid-bugs-address=EMAIL@ADDRESS  set report address for msgid bugs\n"
 msgstr ""
 "      --msgid-bugs-address=EMAIL@ADRESSE  Adresse für msgid-Fehler angeben\n"
 
-#: ../lib/Locale/XGettext.pm:1109
+#: ../lib/Locale/XGettext.pm:1110
 msgid ""
 "  -m[STRING], --msgstr-prefix[=STRING]  use STRING or \"\" as prefix for "
 "msgstr\n"
@@ -436,7 +438,7 @@ msgstr ""
 "msgstr\n"
 "                                 nehmen\n"
 
-#: ../lib/Locale/XGettext.pm:1114
+#: ../lib/Locale/XGettext.pm:1115
 msgid ""
 "  -M[STRING], --msgstr-suffix[=STRING]  use STRING or \"\" as suffix for "
 "msgstr\n"
@@ -447,15 +449,15 @@ msgstr ""
 "msgstr\n"
 "                                 nehmen\n"
 
-#: ../lib/Locale/XGettext.pm:1121
+#: ../lib/Locale/XGettext.pm:1122
 msgid "Informative output:\n"
 msgstr "Informative Ausgabe:\n"
 
-#: ../lib/Locale/XGettext.pm:1125
+#: ../lib/Locale/XGettext.pm:1126
 msgid "  -h, --help                  display this help and exit\n"
 msgstr "  -h, --help                   diese Hilfe anzeigen und beenden\n"
 
-#: ../lib/Locale/XGettext.pm:1129
+#: ../lib/Locale/XGettext.pm:1130
 msgid "  -V, --version               output version information and exit\n"
 msgstr "  -V, --version                Versionsnummer anzeigen und beenden\n"
 
@@ -463,17 +465,17 @@ msgstr "  -V, --version                Versionsnummer anzeigen und beenden\n"
 #. for this package.  Please add _another line_ saying
 #. "Report translation bugs to <...>\n" with the address for translation
 #. bugs (typically your translation team's web or email address).
-#: ../lib/Locale/XGettext.pm:1141
+#: ../lib/Locale/XGettext.pm:1142
 #, perl-brace-format
 msgid "Report bugs at <{URL}>!\n"
 msgstr "Fehler bitte an <{URL}> melden!\n"
 
-#: ../lib/Locale/XGettext.pm:1152
+#: ../lib/Locale/XGettext.pm:1153
 #, perl-brace-format
 msgid "{program_name}: {error}\n"
 msgstr "{program_name}: {error}\n"
 
-#: ../lib/Locale/XGettext.pm:1158
+#: ../lib/Locale/XGettext.pm:1159
 #, perl-brace-format
 msgid "Try '{program_name} --help' for more information!\n"
-msgstr "»%s --help« gibt weitere Informationen.\n"
+msgstr "»{program_name} --help« gibt weitere Informationen.\n"
