@@ -32,6 +32,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 
 use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
+use Locale::XGettext::Util::Flag;
 
 # Helper method, not exported!
 sub __empty($) {
@@ -110,7 +111,7 @@ sub new {
     }
     
     $options->{keyword} = $self->__setKeywords($options->{keyword});
-    $options->{flag} = $self->__setFlags($options->{flags});
+    $options->{flag} = $self->__setFlags($options->{flag});
 
     if (exists $options->{exclude_file} && !ref $options->{exclude_file}) {
         $options->{exclude_file} = [$options->{exclude_file}];
@@ -599,26 +600,44 @@ sub __promoteEntry {
     my ($self, $entry) = @_;
     
     if (!blessed $entry) {
-        my $keyword = delete $entry->{keyword};
+        my %entry = %$entry;
+        my $po_entry = Locale::PO->new;
+
+        my $keyword = delete $entry{keyword};
         if (defined $keyword) {
             my $keywords = $self->option('keyword');
             if (exists $keywords->{$keyword}) {
                 my $comment = $keywords->{$keyword}->comment;
-                $entry->{automatic} = $comment if !__empty $comment;
+                $entry{automatic} = $comment if !__empty $comment;
+
+                my $flags = $self->option('flag');
+                my $sg_arg = $keywords->{$keyword}->singular;
+                my $pl_arg = $keywords->{$keyword}->plural || 0;
+                foreach my $flag (@$flags) {
+                    next if $keyword ne $flag->method;
+                    next if $flag->arg != $sg_arg && $flag->arg != $pl_arg;
+                    my $flag_name = $flag->flag;
+                    $flag_name = 'no-' . $flag_name if $flag->no;
+                    $po_entry->add_flag($flag_name);
+                }
             }
         }
 
-        my $po_entry = Locale::PO->new;
-        my $flags = delete $entry->{flags};
+        my $flags = delete $entry{flags};
         if (defined $flags) {
             my @flags = split /[ \t\r\n]*,[ \t\r\n]*/, $flags;
             foreach my $flag (@flags) {
-                $po_entry->add_flag($flag);
+                $po_entry->add_flag($flag)
+                    if !$po_entry->has_flag($flag);
             }
         }
 
-        foreach my $method (keys %$entry) {
-            $po_entry->$method($entry->{$method});
+        foreach my $method (keys %entry) {
+            eval { $po_entry->$method($entry{$method}) };
+            warn __x("error calling method '{method}' with value '{value}'"
+                     . " on Locale::PO instance: {error}.\n",
+                     method => $method, value => $entry{$method},
+                     error => $@) if $@;
         }
 
         $entry = $po_entry;
@@ -861,6 +880,7 @@ sub __getOptions {
     
     return %options;   
 }
+
 sub __setKeywords {
     my ($self, $options) = @_;
 
@@ -892,34 +912,31 @@ sub __setKeywords {
     return $keywords;
 }
 
-sub __parseFlag {
-    my ($self, $flag) = @_;
-    
-    return if $flag !~ s/:([^:]+)$//;
-    my $format = $1;
-    
-    return if $flag !~ s/:([^:]+)$//;
-    my $argnum = $1;
-    
-    my $function = $flag;
-    return if !length $function;
-    
-    return;
-}
-
 sub __setFlags {
     my ($self, $options) = @_;
     
     my @defaults = @{$self->defaultFlags};
-    
-    foreach my $flag (@defaults, @$options) {
-        my @spec = $self->__parseFlag($flag)
+
+    my %flags;
+    my @flags;
+
+    foreach my $spec (@defaults, @$options) {
+        my $obj = Locale::XGettext::Util::Flag->newFromString($spec)
             or die __x("A --flag argument doesn't have the"
                        . " <keyword>:<argnum>:[pass-]<flag> syntax: {flag}",
-                       $flag);
+                       $spec);
+        my $method = $obj->method;
+        my $arg = $obj->arg;
+        my $flag = $obj->flag;
+
+        # First one wins.
+        next if $flags{$method}->{$flag}->{$arg};
+
+        $flags{$method}->{$flag}->{$arg} = $obj;
+        push @flags, $obj;
     }
     
-    return $self;
+    return \@flags;
 }
 
 sub __displayUsage {
