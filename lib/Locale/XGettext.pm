@@ -111,7 +111,7 @@ sub new {
     }
     
     $self->{__keywords} = $self->__setKeywords($options->{keyword});
-    $options->{flag} = $self->__setFlags($options->{flag});
+    $self->{__flags} = $self->__setFlags($options->{flag});
 
     if (exists $options->{exclude_file} && !ref $options->{exclude_file}) {
         $options->{exclude_file} = [$options->{exclude_file}];
@@ -345,7 +345,7 @@ sub keywords {
 
     my %keywords = %{$self->{__keywords}};
 
-    return \%keywords
+    return \%keywords;
 }
 
 sub keywordOptionStrings {
@@ -357,9 +357,31 @@ sub keywordOptionStrings {
         push @keywords, $keywords->{$function}->dump;
     }
 
-    push @keywords, undef;
+    push @keywords, undef if $terminate;
 
     return \@keywords;
+}
+
+sub flags {
+    my ($self) = @_;
+
+    my @flags = @{$self->{__flags}};
+
+    return \@flags;
+}
+
+sub flagOptionStrings {
+    my ($self, $terminate) = @_;
+
+    my @flags;
+    my $flags = $self->flags;
+    foreach my $flag (keys @$flags) {
+        push @flags, $flag->dump;
+    }
+
+    push @flags, undef if $terminate;
+
+    return \@flags;
 }
 
 sub recodeEntry {
@@ -632,7 +654,7 @@ sub __promoteEntry {
                 my $comment = $keywords->{$keyword}->comment;
                 $entry{automatic} = $comment if !__empty $comment;
 
-                my $flags = $self->option('flag');
+                my $flags = $self->flags;
                 my $sg_arg = $keywords->{$keyword}->singular;
                 my $pl_arg = $keywords->{$keyword}->plural || 0;
                 foreach my $flag (@$flags) {
@@ -1684,11 +1706,30 @@ the future.  Do not use!
 Return a hash reference with all keyword definitions as
 L<Locale::XGettext::Util::Keyword> objects.
 
-=item B<keywordOptionStrings>
+=item B<keywordOptionStrings [TERMINATE]>
 
 Return a reference to an array with all keyword definitions
 as option strings suitable for the command-line option
 "--keyword".
+
+If B<TERMINATE> is a truth value an undefined value is
+added as the last element of the array.  If you call
+the method from C, the array will thus be NULL-terminated.
+
+=item B<flags>
+
+Return an array reference with all flag definitions as
+L<Locale::XGettext::Util::Flag> objects.
+
+=item B<flagOptionStrings [TERMINATE]>
+
+Return a reference to an array with all flag definitions
+as option strings suitable for the command-line option
+"--flag".
+
+If B<TERMINATE> is a truth value an undefined value is
+added as the last element of the array.  If you call
+the method from C, the array will thus be NULL-terminated.
 
 =item B<options>
 
