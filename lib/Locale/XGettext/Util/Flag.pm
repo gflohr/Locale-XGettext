@@ -98,6 +98,15 @@ sub pass {
     shift->{pass};
 }
 
+sub dump {
+    my ($self) = @_;
+
+    return join ':', 
+           grep { defined }
+           $self->function, $self->arg,
+           $self->pass, $self->no, $self->flag; 
+}
+
 1;
 
 =head1 NAME
@@ -188,6 +197,11 @@ True if entry should be marked as "no-FLAG".
 =item B<pass>
 
 True if flag was preceded by "pass-".  Ignored by L<Locale::XGettext>.
+
+=item B<dump>
+
+Dump the flag definition into a string suitable for an argument
+to the xgettext option '--flag'.
 
 =back
 
