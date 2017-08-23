@@ -61,10 +61,10 @@ class JavaXGettext extends InlineJavaPerlCaller {
             while (it.hasNext()) {
                 Map.Entry kv = (Map.Entry) it.next();
 
-                String method = (String) kv.getKey();
+                String function = (String) kv.getKey();
                 JavaXGettextKeyword keyword = (JavaXGettextKeyword) kv.getValue();
 
-                System.out.println("method: " + method);
+                System.out.println("function: " + function);
 
                 Integer context = keyword.context();
                 if (context != null) {
@@ -167,7 +167,7 @@ class JavaXGettext extends InlineJavaPerlCaller {
  * The Java equivalent of the Perl class Locale::XGettext::Util::Keyword.
  */
 class JavaXGettextKeyword {
-    String method;
+    String function;
     int singular;
     int plural; 
     Integer context;
@@ -178,7 +178,7 @@ class JavaXGettextKeyword {
      *
      * All indices used here are 1-based not 0-based!
      *
-     * @param method                the name of the method
+     * @param function              the name of the method
      * @param singular              the index of the argument containing the
      *                              singular form
      * @param plural                the index of the argument containing the
@@ -188,10 +188,10 @@ class JavaXGettextKeyword {
      * @param comment               an automatic comment or null
      * @throws InlineJavaException  thrown for invalid usages
      */
-    public JavaXGettextKeyword(String method, Integer singular, Integer plural,
+    public JavaXGettextKeyword(String function, Integer singular, Integer plural,
                                Integer context, String comment)
             throws InlineJavaException {
-        this.method = method;
+        this.function = function;
         if (singular < 1)
             throw new InlineJavaException("Singular must always be defined");
         this.singular = singular;
@@ -203,12 +203,12 @@ class JavaXGettextKeyword {
     }
 
     /**
-     * The name of the method.
+     * The name of the function.
      *
-     * @return  the method name
+     * @return  the function name
      */
-    public String method() {
-        return this.method;
+    public String function() {
+        return this.function;
     }
 
     /**

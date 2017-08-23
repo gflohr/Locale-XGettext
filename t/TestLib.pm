@@ -45,10 +45,10 @@ sub find_entries {
 sub use_keywords($) {
     my ($keywords) = @_;
 
-    foreach my $method (keys %$keywords) {
-        $keywords->{$method} =
-            Locale::XGettext::Util::Keyword->new($method,
-                                                 @{$keywords->{$method}});
+    foreach my $function (keys %$keywords) {
+        $keywords->{$function} =
+            Locale::XGettext::Util::Keyword->new($function,
+                                                 @{$keywords->{$function}});
     }
 
     Locale::XGettext::Text->new({keywords => $keywords}, 'dummy');

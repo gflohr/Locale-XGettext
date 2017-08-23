@@ -54,7 +54,7 @@ class RubyXGettext
 
         keywords = self.option("keyword")
         keywords.each do |keyword, definition|
-            puts "method: #{keyword}"
+            puts "function: #{keyword}"
             
             if definition['context'] == nil
                 puts "  message context: [none]"

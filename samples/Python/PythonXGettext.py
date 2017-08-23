@@ -32,7 +32,7 @@ class PythonXGettext:
         for keyword, definition in keywords.items():
                 if isinstance(keyword, bytes):
                     keyword = keyword.decode()
-                print("method: " + keyword)
+                print("function: " + keyword)
 
                 context = definition.context()
                 if isinstance(context, bytes):

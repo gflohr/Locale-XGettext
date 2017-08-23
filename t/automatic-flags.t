@@ -59,8 +59,8 @@ $xgettext = Locale::XGettext::Test->new({keyword => ['nxgettext:1,2'],
 $xgettext->_feedEntry($entry);
 @po = $xgettext->run->po;
 is scalar @po, 2, 'expected two entries';
-ok !$po[1]->has_flag('c-format'), 'wrong flag method, singular';
-ok !$po[1]->has_flag('perl-format'), 'wrong flag method, plural';
+ok !$po[1]->has_flag('c-format'), 'wrong flag keyword, singular';
+ok !$po[1]->has_flag('perl-format'), 'wrong flag keyword, plural';
 
 $xgettext = Locale::XGettext::Test->new({keyword => ['nxgettext:1,2'],
                                          flag => [

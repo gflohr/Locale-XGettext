@@ -38,7 +38,7 @@ sub extractFromNonFiles {
 
     my $keywords = $self->option("keyword");
     while (my ($keyword, $definition) = each %$keywords) {
-        print "method: $keyword\n";
+        print "function: $keyword\n";
             
         my $context = $definition->context;
         if (defined $context) {

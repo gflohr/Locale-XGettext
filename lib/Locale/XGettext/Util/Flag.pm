@@ -27,10 +27,10 @@ use Locale::TextDomain qw(Locale-XGettext);
 sub new {
     my ($class, %args) = @_;
 
-    return if !defined $args{method};
+    return if !defined $args{function};
     return if !defined $args{flag};
     return if !defined $args{arg};
-    return if !length $args{method};
+    return if !length $args{function};
     return if !length $args{flag};
     # That would break the output.
     return if $args{flag} =~ /\n/;
@@ -46,7 +46,7 @@ sub new {
     my $comment_seen;
     my $context_seen;
     my $self = {
-        method => $args{method},
+        function => $args{function},
         arg => $args{arg},
         flag => $args{flag}
     };
@@ -63,14 +63,14 @@ sub newFromString {
     my $spec = $orig_spec;
     $spec =~ s/\s+//g;
 
-    my ($method, $arg, $flag) = split /:/, $spec, 3;
+    my ($function, $arg, $flag) = split /:/, $spec, 3;
     
     my ($pass, $no);
     $pass = 1 if $flag =~ s/^pass-//;
     $no = 1 if $flag =~ s/^no-//;
 
     return $class->new(
-        method => $method,
+        function => $function,
         arg => $arg,
         flag => $flag,
         no => $no,
@@ -78,8 +78,8 @@ sub newFromString {
     );
 }
 
-sub method {
-    shift->{method};
+sub function {
+    shift->{function};
 }
 
 sub arg {
@@ -108,7 +108,7 @@ Locale::XGettext::Util::Flag - A Flag Specification Used By xgettext
 
     use Locale::XGettext::Util::Flag;
 
-    $keyword = Locale::XGettext::Flag->new(method => '__x',
+    $keyword = Locale::XGettext::Flag->new(function => '__x',
                                            arg => 1,
                                            flag => 'perl-brace-format',
                                            no => 0,
@@ -131,9 +131,9 @@ key-value pairs) with the following items:
 
 =over 8
 
-=item B<method>
+=item B<function>
 
-The name of the method/function/keyword.  This is mandatory.
+The name of the function resp. keyword.  This is mandatory.
 
 =item B<arg>
 
@@ -169,9 +169,9 @@ ignored by L<Locale::XGettext>!
 
 =over 4
 
-=item B<method>
+=item B<function>
 
-Get the method name of the keyword.
+Get the function name for the keyword.
 
 =item B<arg>
 

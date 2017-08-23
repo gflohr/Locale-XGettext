@@ -153,7 +153,7 @@ sub option {
         foreach my $key (keys %$value) {
             my $perldef = $value->{$key};
             my $javadef = JavaXGettextKeyword->new(
-                $perldef->method,
+                $perldef->function,
                 $perldef->singular, $perldef->plural,
                 $perldef->context, $perldef->comment
             );

@@ -239,7 +239,7 @@ sub _addFlaggedEntry {
     
     if (!$self->{__run}) {
         require Carp;
-    # TRANSLATORS: run() is a method that should be invoked first. 
+        # TRANSLATORS: run() is a method that should be invoked first. 
         Carp::croak(__"Attempt to add entries before run");
     }
 
@@ -614,7 +614,7 @@ sub __promoteEntry {
                 my $sg_arg = $keywords->{$keyword}->singular;
                 my $pl_arg = $keywords->{$keyword}->plural || 0;
                 foreach my $flag (@$flags) {
-                    next if $keyword ne $flag->method;
+                    next if $keyword ne $flag->function;
                     next if $flag->arg != $sg_arg && $flag->arg != $pl_arg;
                     my $flag_name = $flag->flag;
                     $flag_name = 'no-' . $flag_name if $flag->no;
@@ -889,9 +889,9 @@ sub __setKeywords {
         $keywords = {@$keywords};
     }
 
-    while (my ($method, $argspec) = each %$keywords) {
-        $keywords->{$method} = Locale::XGettext::Util::Keyword->new($method, 
-                                                                    @$argspec);
+    while (my ($function, $argspec) = each %$keywords) {
+        $keywords->{$function} = 
+            Locale::XGettext::Util::Keyword->new($function, @$argspec);
     }
     
     foreach my $option (@$options) {
@@ -906,7 +906,7 @@ sub __setKeywords {
         } else {
             $keyword = Locale::XGettext::Util::Keyword->newFromString($option);
         }
-        $keywords->{$keyword->method} = $keyword;
+        $keywords->{$keyword->function} = $keyword;
     }
 
     return $keywords;
@@ -925,14 +925,14 @@ sub __setFlags {
             or die __x("A --flag argument doesn't have the"
                        . " <keyword>:<argnum>:[pass-]<flag> syntax: {flag}",
                        $spec);
-        my $method = $obj->method;
+        my $function = $obj->function;
         my $arg = $obj->arg;
         my $flag = $obj->flag;
 
         # First one wins.
-        next if $flags{$method}->{$flag}->{$arg};
+        next if $flags{$function}->{$flag}->{$arg};
 
-        $flags{$method}->{$flag}->{$arg} = $obj;
+        $flags{$function}->{$flag}->{$arg} = $obj;
         push @flags, $obj;
     }
     
@@ -1366,6 +1366,8 @@ Original explanation from GNU gettext:
 
 =over 4
 
+=encoding UTF-8
+
 Specifies additional flags for strings occurring as part of the I<arg>th
 argument of the function I<word>. The possible flags are the possible
 format string indicators, such as ‘c-format’, and their negations,
@@ -1642,7 +1644,7 @@ You can try this out with:
     xgettext-my.pl --keyword="greet:1" --flag=greet:1:hello-format
 
 Now all PO entries for the keyword "greet" will have the
-flag "hello-format".
+flag "hello-format"
 
 =item B<fuzzy>
 

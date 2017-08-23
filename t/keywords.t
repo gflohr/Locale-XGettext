@@ -41,10 +41,10 @@ ok $okay, $@;
 $okay = eval { use_keywords \%keywords };
 ok $okay, $@;
 
-# Invalid method name.
+# Invalid function name.
 %keywords = ('foo bar' => ['']);
 $okay = eval { use_keywords \%keywords };
-ok !$okay, 'invalid method name';
+ok !$okay, 'invalid function name';
 
 # Too many elements.
 %keywords = (foo => ['1', '2', '3', '4', '5']);

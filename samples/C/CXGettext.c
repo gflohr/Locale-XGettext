@@ -81,8 +81,8 @@ struct po_entry {
 
 /* The equivalent of Locale::XGettext::Util::Keyword in C.  */
 struct keyword {
-        /* The name of the method.  */
-        const char *method;
+        /* The name of the function.  */
+        const char *function;
 
         /* Position of singular form.  */
         unsigned int singular;
@@ -209,7 +209,7 @@ extractFromNonFiles(SV *self)
 
         while (*crs) {
                 keyword = *crs;
-                printf("method: %s\n", keyword->method);
+                printf("function: %s\n", keyword->function);
 
                 if (keyword->context)
                         printf("  context: argument #%u\n", keyword->context);
@@ -471,8 +471,8 @@ keywords(SV *self)
                 entry = hv_iternext(keyword_hash);
                 sv_key = hv_iterkeysv(entry);
 
-                keyword->method = strdup(SvPV(sv_key, PL_na));
-                if (!keyword->method)
+                keyword->function = strdup(SvPV(sv_key, PL_na));
+                if (!keyword->function)
                         croak("virtual memory exhausted");
                 
                 /* The values are objects of type Locale::XGettext::Util::Keyword.
@@ -552,8 +552,8 @@ free_keyword(struct keyword *self)
         if (!self)
                 return;
         
-        if (self->method)
-                free((void *) self->method);
+        if (self->function)
+                free((void *) self->function);
 
         if (self->comment)
                 free((void *) self->comment);
