@@ -28,7 +28,7 @@ class PythonXGettext:
 
         print("Keywords:")
 
-        keywords = self.xgettext.option('keyword')
+        keywords = self.xgettext.keywords()
         for keyword, definition in keywords.items():
                 if isinstance(keyword, bytes):
                     keyword = keyword.decode()

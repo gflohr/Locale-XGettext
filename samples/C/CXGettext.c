@@ -385,7 +385,8 @@ addEntry(SV *self, struct po_entry *entry, const char *comment)
                 reflen = strlen(entry->filename) + 3 + (size_t) floor(log10(UINT_MAX));
                 reference = malloc(reflen);
                 if (!reference) croak("virtual memory exhausted");
-                snprintf(reference, "%s:%u", entry->filename, entry->lineno);
+                snprintf(reference, reflen, "%s:%lu", entry->filename, 
+                         (unsigned long) entry->lineno);
                 PUSHs(sv_2mortal(newSVpv("reference", 9)));
                 PUSHs(sv_2mortal(newSVpv(reference, 0)));
         }
@@ -435,10 +436,33 @@ keywords(SV *self)
         struct keyword *keyword;
         SV **keyword_entry;
         HV *hv;
+        dSP;
+        int count;
+        
+        /* First call the method keywords() to get a hash 
+         * with all valid keyword definitions.
+         */
+        ENTER;
+        SAVETMPS;
+        PUSHMARK(SP);
+        EXTEND(SP, 1);
 
-        setvbuf(stdout, NULL, _IONBF, 0);
+        PUSHs(self);
+        PUTBACK;
 
-        records = option(self, "keyword");
+        count = call_method("keywords", G_SCALAR);
+
+        SPAGAIN;
+
+        if (count != 1)
+                croak("option() returned %d values.\n", count);
+
+        records = newSVsv(POPs);
+
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+
         if (!SvROK(records))
                 croak("keywords is not a reference");
 
@@ -517,7 +541,6 @@ option(SV *self, const char *option)
 
         return retval;
 }
-
 
 static void
 free_keywords(struct keyword **keywords)

@@ -36,7 +36,7 @@ sub extractFromNonFiles {
 
     print "Keywords:\n";
 
-    my $keywords = $self->option("keyword");
+    my $keywords = $self->keywords;
     while (my ($keyword, $definition) = each %$keywords) {
         print "function: $keyword\n";
             
@@ -75,14 +75,14 @@ sub fileInformation {
 
 # Return an array with the default keywords.  This is only used if the
 # method canKeywords() (see below) returns a truth value.  For the lines
-# extractor you would rather return None or an empty hash.
+# extractor you would rather return undef or an empty hash.
 sub defaultKeywords {
-    return { 
-        gettext => [1], 
-        ngettext => [1, 2],
-        pgettext => ['1c', 2],
-        npgettext => ['1c', '2', '3']
-    } 
+    return [ 
+        'gettext:1', 
+        'ngettext:1, 2',
+        'pgettext:1c,2',
+        'npgettext:1c,2,3'
+    ];
 }
 
 # You can add more language specific options here.  It is your

@@ -11,7 +11,7 @@
 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warrant y of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Library General Public License for more details.
 
 # You should have received a copy of the GNU Library General Public
@@ -110,7 +110,7 @@ sub new {
         $self->__usageError(__"no input file given") if !@{$self->{__files}};
     }
     
-    $options->{keyword} = $self->__setKeywords($options->{keyword});
+    $self->{__keywords} = $self->__setKeywords($options->{keyword});
     $options->{flag} = $self->__setFlags($options->{flag});
 
     if (exists $options->{exclude_file} && !ref $options->{exclude_file}) {
@@ -338,6 +338,28 @@ sub addEntry {
     }
     
     $self->_addFlaggedEntry($entry, $comment);
+}
+
+sub keywords {
+    my ($self) = @_;
+
+    my %keywords = %{$self->{__keywords}};
+
+    return \%keywords
+}
+
+sub keywordOptionStrings {
+    my ($self, $terminate) = @_;
+
+    my @keywords;
+    my $keywords = $self->keywords;
+    foreach my $function (keys %$keywords) {
+        push @keywords, $keywords->{$function}->dump;
+    }
+
+    push @keywords, undef;
+
+    return \@keywords;
 }
 
 sub recodeEntry {
@@ -605,7 +627,7 @@ sub __promoteEntry {
 
         my $keyword = delete $entry{keyword};
         if (defined $keyword) {
-            my $keywords = $self->option('keyword');
+            my $keywords = $self->keywords;
             if (exists $keywords->{$keyword}) {
                 my $comment = $keywords->{$keyword}->comment;
                 $entry{automatic} = $comment if !__empty $comment;
@@ -1656,6 +1678,17 @@ comment as appropriate.
 Instead of a hash you can currently also pass a 
 B<Locale::PO> object.  This may no longer be supported in
 the future.  Do not use!
+
+=item B<keywords>
+
+Return a hash reference with all keyword definitions as
+L<Locale::XGettext::Util::Keyword> objects.
+
+=item B<keywordOptionStrings>
+
+Return a reference to an array with all keyword definitions
+as option strings suitable for the command-line option
+"--keyword".
 
 =item B<options>
 

@@ -52,7 +52,7 @@ class RubyXGettext
 
         puts "Keywords:"
 
-        keywords = self.option("keyword")
+        keywords = self.keywords
         keywords.each do |keyword, definition|
             puts "function: #{keyword}"
             

@@ -133,6 +133,18 @@ sub comment {
     shift->{comment};
 }
 
+sub dump {
+    my ($self) = @_;
+
+    my $dump = $self->function . ':';
+    $dump .= $self->context . 'c,' if $self->context;
+    $dump .= $self->singular . ',';
+    $dump .= $self->plural . '.' if $self->plural;
+    chop $dump;
+
+    return $dump;
+}
+
 1;
 
 =head1 NAME
@@ -219,6 +231,11 @@ plural form.
 =item B<comment>
 
 The automatic comment for this keyword or the undefined value.
+
+=item B<dump>
+
+Dump the keyword definition into a string suitable for an argument
+to the xgettext option '--keyword'.
 
 =back
 

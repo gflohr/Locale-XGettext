@@ -369,16 +369,16 @@ the method `canKeywords()` and return `false`.  If it does, you can
 define the default keywords for your language like this:
 
     def defaultKeywords(self):
-        return { 
+        return [
                    'gettext': ['1'], 
                    'ngettext': ['1', '2'],
                    'pgettext': ['1c', '2'],
                    'npgettext': ['1c', '2', '3'] 
-               }
+        ]
 
-The return value of `defaultKeywords()` should be an associative array.
-The keys are the keywords themselves, the values define the position of
-the keyword in the invocation.  In the above example, the extractor
+The return value of `defaultKeywords()` should be an array
+of strings suitable as arguments for the command-line option
+"--keyword". In the above example, the extractor
 should extract the first argument to the function `npgettext()` and
 interpret it as the message context (hence the `c` after the position),
 arguments 2 and 3 should be interpreted as the singular and plural form

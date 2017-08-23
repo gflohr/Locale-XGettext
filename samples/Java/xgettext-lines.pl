@@ -65,7 +65,7 @@ sub defaultKeywords {
         if !$self->{__helper}->can('defaultKeywords');
     
     return $self->{__helper}->defaultKeywords;
-    
+
     # Turn the array of arrays returned by the Java class method into a Perl
     # Hash.  The array returned from Java is an Inline::Java::Array which
     # does not support splice().  We therefore have to copy it into a
@@ -148,22 +148,25 @@ sub addEntry {
 sub option {
     my ($class, $name) = @_;
 
-    my $value = $xgettext->option($name);
-    if ('keyword' eq $name) {
-        my $keywords = JavaXGettextKeywords->new;
+    return $xgettext->option($name);
+}
 
-        foreach my $key (keys %$value) {
-            my $perldef = $value->{$key};
-            my $javadef = JavaXGettextKeyword->new(
-                $perldef->function,
-                $perldef->singular, $perldef->plural,
-                $perldef->context, $perldef->comment
-            );
-            $keywords->put($key, $javadef);
-        }
+sub keywords {
+    my ($class) = @_;
 
-        $value = $keywords;
+    my $keywords = JavaXGettextKeywords->new;
+    my $value = $xgettext->keywords;
+
+    foreach my $key (keys %$value) {
+        my $perldef = $value->{$key};
+        my $javadef = JavaXGettextKeyword->new(
+            $perldef->function,
+            $perldef->singular, $perldef->plural,
+            $perldef->context, $perldef->comment
+        );
+        
+        $keywords->put($key, $javadef);
     }
 
-    return $value;
+    return $keywords;
 }

@@ -52,13 +52,12 @@ class JavaXGettext extends InlineJavaPerlCaller {
         if (test != null) {
             JavaXGettextKeywords keywords = (JavaXGettextKeywords)
                     CallPerlStaticMethod("Locale::XGettext::Callbacks",
-                            "option",
-                            new Object [] {
-                                    "keyword"
-                            });
+                            "keywords", new Object[] {});
 
+System.out.println("have keywords");
             Iterator it = keywords.entrySet().iterator();
             while (it.hasNext()) {
+System.out.println("get next value");
                 Map.Entry kv = (Map.Entry) it.next();
 
                 String function = (String) kv.getKey();
