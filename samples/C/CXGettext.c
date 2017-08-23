@@ -235,6 +235,11 @@ extractFromNonFiles(SV *self)
         }
 
         free_keywords(records);
+        
+        /* Extracting the valid flags is left as an exercise to
+         * the reader.  File a bug report if you cannot find yourself
+         * how to do it.
+         */
 }
 
 /* Describe the type of input files.  */
@@ -251,35 +256,17 @@ for every non-empty line.";
 
 /* Return an array with the default keywords.  This is only used if the
  * method canKeywords() (see below) returns a truth value.  For the lines
- * extractor you would rather return None or an empty array.
+ * extractor you would rather NULL or an empty array.
  */
 SV *
 defaultKeywords(SV *self)
 {
-        /* We have to return a hash of arrays which is not trivial.
-         * Alternatively, you can define the method inside xgettext-lines.pl
-         * in Perl.
-         */
-        HV *keywords = newHV();
-        AV *gettext = newAV();
-        AV *ngettext = newAV();
-        AV *pgettext = newAV();
-        AV *npgettext = newAV();
+        AV *keywords = newAV();
 
-        av_push(gettext, newSViv(1));
-        hv_store(keywords, "gettext", 7, newRV_noinc((SV *) gettext), 0);
-
-        av_push(ngettext, newSViv(1));
-        av_push(ngettext, newSViv(2));
-        hv_store(keywords, "ngettext", 8, newRV_noinc((SV *) ngettext), 0);
-
-        av_push(pgettext, newSVpv("1c", 0));
-        av_push(pgettext, newSViv(2));
-        hv_store(keywords, "pgettext", 8, newRV_noinc((SV *) pgettext), 0);
-
-        av_push(npgettext, newSVpv("1c", 0));
-        av_push(npgettext, newSViv(2));
-        hv_store(keywords, "npgettext", 9, newRV_noinc((SV *) npgettext), 0);
+        av_push(keywords, newSVpv("gettext:1", 9));
+        av_push(keywords, newSVpv("ngettext:1,2", 12));
+        av_push(keywords, newSVpv("pgettext:1c,2", 13));
+        av_push(keywords, newSVpv("npgettext:1c,2,3", 16));
 
         return newRV_noinc((SV *) keywords);
 

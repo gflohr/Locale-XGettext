@@ -884,17 +884,10 @@ sub __getOptions {
 sub __setKeywords {
     my ($self, $options) = @_;
 
-    my $keywords = $self->defaultKeywords || {};
-    if ('ARRAY' eq reftype $keywords) {
-        $keywords = {@$keywords};
-    }
-
-    while (my ($function, $argspec) = each %$keywords) {
-        $keywords->{$function} = 
-            Locale::XGettext::Util::Keyword->new($function, @$argspec);
-    }
+    my $defaults = $self->defaultKeywords || [];
     
-    foreach my $option (@$options) {
+    my $keywords = {};
+    foreach my $option (@$defaults, @$options) {
         if ('' eq $option) {
             $keywords = {};
             next;
@@ -1781,27 +1774,44 @@ definitions for the specific language.  The default keywords
 (actually just a subset for it) for the language C would look like 
 this (expressed in JSON):
 
-    {
-        "gettext": [1],
-        "ngettext": [1, 2],
-        "pgettext": ["1c", 2],
-        "npgettext": ["1c", 2, 3]
-    }
+    [
+        "gettext:1",
+        "ngettext:1,2",
+        "pgettext:1c,2",
+        "npgettext:1c,2,3"
+    ]
 
-Instead of a hasn reference you can also pass an array reference
-or a list.  The reason for that is that other languages than Perl
-may not support hashes or lists.
-
-In either case, each entry consists of a keyword and an argument
-specification.  The first position specification without a 
-modifier (only "c" is possible) is the position of the message
-id.  The second one is the position of the plural form.  The
-location specification with a trailing "c" denoteas the position
-of the message context.
+See above the description of the command-line option "--keyword"
+for more information about the meaning of these strings.
 
 =item B<defaultFlags>
 
-Not yet implemented.  Do not use!
+Returns a reference to an emtpy array.
+
+Subclasses may return a reference to an array with default flag
+specifications for the specific language.  An example may look
+like this (expressed in JSON):
+
+    [
+        "gettextx:1:perl-brace-format",
+        "ngettextx:1:perl-brace-format",
+        "ngettextx:2:perl-brace-format",
+    ]
+
+We assume that "gettextx()" and "gettextx() are keywords for
+the language in question.  The above default flag definition
+would mean that in all invocations of the function "gettextx()",
+the 1st argument would get the flag "perl-brace-format".  In
+all invocations of "ngettextx()", the 1st and 2nd argument would
+get the flag "perl-brace-format".
+
+You can prefix the format with "no-" which tells the GNU gettext
+tools that the particular never uses that format.
+
+You can additionally prefix the format with "pass-" but this
+is ignored by Locale::XGettext.  If you want to implemnt the
+GNU xgettext behavior for the "pass-" prefix, you have to implement
+it yourself in your extractor.
 
 =item B<recodeEntry ENTRY>
 

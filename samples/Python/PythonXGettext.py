@@ -63,7 +63,11 @@ class PythonXGettext:
                     comment = comment.decode()
                 
                 print("  automatic comment: " + comment)
-                    
+
+        # Extracting the valid flags is left as an exercise to
+        # the reader.  File a bug report if you cannot find yourself
+        # how to do it.
+
         return
 
     # Describe the type of input files.
@@ -74,12 +78,12 @@ class PythonXGettext:
     # method canKeywords() (see below) returns a truth value.  For the lines
     # extractor you would rather return None or an empty hash.
     def defaultKeywords(self):
-        return { 
-                   'gettext': ['1'], 
-                   'ngettext': ['1', '2'],
-                   'pgettext': ['1c', '2'],
-                   'npgettext': ['1c', '2', '3'] 
-               }               
+        return [
+                   'gettext:1', 
+                   'ngettext:1,2',
+                   'pgettext:1c,2',
+                   'npgettext:1c,2,3' 
+        ]               
 
     # You can add more language specific options here.  It is your
     # responsibility that the option names do not conflict with those of the

@@ -64,6 +64,8 @@ sub defaultKeywords {
     return $self->SUPER::defaultKeywords()
         if !$self->{__helper}->can('defaultKeywords');
     
+    return $self->{__helper}->defaultKeywords;
+    
     # Turn the array of arrays returned by the Java class method into a Perl
     # Hash.  The array returned from Java is an Inline::Java::Array which
     # does not support splice().  We therefore have to copy it into a

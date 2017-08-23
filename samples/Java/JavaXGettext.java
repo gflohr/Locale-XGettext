@@ -91,12 +91,12 @@ class JavaXGettext extends InlineJavaPerlCaller {
     /*
      * Return an array of arrays with the default keywords of this language.
      */
-    public String[][] defaultKeywords() {
-        return new String[][] {
-                {"gettext", "1"},
-                {"ngettext", "1", "2"},
-                {"pgettext", "1c", "2"},
-                {"npgettext", "1c", "2", "3"}
+    public String[] defaultKeywords() {
+        return new String[] {
+                "gettext:1",
+                "ngettext:1,2",
+                "pgettext:1c,2",
+                "npgettext:1c,2,3"
         };
     }
     
