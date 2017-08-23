@@ -1362,13 +1362,54 @@ B<Not all extractors support this option!>
 
 =item B<--flag=WORD:ARG:FLAG>
 
-Not yet implemented.  The option is ignored for compatibility reasons.
+Original explanation from GNU gettext:
 
-Individual extractors may define more language-specific options.
+=over 4
+
+Specifies additional flags for strings occurring as part of the I<arg>th
+argument of the function I<word>. The possible flags are the possible
+format string indicators, such as ‘c-format’, and their negations,
+such as ‘no-c-format’, possibly prefixed with ‘pass-’.
+
+The meaning of --flag=I<function:arg:lang-format> is that in language
+I<lang>, the specified I<function> expects as I<arg>th argument a format string.
+(For those of you familiar with GCC function attributes, 
+--flag=I<function:arg>:c-format is roughly equivalent to the declaration
+‘__attribute__ ((__format__ (__printf__, I<arg>, ...)))’ attached to I<function>
+in a C source file.) For example, if you use the ‘error’ function from
+GNU libc, you can specify its behaviour through --flag=error:3:c-format.
+The effect of this specification is that xgettext will mark as format
+strings all gettext invocations that occur as I<arg>th argument of I<function>.
+This is useful when such strings contain no format string directives:
+together with the checks done by ‘msgfmt -c’ it will ensure that translators
+cannot accidentally use format string directives that would lead to a
+crash at runtime.
+
+The meaning of --flag=I<function:arg>:pass-I<lang>-format is that in language
+I<lang>, if the I<function> call occurs in a position that must yield a format
+string, then its I<arg>th argument must yield a format string of the same
+type as well. (If you know GCC function attributes, the 
+--flag=I<function:arg>:pass-c-format option is roughly equivalent to the
+declaration ‘__attribute__ ((__format_arg__ (I<arg>)))’ attached to function
+in a C source file.) For example, if you use the ‘_’ shortcut for the
+gettext function, you should use --flag=_:1:pass-c-format. The effect of
+this specification is that xgettext will propagate a format string
+requirement for a _("string") call to its first argument, the literal
+"string", and thus mark it as a format string. This is useful when such
+strings contain no format string directives: together with the checks
+done by ‘msgfmt -c’ it will ensure that translators cannot accidentally
+use format string directives that would lead to a crash at runtime.
 
 =back
 
-=head2
+Note that B<Locale::XGettext> ignores the prefix I<pass-> and therefore
+most extractors based on B<Locale::XGettext> will also ignore it.
+
+=back
+
+Individual extractors may define more language-specific options.
+
+=head2 Output Details
 
 =over 4
 
@@ -1591,6 +1632,17 @@ like this:
 If you set B<keyword> to "greet", the comment "Hello, world"
 will be added.  Note that the "double quotes" are part of the
 command-line argument!
+
+Likewise, if "--flag" was specified on the command-line or
+the extractor ships with default flags, entries matching
+the flag definition will automatically have this flag.
+
+You can try this out with:
+
+    xgettext-my.pl --keyword="greet:1" --flag=greet:1:hello-format
+
+Now all PO entries for the keyword "greet" will have the
+flag "hello-format".
 
 =item B<fuzzy>
 

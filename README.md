@@ -70,10 +70,27 @@ other languages.  The distribution currently contains fully function
 examples written in [C](samples/C/README.md), [Java](samples/Java/README.md), 
 [Python](samples/Python/README.md), [Perl](samples/Perl/README.md),
 and [Ruby](samples/Ruby/README.md).
- 
-## TODO
 
-Flags (xgettext option `--flag`) are not yet supported.
+## Differences To `xgettext` From GNU Gettext
+
+There a couple of subtle differences in the handling of command-line
+arguments between extractors based on `Locale::XGettext` and
+the original `xgettext` program.  Report a bug if you think that
+a particular difference is a bug and not an improvement.
+
+One thing that `Locale::XGettext` does not support is the prefix
+"pass-" for flag definitions.  While it is possible for an
+extractor to implement the behavior of GNU gettext, this is not
+directly supported by `Locale::XGettext`.  Instead, that
+prefix is simply ignored, when specified on the command-line
+for the option "--flag" or as part of the set of default flags
+for a particular extractor.
+
+Additionally, while `xgettext` from GNU gettext has a hard-coded,
+fixed set of supported formats, you can specify arbitrary formats
+with "--flag" for extractors based on B<Locale::XGettext>.
+
+## TODO
 
 The module should ship with its own PO parser and writer.
 
