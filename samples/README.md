@@ -337,6 +337,52 @@ underscores:
 
 The above would extract the value of the option `'--extract-all'`.
 
+### Accessing Keywords And Flags
+
+Keywords and Flags are always a mixture between default settings
+and those specified on the command-line with `--keyword` or
+`--flag`.  There are two flavors of retrieving the merged
+definitions:
+
+    keywords = self.xgettext.keywords()
+
+This will a list of objects resp. hashes/associative arrays,
+each one having the following keys:
+
+* function: the function name (the keyword)
+* singular: the argument number of the singular form
+* plural: the argument number of the plural form or 0
+* context: the argument number of the message context or 0
+* comment: an automatic comment or None, undefined, nil, NULL, ...
+
+See the example source code for details how to retrieve that.
+
+Alternatively, you can also just get an array of corresponding
+object strings and parse them yourself:
+
+    keywords = self.xgettext.keywordOptionStrings()
+
+This would produce something like:
+
+    [
+        "gettext:1",
+        "ngettext:1,2",
+        "ncgettext:1c,2,3",
+        "greet:1,\"Hello, world!\""
+    ]
+
+Accessing flags is almost the same.  The objects returned by
+the method "flags()" have the properties "function", "arg"
+(for the argument number), "flag" for the flag ("c-format",
+"perl-format", ...), "no" (true for "no-c-format", "no-perl-format"),
+and "pass" (for "pass-c-format", "pass-perl-format"). 
+Alternatively, you have the method "flagOptionStrings()" if you
+want to parse the values yourself.
+
+Under normal circumstances, you don't have to access flags.
+Just pass the "keyword" property with "addEntry()" and
+`Locale::XGettext` will process the flags automatically.
+
 ### More Modifications To the CLI
 
 By overriding certain methods you can enable or disable more options in
@@ -370,10 +416,10 @@ define the default keywords for your language like this:
 
     def defaultKeywords(self):
         return [
-                   'gettext': ['1'], 
-                   'ngettext': ['1', '2'],
-                   'pgettext': ['1c', '2'],
-                   'npgettext': ['1c', '2', '3'] 
+                   'gettext:1', 
+                   'ngettext:1,2',
+                   'pgettext:1c,2',
+                   'npgettext:1c,2,3' 
         ]
 
 The return value of `defaultKeywords()` should be an array
