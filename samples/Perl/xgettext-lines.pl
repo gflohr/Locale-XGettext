@@ -34,14 +34,7 @@ sub extractFromNonFiles {
         return $self;
     }
 
-    print "Keywords as command-line options:\n";
-
-    # First print them as command-line options.
-    foreach my $option (@{$self->keywordOptionStrings}) {
-        print "  $option\n";
-    }
-
-    print "\nKeywords broken down:\n";
+    print "Keywords:\n";
 
     my $keywords = $self->keywords;
     while (my ($keyword, $definition) = each %$keywords) {
@@ -71,16 +64,6 @@ sub extractFromNonFiles {
         $comment = '[none]' if !defined $comment;
         print "  automatic comment: $comment\n";
     }
-
-    print "\nFlags as command-line options:\n";
-
-    # First print them as command-line options.
-    foreach my $option (@{$self->flagOptionStrings}) {
-        print "  $option\n";
-    }
-
-    # Printing them in broken down form is left as an exercise to
-    # the reader.
 
     return $self;
 }
