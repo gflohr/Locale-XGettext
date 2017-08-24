@@ -375,7 +375,7 @@ sub flagOptionStrings {
 
     my @flags;
     my $flags = $self->flags;
-    foreach my $flag (keys @$flags) {
+    foreach my $flag (@$flags) {
         push @flags, $flag->dump;
     }
 
