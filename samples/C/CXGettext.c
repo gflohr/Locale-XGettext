@@ -66,7 +66,7 @@ struct po_entry {
         /* This is a so-called automatic comment.  Automatic
          * commands are prefixed with "#." in the PO files.
          * The only reason why you want to add them is actually
-         * that it had been specified on the commandline with
+         * that it had been specified on the command-line with
          * "--add-comment."  But in that case it is actually
          * easier to just specify the keyword and then Locale::XGettext
          * will do that automaticaslly for you, when it is 
@@ -101,7 +101,7 @@ struct keyword {
  * source code comment preceding the message but without the
  * comment delimiter of your language.  The string is then parsed
  * by Locale::XGettext, especially for translator comments specified
- * on the commandline with "--add-comment".
+ * on the command-line with "--add-comment".
  *
  * The method is just a thin wrapper against addEntry() of the 
  * underlying Perl object.
@@ -115,7 +115,7 @@ static void addEntry(SV *self, struct po_entry *entry, const char *comment);
 #define init_po_entry(entry) memset(&entry, 0, sizeof(struct po_entry))
 
 /* Get all valid keyword definitions.  That is the merge of 
- * default keywords and those specified on the commandline.
+ * default keywords and those specified on the command-line.
  * Pass the return value to free_keywords() in order to free
  * all resources again.
  */
@@ -203,7 +203,7 @@ extractFromNonFiles(SV *self)
         if (!SvTRUE(option(self, "test_binding")))
                return;
 
-        puts("Keyword definitions:");
+        puts("Keyword as command-line-options:");
 
         records = crs = keywords(self);
 

@@ -320,7 +320,7 @@ the rest of the usage description.
 The last element contains the description of the option in the usage
 description.
 
-### Accessing Commandline Options
+### Accessing Command-Line Options
 
 You access command line options with the method `option()`:
 

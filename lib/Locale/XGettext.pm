@@ -1223,7 +1223,7 @@ Locale::XGettext - Extract Strings To PO Files
 =head1 DESCRIPTION
 
 B<Locale::XGettext> is the base class for various string extractors.  These
-string extractors can be used as standalone programs on the commandline or
+string extractors can be used as standalone programs on the command-line or
 as a module as a part of other software.
 
 See L<https://github.com/gflohr/Locale-XGettext> for an overall picture of
@@ -1584,16 +1584,16 @@ additionally modify the behavior your extractor.
 
 =item B<new $OPTIONS, @FILES>
 
-B<OPTIONS> is a hash reference containing the above commandline
+B<OPTIONS> is a hash reference containing the above command-line
 options but with every hyphen replaced by an underscore.  You
 should normally not use this constructor!
 
 =item B<newFromArgv $ARGV>
 
-B<ARGV> is a reference to a an array of commandline arguments
+B<ARGV> is a reference to a an array of command-line arguments
 that is passed verbatim to B<Getopt::Long::GetOptionsFromArray>.
 After processing all options and arguments, the constructor
-B<new()> above is then invoked with the cooked commandline
+B<new()> above is then invoked with the cooked command-line
 arguments.
 
 This is the constructor that you should normally use in 
@@ -1721,7 +1721,7 @@ as option strings suitable for the command-line option
 
 =item B<options>
 
-Get all commandline options as a hash reference.
+Get all command-line options as a hash reference.
 
 =item B<option OPTION>
 
