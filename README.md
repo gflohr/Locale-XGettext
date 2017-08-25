@@ -140,7 +140,7 @@ The module should ship with its own PO parser and writer.
 ## Bugs
 
 Please report bugs at 
-https://github.com/gflohr/Locale-XGettext/issues
+[https://github.com/gflohr/Locale-XGettext/issues](https://github.com/gflohr/Locale-XGettext/issues)
 
 ## Copyright
 

@@ -1,4 +1,6 @@
 /.build
+/_build
+/Build
 /.idea
 /.project
 /.includepath
@@ -13,3 +15,4 @@
 _Inline/
 .DS_Store
 /Makefile.old
+/README.pod
