@@ -196,6 +196,10 @@ sub run {
         $po->prepend($self->__poHeader);
     }
 
+    foreach my $entry ($po->entries) {
+        $self->recodeEntry($entry);
+    }
+
     return $self;
 }
 
@@ -359,7 +363,8 @@ sub flagOptionStrings {
 sub recodeEntry {
     my ($self, $entry) = @_;
     
-    my $from_code = $self->{__options}->{from_code};
+    my $from_code = $self->option('from_code');
+    $from_code = 'US-ASCII' if __empty $from_code;
     $from_code = Locale::Recode->resolveAlias($from_code);
     
     my $cd;
