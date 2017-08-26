@@ -38,16 +38,17 @@ my ($xgettext, @po);
 my $entry = { msgid => 'Hello, world!'};
 
 $xgettext = Locale::XGettext::Test->new;
-$xgettext->_feedEntry($entry, <<EOF);
-TRANSLATORS: There was no comment keyword specified!
-EOF
+my $comment = "TRANSLATORS: There was no comment specified!\n";
+$entry->{automatic} = $comment;
+$xgettext->_feedEntry($entry);
 @po = $xgettext->run->po;
 is scalar @po, 2;
 ok !defined $po[1]->automatic, "no comment keyword specified";
 
 my $comment1 = "TRANSLATORS: This comment should go into the PO file!\n";
+$entry->{automatic} = $comment1;
 $xgettext = Locale::XGettext::Test->new({add_comments => ['TRANSLATORS:']});
-$xgettext->_feedEntry($entry, $comment1);
+$xgettext->_feedEntry($entry);
 @po = $xgettext->run->po;
 is scalar @po, 2;
 is $po[1]->automatic, $comment1, "regular comment";
@@ -60,10 +61,11 @@ More leading garbage TRANSLATORS: Where should this go?
 garbage againxgettext: no-perl-brace-format c-format trailing garbage
 Into the PO file!
 EOF
-$xgettext->_feedEntry($entry, $multi_comment);
+$entry->{automatic} = $multi_comment;
+$xgettext->_feedEntry($entry);
 my $comment2 = "CODERS: Think before you type!\n";
-my $entry2 = { msgid => "Hello, underworld!" };
-$xgettext->_feedEntry($entry2, $comment2);
+my $entry2 = { msgid => "Hello, underworld!", automatic => $comment2 };
+$xgettext->_feedEntry($entry2);
 @po = $xgettext->run->po;
 is scalar @po, 3;
 is $po[1]->automatic, <<EOF, "interrupted comment";
@@ -79,7 +81,8 @@ my $multi_comment2 = <<EOF;
 TRANSLATORS: You can use
 The string "xgettext:" in order to set flags in comments.
 EOF
-$xgettext->_feedEntry($entry, $multi_comment2);
+$entry->{automatic} = $multi_comment2;
+$xgettext->_feedEntry($entry);
 @po = $xgettext->run->po;
 is scalar @po, 2;
 is $po[1]->automatic, $multi_comment2, '"xgettext:" without valid flags';
@@ -93,8 +96,8 @@ is $po[1]->automatic, "Hello!", "automatic keyword comment not used";
 $xgettext = Locale::XGettext::Test->new({keyword => ['greet:1,"world!"'],
                                          add_comments => ['TRANSLATORS:']});
 my $comment3 = "TRANSLATORS: Hello,";
-$DB::single = 1;
-$xgettext->_feedEntry({msgid => 'world', keyword => 'greet'}, $comment3);
+$xgettext->_feedEntry({msgid => 'world', keyword => 'greet', 
+                       automatic => $comment3});
 @po = $xgettext->run->po;
 is scalar @po, 2;
 is $po[1]->automatic, "TRANSLATORS: Hello,\nworld!", 

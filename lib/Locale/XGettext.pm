@@ -236,9 +236,9 @@ sub readPO {
     return $self;
 }
 
-sub _addFlaggedEntry {
-    my ($self, $entry, $comment) = @_;
-    
+sub addEntry {
+    my ($self, $entry) = @_;
+
     if (!$self->{__run}) {
         require Carp;
         # TRANSLATORS: run() is a method that should be invoked first. 
@@ -247,64 +247,13 @@ sub _addFlaggedEntry {
 
     # Simplify calling from languages that do not have hashes.
     if (!ref $entry) {
-        my @args = splice @_, 1;
-        if (@args % 2) {
-            # Odd number of arguments.  A comment was passed.
-            $comment = pop @args;
-        } else {
-            undef $comment;
-        }
-
-        $entry = {@args};
+        $entry = {splice @_, 1};
     }
 
+    my $comment = delete $entry->{automatic};
     $entry = $self->__promoteEntry($entry);
-    
-    my ($msgid) = $entry->msgid;
-    if (!__empty $msgid) {
-        my $ctx = $entry->msgctxt;
-        $ctx = '' if __empty $ctx;
-        
-        return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
-    }
-    
-    my $comment_keywords = $self->option('add_comments');
-    my @automatic;
-    if (defined $comment && $comment_keywords) {
-        foreach my $keyword (@$comment_keywords) {
-            if ($comment =~ /($keyword.*)/s) {
-                push @automatic, $1;
-                last;
-            }
-        }
-    }
-    my $old_automatic = $entry->automatic;
-    push @automatic, $entry->dequote($old_automatic) if !__empty $old_automatic;
-
-    $entry->automatic(join "\n", @automatic) if @automatic;
-    
-    $self->{__po}->add($entry);
-}
-
-sub addEntry {
-    my ($self, $entry, $comment) = @_;
-
-    # Simplify calling from languages that do not have hashes.
-    if (!ref $entry) {
-        my @args = splice @_, 1;
-        if (@args % 2) {
-            # Odd number of arguments.  A comment was passed.
-            $comment = pop @args;
-        } else {
-            undef $comment;
-        }
-
-        $entry = {@args};
-    }
 
     if (defined $comment) {
-        $entry = $self->__promoteEntry($entry);
-        
         # Does it contain an "xgettext:" comment?  The original implementation
         # is quite relaxed here, even recogizing comments like "exgettext:".
         my $cleaned = '';
@@ -337,9 +286,34 @@ sub addEntry {
 
         $cleaned .= $comment;
         $comment = $cleaned;
+
+        my $comment_keywords = $self->option('add_comments');
+        if (!__empty $comment && defined $comment_keywords) {
+            my @automatic;
+            foreach my $keyword (@$comment_keywords) {
+                if ($comment =~ /($keyword.*)/s) {
+                    push @automatic, $1;
+                    last;
+                }
+            }
+            
+            my $old_automatic = $entry->automatic;
+            push @automatic, $entry->dequote($old_automatic) if !__empty $old_automatic;
+            $entry->automatic(join "\n", @automatic) if @automatic;    
+        }
     }
     
-    $self->_addFlaggedEntry($entry, $comment);
+    my ($msgid) = $entry->msgid;
+    if (!__empty $msgid) {
+        my $ctx = $entry->msgctxt;
+        $ctx = '' if __empty $ctx;
+        
+        return $self if exists $self->{__exclude}->{$msgid}->{$ctx};
+    }
+    
+    $self->{__po}->add($entry);
+
+    return $self;
 }
 
 sub keywords {

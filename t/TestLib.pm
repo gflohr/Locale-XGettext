@@ -68,18 +68,18 @@ sub extractFromNonFiles {
     my ($self) = @_;
 
     my @added = @{$self->{__fed_entries} || []};
-    foreach my $record (@added) {
-        $self->addEntry($record->[0], $record->[1]);
+    foreach my $entry (@added) {
+        $self->addEntry($entry);
     }
 
     return $self;
 }
 
 sub _feedEntry {
-    my ($self, $entry, $comment) = @_;
+    my ($self, $entry) = @_;
 
     $self->{__fed_entries} ||= [];
-    push @{$self->{__fed_entries}}, [$entry, $comment];
+    push @{$self->{__fed_entries}}, $entry;
 
     return $self;
 }
