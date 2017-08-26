@@ -526,7 +526,7 @@ consisting of four items:
 =item *
 
 The option specification for Getopt::Long(3pm), for example
-"-f|--filename=s" for an option expexting a mandatory
+"f|filename=s" for an option expexting a mandatory
 string argument.
 
 =item *
