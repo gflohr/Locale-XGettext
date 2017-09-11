@@ -30,7 +30,7 @@ use File::Spec;
 use Locale::PO 0.27;
 use Scalar::Util qw(reftype blessed);
 use Locale::Recode;
-use Getopt::Long qw(GetOptionsFromArray);
+use Getopt::Long 2.36 qw(GetOptionsFromArray);
 
 use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
