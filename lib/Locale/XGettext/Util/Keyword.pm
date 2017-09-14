@@ -35,6 +35,7 @@ sub new {
         function => $function,
         singular => 0,
         plural => 0,
+        context => 0,
     };
         
     foreach my $arg (@args) {
@@ -60,7 +61,7 @@ sub new {
             }
         } elsif ($arg =~ /^"(.*)"$/) {
               die __x("Multiple automatic comments for function '{function}'!\n",
-                      functin => $function)
+                      function => $function)
                   if $comment_seen++;
               $self->{comment} = $1;
         } else {
@@ -77,35 +78,50 @@ sub new {
 sub newFromString {
     my ($class, $spec) = @_;
     
-    my ($function, $string) = split /:/, $spec, 2;
-    $function =~ s/^\s+//;
-    $function =~ s/\s+$//;
-    
-    die __x("Invalid function name in keyword specification '{spec}'!\n",
-            spec => $spec)
-        if $function !~ /^[a-zA-Z][_a-zA-Z0-9]*$/;
-        
-    $string = '' if !defined $string;
-    
-    
+    # Strip off a possible automatic comment.
     my @tokens;
-    push @tokens, '' if $string =~ s/^,//;
-    my @chunks = split /(\s*".*"\s*|[^,]*)/, $string;
-    for (my $i = 0; $i < @chunks; $i += 2) {
-        my $token = $chunks[$i + 1];
-        $token =~ s/^\s+//;
+    my $comment_seen;
+    my $forms_seen = 0;
+    my $context_seen;
+    while (@tokens < 4 && length $spec) {
+        if ($spec =~ s/([,:])[\s]*([1-9][0-9]*c?)[\s]*$//) {
+            my ($sep, $token) = ($1, $2);
+            if ($token =~ /c$/) {
+                if ($context_seen) {
+                    $spec .= ":$token";
+                    last;
+                }
+                $context_seen = 1;
+            } else {
+                if ($forms_seen >= 2) {
+                    $spec .= ":$token";
+                    last;
+                }
+                ++$forms_seen;
+            }
+            unshift @tokens, $token;
 
-        if ($token =~ s/^(".*")\s*$//) {
-            # This is what GNU xgettext does.
-            $token = $1;
-            $token =~ s/"//g;
-            $token = qq{"$token"};
+            last if ':' eq $sep;
+        } elsif ($spec =~ s/([,:])[\s]*"(.*)"[\s]*$//) {
+            my ($sep, $token) = ($1, $2);
+            if ($comment_seen) {
+                $spec .= qq{:"$token"};
+                last;
+            }
+
+            my $comment = $token;
+            # This is what GNU xgettxt does.
+            $comment =~ s/"//;
+            unshift @tokens, qq{"$token"};
+            
+            last if ':' eq $sep;
+        } else {
+            last;
         }
-        push @tokens, $token;
     }
-    
-    @tokens = (1) if !@tokens;
-    
+    my $function = $spec;
+    $function = shift @tokens if !length $spec;
+
     return $class->new($function, @tokens);
 }
 

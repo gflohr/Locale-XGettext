@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 14;
+use Test::More tests => 38;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -100,3 +100,40 @@ ok !$okay, $@;
 %keywords = (foo => [1, '', 3]);
 $okay = eval { use_keywords \%keywords };
 ok !$okay;
+
+# We now allow all keywords, even those with a colon or comma in the name.
+my $keyword;
+
+use Locale::XGettext::Util::Keyword;
+
+$keyword = Locale::XGettext::Util::Keyword->newFromString('npx:1c,2,3,"c"');
+ok defined $keyword, "all keyword components";
+is $keyword->function, 'npx';
+is $keyword->context, '1';
+is $keyword->singular, 2;
+is $keyword->plural, 3;
+is $keyword->comment, 'c';
+
+$keyword = Locale::XGettext::Util::Keyword->newFromString('__');
+ok defined $keyword, "keyword '__'";
+is $keyword->function, '__';
+is $keyword->context, 0;
+is $keyword->singular, 1;
+is $keyword->plural, 0;
+is $keyword->comment, undef;
+
+$keyword = Locale::XGettext::Util::Keyword->newFromString('L::G::_');
+ok defined $keyword, "keyword 'L::G::_'";
+is $keyword->function, 'L::G::_';
+is $keyword->context, 0;
+is $keyword->singular, 1;
+is $keyword->plural, 0;
+is $keyword->comment, undef;
+
+$keyword = Locale::XGettext::Util::Keyword->newFromString('1c,1c:1c,2,3,"c"');
+ok defined $keyword, '1c,1c:1c,2,3,"c"';
+is $keyword->function, '1c,1c';
+is $keyword->context, 1;
+is $keyword->singular, 2;
+is $keyword->plural, 3;
+is $keyword->comment, 'c';
