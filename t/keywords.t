@@ -20,7 +20,7 @@
 
 use strict;
 
-use Test::More tests => 15;
+use Test::More tests => 14;
 
 BEGIN {
     my $test_dir = __FILE__;
@@ -40,11 +40,6 @@ ok $okay, $@;
 %keywords = (foo => [''], bar => ['1']);
 $okay = eval { use_keywords \%keywords };
 ok $okay, $@;
-
-# Invalid function name.
-%keywords = ('foo bar' => ['']);
-$okay = eval { use_keywords \%keywords };
-ok !$okay, 'invalid function name';
 
 # Too many elements.
 %keywords = (foo => ['1', '2', '3', '4', '5']);

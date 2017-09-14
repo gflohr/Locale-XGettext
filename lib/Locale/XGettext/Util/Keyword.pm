@@ -26,10 +26,6 @@ use Locale::TextDomain qw(Locale-XGettext);
 
 sub new {
     my ($class, $function, @args) = @_;
-
-    die __x("Invalid function name '{function}'!\n", function => $function)
-        if $function !~ /^[_a-zA-Z][_a-zA-Z0-9]*$/;
-   
     
     my %seen;
     my $comment;
