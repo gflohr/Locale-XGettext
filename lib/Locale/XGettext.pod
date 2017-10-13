@@ -686,10 +686,6 @@ if you are not happy with the formatting.
 
 =back
 
-=head1 BUGS
-
-Flags are not yet supported.
-
 =head1 COPYRIGHT
 
 Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
