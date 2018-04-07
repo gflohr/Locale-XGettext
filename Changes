@@ -1,6 +1,8 @@
 Changes for Locale-XGettext.
 
 {{$NEXT}}
+
+0.3  2017-12-31
   - Allow overriding program name.
   - Allow setting CLI options for internal use.
 
