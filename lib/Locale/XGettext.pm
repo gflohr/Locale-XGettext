@@ -109,7 +109,8 @@ sub new {
     
     $self->__readFilesFrom($options->{files_from});
     if ($self->needInputFiles) {
-        $self->__usageError(__"no input file given") if !@{$self->{__files}};
+        $self->__usageError(__"no input file given")
+            if !@{$self->{__files}} && !@{$options->{files_from}};
     }
     
     $self->{__keywords} = $self->__setKeywords($options->{keyword});
