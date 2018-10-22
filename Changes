@@ -4,6 +4,8 @@ Changes for Locale-XGettext.
   - fixes https://github.com/gflohr/Locale-XGettext/issues/3
     That was a blocker for [Qgoda](http://www.qgoda.net/),
     see https://github.com/gflohr/qgoda/issues/33
+  - releases 0.4 and 0.5 had to be skipped because of a versioning
+    problem
 
 0.3  2017-12-31
   - Allow overriding program name.
