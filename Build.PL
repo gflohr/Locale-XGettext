@@ -19,7 +19,7 @@ my %module_build_args = (
     "Guido Flohr <guido.flohr\@cantanea.com>"
   ],
   "dist_name" => "Locale-XGettext",
-  "dist_version" => "0.4",
+  "dist_version" => "0.5",
   "license" => "lgpl",
   "module_name" => "Locale::XGettext",
   "recursive_test_files" => 1,
