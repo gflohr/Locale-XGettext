@@ -494,7 +494,7 @@ sub output {
         # We have no idea about the encoding.
         Encode::_utf8_off($dump);
 
-        print $fh $entry->dump
+        print $fh $dump
             or die __x("Error writing '{file}': {error}.\n",
                        file => $filename, error => $!);
     }
