@@ -31,6 +31,7 @@ use Locale::PO 0.27;
 use Scalar::Util qw(reftype blessed);
 use Locale::Recode;
 use Getopt::Long 2.36 qw(GetOptionsFromArray);
+use Encode;
 
 use Locale::XGettext::Util::POEntries;
 use Locale::XGettext::Util::Keyword;
@@ -489,6 +490,10 @@ sub output {
                    file => $filename, error => $!);
     
     foreach my $entry ($self->{__po}->entries) {
+        my $dump = $entry->dump;
+        # We have no idea about the encoding.
+        Encode::_utf8_off($dump);
+
         print $fh $entry->dump
             or die __x("Error writing '{file}': {error}.\n",
                        file => $filename, error => $!);
