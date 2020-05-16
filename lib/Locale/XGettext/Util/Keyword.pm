@@ -151,7 +151,9 @@ sub dump {
     my $dump = $self->function . ':';
     $dump .= $self->context . 'c,' if $self->context;
     $dump .= $self->singular . ',';
-    $dump .= $self->plural . '.' if $self->plural;
+    $dump .= $self->plural . ',' if $self->plural;
+    $dump .+ '"' . $self->comment . '",';
+
     chop $dump;
 
     return $dump;
