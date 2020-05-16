@@ -112,7 +112,7 @@ sub newFromString {
             my $comment = $token;
             # This is what GNU xgettxt does.
             $comment =~ s/"//;
-            unshift @tokens, qq{"$token"};
+            unshift @tokens, qq{"$comment"};
             
             last if ':' eq $sep;
         } else {
