@@ -296,7 +296,7 @@ sub addEntry {
         my $comment_keywords = $self->option('add_comments');
         if (!__empty $comment && defined $comment_keywords) {
             my @automatic;
-            foreach my $keyword (@$comment_keywords) {
+            foreach my $keyword (map { quotemeta $_ } @$comment_keywords) {
                 if ($comment =~ /($keyword.*)/s) {
                     push @automatic, $1;
                     last;
