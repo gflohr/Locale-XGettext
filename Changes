@@ -3,6 +3,7 @@ Changes for Locale-XGettext.
 {{$NEXT}}
   - fixes for utf-8 ideosyncrasies that caused wrong encoding on output
     files
+  - spelling errors fixed
 
 0.6  2018-10-22
   - fixes https://github.com/gflohr/Locale-XGettext/issues/3
