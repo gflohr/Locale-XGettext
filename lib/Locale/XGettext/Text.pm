@@ -1,7 +1,7 @@
 #! /bin/false
 # vim: ts=4:et
 
-# Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
+# Copyright (C) 2016-2025 Guido Flohr <guido.flohr@cantanea.com>,
 # all rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
@@ -67,7 +67,7 @@ or later <http://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 Written by Guido Flohr (http://www.guido-flohr.net/).
-', program => $0, years => '2016-2017', version => $Locale::XGettext::VERSION);
+', program => $0, years => '2016-2025', version => $Locale::XGettext::VERSION);
 }
 
 sub fileInformation {

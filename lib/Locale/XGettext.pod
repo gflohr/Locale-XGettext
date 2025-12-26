@@ -697,7 +697,7 @@ if you are not happy with the formatting.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 Guido Flohr <guido.flohr@cantanea.com>,
+Copyright (C) 2016-2025 Guido Flohr <guido.flohr@cantanea.com>,
 all rights reserved.
 
 =head1 SEE ALSO
