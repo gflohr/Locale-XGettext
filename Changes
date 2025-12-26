@@ -2,6 +2,7 @@ Changes for Locale-XGettext.
 
 {{$NEXT}}
   - declare package in TestLib
+    (fixes https://github.com/gflohr/Locale-XGettext/issues/8)
 
 0.8  2023-03-15
   - spelling errors fixed
