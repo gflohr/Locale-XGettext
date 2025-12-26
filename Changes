@@ -1,6 +1,9 @@
 Changes for Locale-XGettext.
 
 {{$NEXT}}
+  - declare package in TestLib
+
+0.8  2023-03-15
   - spelling errors fixed
 
 0.7  2018-11-04
